@@ -4,8 +4,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,9 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,6 +28,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
@@ -67,20 +70,14 @@ fun Button(
 ) {
     val spec = size.spec()
     val motion = MealomatTheme.motion
-    val interactionSource = remember { MutableInteractionSource() }
-    val pressed by interactionSource.collectIsPressedAsState()
     val haptics = LocalHapticFeedback.current
+    var pressed by remember { mutableStateOf(false) }
 
-    val held = pressed && enabled
     val edgeDepth by animateDpAsState(
-        targetValue = if (held) motion.pressedEdge else spec.edge,
+        targetValue = if (pressed) motion.pressedEdge else spec.edge,
         animationSpec = tween(motion.pressMillis, easing = motion.pressEasing),
     )
     val drop = spec.edge - edgeDepth
-
-    LaunchedEffect(held) {
-        if (held) haptics.performHapticFeedback(HapticFeedbackType.VirtualKey)
-    }
 
     Box(modifier = modifier.padding(bottom = spec.edge)) {
         Row(
@@ -96,8 +93,18 @@ fun Button(
                 }
                 .clip(spec.shape)
                 .background(tone.fill)
+                .pointerInput(enabled) {
+                    if (!enabled) return@pointerInput
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false)
+                        pressed = true
+                        haptics.performHapticFeedback(HapticFeedbackType.VirtualKey)
+                        waitForUpOrCancellation()
+                        pressed = false
+                    }
+                }
                 .clickable(
-                    interactionSource = interactionSource,
+                    interactionSource = null,
                     indication = null,
                     enabled = enabled,
                     role = Role.Button,
