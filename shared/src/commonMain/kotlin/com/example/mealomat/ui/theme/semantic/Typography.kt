@@ -1,10 +1,12 @@
 package com.example.mealomat.ui.theme.semantic
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.mealomat.ui.theme.primitives.nunito
 
 // INCOMPLETE. Only the kinds the built screens actually use live here; headings, body, etc...
 @Immutable
@@ -20,7 +22,8 @@ data class LabelStyles(
     val lg: TextStyle,
 )
 
-fun mealomatTypography(family: FontFamily = FontFamily.Default) = MealomatTypography(
+@Composable
+fun mealomatTypography(family: FontFamily = nunito()) = MealomatTypography(
     label = LabelStyles(
         xs = label(family, 13),
         sm = label(family, 14),
