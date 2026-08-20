@@ -8,6 +8,8 @@ import com.example.mealomat.ui.theme.primitives.Radius
 @Immutable
 data class MealomatShapes(
     val button: ButtonShapes = ButtonShapes(),
+    // split up later into sm/md/lg, etc...
+    val field: CornerBasedShape = RoundedCornerShape(Radius.Xl2),
 )
 
 @Immutable
