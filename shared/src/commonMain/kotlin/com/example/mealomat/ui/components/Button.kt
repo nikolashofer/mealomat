@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.drawOutline
@@ -70,6 +71,7 @@ fun Button(
 ) {
     val spec = size.spec()
     val motion = MealomatTheme.motion
+    val opacity = MealomatTheme.opacity
     val haptics = LocalHapticFeedback.current
     var pressed by remember { mutableStateOf(false) }
 
@@ -79,9 +81,13 @@ fun Button(
     )
     val drop = spec.edge - edgeDepth
 
-    Box(modifier = modifier.padding(bottom = spec.edge)) {
+    Box(
+        modifier = Modifier
+            .alpha(if (enabled) 1f else opacity.disabled)
+            .padding(bottom = spec.edge),
+    ) {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .offset { IntOffset(0, drop.roundToPx()) }
                 .drawBehind {
                     translate(top = edgeDepth.toPx()) {
@@ -112,7 +118,7 @@ fun Button(
                 )
                 .padding(spec.padding),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             content = content,
         )
     }
