@@ -14,6 +14,13 @@ import com.example.mealomat.ui.theme.primitives.nunito
 data class MealomatTypography(
     val label: LabelStyles,
     val field: FieldStyles,
+    val display: TextStyle,
+    val body: BodyStyles,
+)
+
+@Immutable
+data class BodyStyles(
+    val md: TextStyle,
 )
 
 @Immutable
@@ -37,6 +44,14 @@ fun mealomatTypography(family: FontFamily = nunito()) = MealomatTypography(
         sm = label(family, 14),
         md = label(family, 16),
         lg = label(family, 17),
+    ),
+    display = TextStyle(
+        fontFamily = family,
+        fontWeight = FontWeight.Black,
+        fontSize = 40.sp,
+    ),
+    body = BodyStyles(
+        md = TextStyle(fontFamily = family, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp),
     ),
     field = FieldStyles(
         label = TextStyle(

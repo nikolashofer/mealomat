@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.example.mealomat.ui.theme.MealomatTheme
+import com.example.mealomat.ui.theme.Space
 
 @Composable
 fun TextField(
@@ -66,7 +67,7 @@ fun TextField(
             .clip(shape)
             .background(colors.surface.raised)
             .border(borderWidth, borderColor, shape)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = Space.S16, vertical = Space.S12),
     ) {
         BasicText(
             text = label.uppercase(),

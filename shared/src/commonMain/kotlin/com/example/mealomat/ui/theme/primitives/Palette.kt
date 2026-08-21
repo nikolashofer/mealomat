@@ -41,6 +41,10 @@ internal object Palette {
     val Purple500 = Color(0xFF8B5CF6)
     val Purple700 = Color(0xFF6D3EE0)
 
+    val Red100 = Color(0xFFFDECEC)
+    val Red500 = Color(0xFFEF4444)
+    val Red700 = Color(0xFFB91C1C)
+
     val Green100 = Color(0xFFE9F8EE)
     val Green300 = Color(0xFFCFEEDA)
     val Green500 = Color(0xFF22C55E)

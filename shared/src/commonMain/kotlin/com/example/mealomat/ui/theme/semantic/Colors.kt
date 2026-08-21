@@ -11,6 +11,7 @@ data class MealomatColors(
     val border: BorderColors,
     val edge: EdgeColors,
     val tone: ToneScheme,
+    val status: StatusScheme,
 )
 
 @Immutable
@@ -65,6 +66,21 @@ data class ToneScheme(
     val shopping: ToneColors,
     val prep: ToneColors,
     val logbook: ToneColors,
+)
+
+@Immutable
+data class StatusColors(
+    val fill: Color,
+    val tint: Color,
+    val text: Color,
+    val edge: Color,
+)
+
+@Immutable
+data class StatusScheme(
+    val success: StatusColors,
+    val warning: StatusColors,
+    val danger: StatusColors,
 )
 
 fun lightColors(): MealomatColors = MealomatColors(
@@ -149,6 +165,26 @@ fun lightColors(): MealomatColors = MealomatColors(
             tint = Palette.Green100,
             onTint = Palette.Green700,
             onFill = Palette.White,
+        ),
+    ),
+    status = StatusScheme(
+        success = StatusColors(
+            fill = Palette.Green500,
+            tint = Palette.Green100,
+            text = Palette.Green700,
+            edge = Palette.Green700,
+        ),
+        warning = StatusColors(
+            fill = Palette.Amber500,
+            tint = Palette.Amber100,
+            text = Palette.Amber700,
+            edge = Palette.Amber700,
+        ),
+        danger = StatusColors(
+            fill = Palette.Red500,
+            tint = Palette.Red100,
+            text = Palette.Red700,
+            edge = Palette.Red700,
         ),
     ),
 )

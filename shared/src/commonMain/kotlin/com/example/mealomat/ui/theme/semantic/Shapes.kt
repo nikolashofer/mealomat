@@ -2,6 +2,7 @@ package com.example.mealomat.ui.theme.semantic
 
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Immutable
 import com.example.mealomat.ui.theme.primitives.Radius
 
@@ -10,6 +11,7 @@ data class MealomatShapes(
     val button: ButtonShapes = ButtonShapes(),
     // split up later into sm/md/lg, etc...
     val field: CornerBasedShape = RoundedCornerShape(Radius.Xl2),
+    val sheet: CornerBasedShape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
 )
 
 @Immutable

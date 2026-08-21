@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.semantic.ToneColors
+import com.example.mealomat.ui.theme.Space
 
 enum class ButtonSize { Sm, Md, Lg }
 
@@ -118,7 +119,7 @@ fun Button(
                 )
                 .padding(spec.padding),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(Space.S8, Alignment.CenterHorizontally),
             content = content,
         )
     }
@@ -130,8 +131,8 @@ private fun ButtonSize.spec(): ButtonSpec {
     val s = MealomatTheme.shadows
     val label = MealomatTheme.typography.label
     return when (this) {
-        ButtonSize.Sm -> ButtonSpec(t.sm, s.edgeSm.offsetY, PaddingValues(14.dp, 10.dp), label.xs)
-        ButtonSize.Md -> ButtonSpec(t.md, s.edgeMd.offsetY, PaddingValues(16.dp, 12.dp), label.md)
-        ButtonSize.Lg -> ButtonSpec(t.lg, s.edgeLg.offsetY, PaddingValues(24.dp, 16.dp), label.lg)
+        ButtonSize.Sm -> ButtonSpec(t.sm, s.edgeSm.offsetY, PaddingValues(Space.S14, Space.S10), label.xs)
+        ButtonSize.Md -> ButtonSpec(t.md, s.edgeMd.offsetY, PaddingValues(Space.S16, Space.S12), label.md)
+        ButtonSize.Lg -> ButtonSpec(t.lg, s.edgeLg.offsetY, PaddingValues(Space.S24, Space.S16), label.lg)
     }
 }
