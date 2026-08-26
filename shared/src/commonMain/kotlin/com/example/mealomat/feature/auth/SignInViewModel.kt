@@ -2,15 +2,16 @@ package com.example.mealomat.feature.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mealomat.auth.AuthException
 import com.example.mealomat.auth.AuthRepository
+import com.example.mealomat.core.AppError
+import com.example.mealomat.core.Outcome
+import com.example.mealomat.core.SignInError
+import com.example.mealomat.feature.GENERIC_ERROR
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-private const val GENERIC_ERROR = "Something went wrong. Try again."
 
 class SignInViewModel(private val auth: AuthRepository) : ViewModel() {
 
@@ -26,16 +27,19 @@ class SignInViewModel(private val auth: AuthRepository) : ViewModel() {
         if (!current.canSubmit) return
         _state.update { it.copy(isSubmitting = true, error = null) }
         viewModelScope.launch {
-            val result = auth.signIn(current.email, current.password)
-            val failure = result.exceptionOrNull()
+            val outcome = auth.signIn(current.email, current.password)
             _state.update {
                 it.copy(
                     isSubmitting = false,
-                    error = failure?.let {
-                        (it as? AuthException)?.userMessage ?: GENERIC_ERROR
-                    },
+                    error = (outcome as? Outcome.Fail)?.error?.toMessage(),
                 )
             }
         }
     }
+}
+
+private fun AppError.toMessage(): String = when (this) {
+    SignInError.InvalidCredentials -> "Email or password is incorrect."
+    AppError.Offline -> "Can't reach the server. Signing in needs a connection."
+    AppError.Unauthorized, is AppError.Server, AppError.Unknown -> GENERIC_ERROR
 }

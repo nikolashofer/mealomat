@@ -111,7 +111,7 @@ fun SignInScreen(viewModel: SignInViewModel = koinViewModel()) {
     }
 }
 
-// TODO: maybe move to component
+// TODO: maybe move to component have general toasts which are reusable throughout app
 @Composable
 private fun ErrorBanner(message: String) {
     val colors = MealomatTheme.colors

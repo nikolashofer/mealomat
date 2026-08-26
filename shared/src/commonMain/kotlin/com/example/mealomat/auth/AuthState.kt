@@ -5,5 +5,3 @@ sealed interface AuthState {
     data object SignedOut : AuthState
     data object SignedIn : AuthState
 }
-
-class AuthException(val userMessage: String) : Exception(userMessage)

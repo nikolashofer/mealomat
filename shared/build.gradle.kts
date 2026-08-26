@@ -22,8 +22,6 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "Shared"
             isStatic = true
-            // symbol must be requested explicitly or Xcode fails with undefined _sqlite3_* references.
-            linkerOpts("-lsqlite3")
         }
     }
 
@@ -45,8 +43,6 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.compose.uiTooling)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.sqldelight.driver.android)
             implementation(libs.koin.android)
@@ -71,7 +67,6 @@ kotlin {
             implementation(libs.compose.foundation)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
@@ -84,10 +79,6 @@ kotlin {
         }
 
     }
-}
-
-dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
 }
 
 sqldelight {

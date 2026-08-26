@@ -1,5 +1,9 @@
 package com.example.mealomat.auth
 
+import com.example.mealomat.core.AppError
+import com.example.mealomat.core.Outcome
+import com.example.mealomat.core.SignInError
+import com.example.mealomat.core.toOutcome
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.exception.AuthErrorCode
@@ -7,6 +11,7 @@ import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.exceptions.HttpRequestException
+import io.github.jan.supabase.exceptions.RestException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -29,24 +34,25 @@ class SupabaseAuthRepository(
     }
 
     // TODO: extend with additional provider mapping
-    override suspend fun signIn(email: String, password: String): Result<Unit> =
+    override suspend fun signIn(email: String, password: String): Outcome<Unit> =
         runCatching {
             client.auth.signInWith(Email) {
                 this.email = email.trim()
                 this.password = password
             }
-        }.recoverCatching { throw AuthException(it.toUserMessage()) }
+        }.toOutcome(Throwable::toAppError)
 
-    override suspend fun signOut() {
+    override suspend fun signOut(): Outcome<Unit> {
         sessionData.clear()
-        runCatching { client.auth.signOut() }
+        return runCatching { client.auth.signOut() }.toOutcome(Throwable::toAppError)
     }
 }
 
-// TODO: maybe map to dedicated AuthError enum and have message mapping in viewmodel
-private fun Throwable.toUserMessage(): String = when {
-    this is AuthRestException && errorCode == AuthErrorCode.InvalidCredentials ->
-        "Email or password is incorrect."
-    this is HttpRequestException -> "Can't reach the server. Signing in needs a connection."
-    else -> "Something went wrong. Try again."
+private fun Throwable.toAppError(): AppError = when (this) {
+    is AuthRestException if errorCode == AuthErrorCode.InvalidCredentials ->
+        SignInError.InvalidCredentials
+    is HttpRequestException -> AppError.Offline
+    is RestException if statusCode == 401 -> AppError.Unauthorized
+    is RestException -> AppError.Server(statusCode)
+    else -> AppError.Unknown
 }
