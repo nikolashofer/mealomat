@@ -3,7 +3,7 @@ import Shared
 
 @main
 struct iOSApp: App {
-    init() { MainViewControllerKt.startDependencyInjection() }
+    init() { PlatformModule_iosKt.startKoinIos() }
 
     var body: some Scene {
         WindowGroup {

@@ -1,0 +1,44 @@
+import com.example.mealomat.data.db.Basis;
+import kotlin.Boolean;
+
+CREATE TABLE ingredient (
+  id              TEXT    NOT NULL PRIMARY KEY,
+  user_id         TEXT    NOT NULL,
+  updated_at      INTEGER NOT NULL,
+  deleted_at      INTEGER,
+  name            TEXT    NOT NULL,
+  basis           TEXT AS Basis NOT NULL,
+  kcal            REAL    NOT NULL,
+  protein_g       REAL    NOT NULL,
+  carbs_g         REAL    NOT NULL,
+  fat_g           REAL    NOT NULL,
+  fiber_g         REAL,
+  sugar_g         REAL,
+  saturated_fat_g REAL,
+  salt_g          REAL,
+  pack_size       REAL,
+  archived        INTEGER AS Boolean NOT NULL DEFAULT 0,
+  note            TEXT
+);
+
+CREATE INDEX ingredient_user_id ON ingredient(user_id);
+
+upsert:
+INSERT OR REPLACE INTO ingredient VALUES ?;
+
+findById:
+SELECT * FROM ingredient WHERE id = ?;
+
+listActive:
+SELECT * FROM ingredient
+WHERE deleted_at IS NULL AND archived = 0
+ORDER BY name;
+
+listWithArchived:
+SELECT * FROM ingredient WHERE deleted_at IS NULL ORDER BY name;
+
+softDelete:
+UPDATE ingredient SET deleted_at = ?, updated_at = ? WHERE id = ?;
+
+setArchived:
+UPDATE ingredient SET archived = ?, updated_at = ? WHERE id = ?;
