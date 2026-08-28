@@ -1,0 +1,20 @@
+CREATE TABLE plan (
+  id                   TEXT    NOT NULL PRIMARY KEY,
+  user_id              TEXT    NOT NULL,
+  updated_at           INTEGER NOT NULL,
+  deleted_at           INTEGER,
+  active_from_date     TEXT    NOT NULL,
+  active_from_position INTEGER NOT NULL
+);
+
+CREATE INDEX plan_user_id ON plan(user_id);
+CREATE UNIQUE INDEX plan_activation ON plan(user_id, active_from_date, active_from_position) WHERE deleted_at IS NULL;
+
+insert:
+INSERT INTO plan VALUES ?;
+
+list:
+SELECT * FROM plan WHERE deleted_at IS NULL ORDER BY active_from_date, active_from_position;
+
+findById:
+SELECT * FROM plan WHERE id = ?;

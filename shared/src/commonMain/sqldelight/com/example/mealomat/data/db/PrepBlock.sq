@@ -14,9 +14,9 @@ CREATE TABLE prep_block (
 
 CREATE INDEX prep_block_user_id ON prep_block(user_id);
 
+upsert:
+INSERT OR REPLACE INTO prep_block VALUES ?;
+
 list:
 SELECT * FROM prep_block WHERE deleted_at IS NULL
 ORDER BY covers_from_weekday, covers_from_position;
-
-upsert:
-INSERT OR REPLACE INTO prep_block VALUES ?;

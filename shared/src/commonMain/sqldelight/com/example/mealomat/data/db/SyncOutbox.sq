@@ -10,6 +10,10 @@ CREATE TABLE sync_outbox (
   last_error      TEXT
 );
 
+enqueue:
+INSERT INTO sync_outbox (table_name, row_id, op, payload, created_at)
+VALUES (?, ?, ?, ?, ?);
+
 list:
 SELECT * FROM sync_outbox ORDER BY id;
 
@@ -18,7 +22,3 @@ SELECT * FROM sync_outbox WHERE table_name = ? AND row_id = ? ORDER BY id;
 
 count:
 SELECT count(*) FROM sync_outbox;
-
-enqueue:
-INSERT INTO sync_outbox (table_name, row_id, op, payload, created_at)
-VALUES (?, ?, ?, ?, ?);

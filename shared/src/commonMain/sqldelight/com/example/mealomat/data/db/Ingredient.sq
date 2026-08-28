@@ -23,6 +23,15 @@ CREATE TABLE ingredient (
 
 CREATE INDEX ingredient_user_id ON ingredient(user_id);
 
+upsert:
+INSERT OR REPLACE INTO ingredient VALUES ?;
+
+softDelete:
+UPDATE ingredient SET deleted_at = ?, updated_at = ? WHERE id = ?;
+
+setArchived:
+UPDATE ingredient SET archived = ?, updated_at = ? WHERE id = ?;
+
 list:
 SELECT * FROM ingredient
 WHERE deleted_at IS NULL AND archived = 0
@@ -36,12 +45,3 @@ SELECT * FROM ingredient WHERE id = ?;
 
 countWithArchived:
 SELECT count(*) FROM ingredient WHERE deleted_at IS NULL;
-
-upsert:
-INSERT OR REPLACE INTO ingredient VALUES ?;
-
-softDelete:
-UPDATE ingredient SET deleted_at = ?, updated_at = ? WHERE id = ?;
-
-setArchived:
-UPDATE ingredient SET archived = ?, updated_at = ? WHERE id = ?;

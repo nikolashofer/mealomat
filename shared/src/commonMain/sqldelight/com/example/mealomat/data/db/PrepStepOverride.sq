@@ -4,17 +4,17 @@ CREATE TABLE prep_step_override (
   prep_block_id TEXT    NOT NULL,
   updated_at    INTEGER NOT NULL,
   deleted_at    INTEGER,
-  target_key    TEXT    NOT NULL,   -- "component:<plan_component_id>" | "ingredient:<ingredient_id>"
+  target_key    TEXT    NOT NULL,   -- "component:<lineage_id>" | "ingredient:<ingredient_id>"
   position      INTEGER NOT NULL
 );
 
 CREATE INDEX prep_step_override_user_id ON prep_step_override(user_id);
 CREATE INDEX prep_step_override_block ON prep_step_override(prep_block_id);
 
+upsert:
+INSERT OR REPLACE INTO prep_step_override VALUES ?;
+
 listForBlock:
 SELECT * FROM prep_step_override
 WHERE deleted_at IS NULL AND prep_block_id = ?
 ORDER BY position;
-
-upsert:
-INSERT OR REPLACE INTO prep_step_override VALUES ?;

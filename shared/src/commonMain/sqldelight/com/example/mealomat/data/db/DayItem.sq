@@ -1,0 +1,26 @@
+import kotlin.Boolean;
+
+CREATE TABLE day_item (
+  id           TEXT    NOT NULL PRIMARY KEY,
+  user_id      TEXT    NOT NULL,
+  plan_item_id TEXT    NOT NULL,
+  updated_at   INTEGER NOT NULL,
+  deleted_at   INTEGER,
+  committed_at INTEGER,                  -- a shopping or prep session covered this line
+  prepped_at   INTEGER,                  -- set by the prep wizard
+  ticked_at    INTEGER,                  -- set by the logbook
+  date         TEXT    NOT NULL,
+  excluded     INTEGER AS Boolean NOT NULL DEFAULT 0   -- planned eat-out removed this line
+);
+
+CREATE INDEX day_item_user_id ON day_item(user_id);
+CREATE UNIQUE INDEX day_item_line ON day_item(date, plan_item_id) WHERE deleted_at IS NULL;
+
+upsert:
+INSERT OR REPLACE INTO day_item VALUES ?;
+
+listForDate:
+SELECT * FROM day_item WHERE deleted_at IS NULL AND date = ?;
+
+findByDateAndPlanItem:
+SELECT * FROM day_item WHERE deleted_at IS NULL AND date = ? AND plan_item_id = ?;

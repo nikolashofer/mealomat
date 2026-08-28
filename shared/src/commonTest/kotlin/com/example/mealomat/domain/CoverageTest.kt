@@ -24,6 +24,7 @@ class CoverageTest {
     private fun meal(weekday: DayOfWeek, position: Long, name: String) = Plan_meal(
         id = "${weekday.name.take(3)}-$name",
         user_id = "user-1",
+        plan_id = "plan-1",
         updated_at = 0,
         deleted_at = null,
         weekday = weekday,

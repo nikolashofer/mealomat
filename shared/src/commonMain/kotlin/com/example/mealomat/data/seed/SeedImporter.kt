@@ -7,6 +7,7 @@ import com.example.mealomat.data.repo.PlanMealDraft
 import com.example.mealomat.data.repo.PlanRepository
 import com.example.mealomat.data.repo.PrepBlockDraft
 import com.example.mealomat.data.repo.PrepBlockRepository
+import com.example.mealomat.domain.Slot
 import kotlinx.datetime.DayOfWeek
 
 // TODO: redo proper seeds file, once seeded, so we do not need this Seed<Table> models 1:1 export/import
@@ -16,18 +17,20 @@ class SeedImporter(
     private val plan: PlanRepository,
     private val prepBlocks: PrepBlockRepository,
 ) {
-    suspend fun import(seed: Seed) {
+    suspend fun import(seed: Seed, activeFrom: Slot) {
         val ingredientIds = seed.ingredients.associate { it.key to ingredients.upsert(it.toDraft()) }
 
         seed.prepBlocks.forEach { prepBlocks.upsertBlock(it.toDraft()) }
 
+        val planId = plan.createPlan(activeFrom)
         seed.planMeals.forEach { meal ->
-            val mealId = plan.upsertMeal(meal.toDraft())
+            val mealId = plan.upsertMeal(planId, meal.toDraft())
             meal.items.forEachIndexed { index, item ->
                 val ingredientId = requireNotNull(ingredientIds[item.ingredient]) {
                     "seed references unknown ingredient '${item.ingredient}'"
                 }
                 plan.upsertItem(
+                    planId,
                     PlanItemDraft(
                         planMealId = mealId,
                         ingredientId = ingredientId,

@@ -3,6 +3,7 @@ import com.example.mealomat.data.db.PrepMode;
 CREATE TABLE plan_item (
   id                TEXT    NOT NULL PRIMARY KEY,
   user_id           TEXT    NOT NULL,
+  plan_id           TEXT    NOT NULL,
   plan_meal_id      TEXT    NOT NULL,
   plan_component_id TEXT,                    -- NULL = flat, directly on the meal
   ingredient_id     TEXT    NOT NULL,
@@ -14,11 +15,17 @@ CREATE TABLE plan_item (
 );
 
 CREATE INDEX plan_item_user_id ON plan_item(user_id);
+CREATE INDEX plan_item_plan ON plan_item(plan_id);
 CREATE INDEX plan_item_meal ON plan_item(plan_meal_id);
-CREATE INDEX plan_item_component ON plan_item(plan_component_id);
-
-list:
-SELECT * FROM plan_item WHERE deleted_at IS NULL ORDER BY plan_meal_id, position;
 
 upsert:
 INSERT OR REPLACE INTO plan_item VALUES ?;
+
+softDelete:
+UPDATE plan_item SET deleted_at = ?, updated_at = ? WHERE id = ?;
+
+listForPlan:
+SELECT * FROM plan_item WHERE deleted_at IS NULL AND plan_id = ? ORDER BY plan_meal_id, position;
+
+findById:
+SELECT * FROM plan_item WHERE id = ?;

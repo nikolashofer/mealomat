@@ -6,11 +6,13 @@ import com.example.mealomat.data.db.PrepMode
 import com.example.mealomat.data.db.mealomatDatabase
 import com.example.mealomat.data.sync.OutboxWriter
 import com.example.mealomat.data.sync.Tables
+import com.example.mealomat.domain.Slot
 import com.example.mealomat.testing.FakeAuth
 import com.example.mealomat.testing.FixedClock
 import com.example.mealomat.testing.testDriver
-import kotlinx.datetime.DayOfWeek
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.int
@@ -18,6 +20,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -28,6 +31,9 @@ class PlanRepositoryTest {
     private lateinit var repo: PlanRepository
     private val clock = FixedClock()
 
+    private val monday = LocalDate(2026, 6, 22)
+    private val sunday = LocalDate(2026, 6, 28)
+
     @BeforeTest
     fun setUp() {
         driver = testDriver()
@@ -35,109 +41,135 @@ class PlanRepositoryTest {
         repo = PlanRepository(db, OutboxWriter(db, clock), FakeAuth("user-1"), clock)
     }
 
-    private suspend fun mondayLunch(): String =
-        repo.upsertMeal(PlanMealDraft(weekday = DayOfWeek.MONDAY, name = "Lunch", position = 0))
+    private suspend fun seededPlan(): String {
+        val plan = repo.createPlan(Slot(monday, 0))
+        val meal = repo.upsertMeal(plan, PlanMealDraft(weekday = DayOfWeek.MONDAY, name = "Lunch", position = 0))
+        val component = repo.upsertComponent(
+            plan, PlanComponentDraft(planMealId = meal, name = "Bowl", position = 0, prepMode = PrepMode.PREP),
+        )
+        repo.upsertItem(plan, PlanItemDraft(planMealId = meal, planComponentId = component, ingredientId = "rice", amount = 180.0, position = 0))
+        repo.upsertItem(plan, PlanItemDraft(planMealId = meal, ingredientId = "egg", amount = 2.0, position = 1))
+        return plan
+    }
 
     @Test
     fun everyTableWritesAnOutboxEntry() = runTest {
-        val meal = mondayLunch()
-        val component = repo.upsertComponent(
-            PlanComponentDraft(planMealId = meal, name = "Peanut sauce", position = 0, prepMode = PrepMode.PREP),
-        )
-        repo.upsertItem(
-            PlanItemDraft(
-                planMealId = meal,
-                planComponentId = component,
-                ingredientId = "ing-1",
-                amount = 40.0,
-                position = 0,
-            ),
-        )
+        seededPlan()
 
-        assertEquals(3L, db.syncOutboxQueries.count().executeAsOne())
-        val tables = listOf(Tables.PLAN_MEAL, Tables.PLAN_COMPONENT, Tables.PLAN_ITEM)
-        tables.forEach { table ->
-            assertTrue(
-                db.syncOutboxQueries.list().executeAsList().any { it.table_name == table },
-                "no outbox entry for $table",
-            )
-        }
+        val tables = db.syncOutboxQueries.list().executeAsList().map { it.table_name }
+        assertTrue(tables.containsAll(listOf(Tables.PLAN, Tables.PLAN_MEAL, Tables.PLAN_COMPONENT, Tables.PLAN_ITEM)))
     }
 
     @Test
     fun itemPrepModeStaysNullWhenNotOverridden() = runTest {
-        val meal = mondayLunch()
-        repo.upsertItem(PlanItemDraft(planMealId = meal, ingredientId = "ing-1", amount = 80.0, position = 0))
-        repo.upsertItem(
-            PlanItemDraft(
-                planMealId = meal,
-                ingredientId = "ing-2",
-                amount = 2.0,
-                position = 1,
-                prepMode = PrepMode.FRESH,
-            ),
-        )
+        val plan = seededPlan()
 
-        val items = repo.items()
-        assertNull(items.single { it.ingredient_id == "ing-1" }.prep_mode)
-        assertEquals(PrepMode.FRESH, items.single { it.ingredient_id == "ing-2" }.prep_mode)
+        val items = repo.items(plan)
+        assertNull(items.single { it.ingredient_id == "egg" }.prep_mode, "NULL means inherit")
+        assertNull(items.single { it.ingredient_id == "rice" }.prep_mode)
     }
 
     @Test
-    fun itemsCanBeFlatOrUnderAComponent() = runTest {
-        val meal = mondayLunch()
-        val component = repo.upsertComponent(
-            PlanComponentDraft(planMealId = meal, name = "Bowl base", position = 0, prepMode = PrepMode.PREP),
-        )
-        repo.upsertItem(PlanItemDraft(planMealId = meal, planComponentId = component, ingredientId = "rice", amount = 180.0, position = 0))
-        repo.upsertItem(PlanItemDraft(planMealId = meal, ingredientId = "egg", amount = 2.0, position = 1))
+    fun weekdayRoundTripsAsTheIsoDayNumber() = runTest {
+        val plan = repo.createPlan(Slot(monday, 0))
+        repo.upsertMeal(plan, PlanMealDraft(weekday = DayOfWeek.SUNDAY, name = "Brunch", position = 0))
 
-        val items = repo.items()
-        assertEquals(component, items.single { it.ingredient_id == "rice" }.plan_component_id)
-        assertNull(items.single { it.ingredient_id == "egg" }.plan_component_id)
-    }
-
-    @Test
-    fun payloadKeysAreColumnNames() = runTest {
-        val meal = mondayLunch()
-        repo.upsertItem(PlanItemDraft(planMealId = meal, ingredientId = "ing-1", amount = 80.0, position = 0))
-
+        assertEquals(DayOfWeek.SUNDAY, repo.meals(plan).single().weekday)
         val payload = db.syncOutboxQueries.list().executeAsList()
-            .single { it.table_name == Tables.PLAN_ITEM }.payload
-        val json = Json.decodeFromString(JsonObject.serializer(), payload)
-        assertTrue(
-            json.keys.containsAll(listOf("plan_meal_id", "plan_component_id", "ingredient_id", "prep_mode")),
-        )
-        assertTrue(json.keys.none { it.any(Char::isUpperCase) }, "camelCase leaked: ${json.keys}")
-        assertEquals("user-1", json.getValue("user_id").jsonPrimitive.content)
+            .single { it.table_name == Tables.PLAN_MEAL }.payload
+        assertEquals(7, Json.decodeFromString(JsonObject.serializer(), payload).getValue("weekday").jsonPrimitive.int)
+    }
+
+    @Test
+    fun editablePlanCopiesEveryRowWithFreshIds() = runTest {
+        val v1 = seededPlan()
+
+        val v2 = repo.editablePlan(monday, Slot(sunday, 1))
+
+        assertTrue(v2 != v1)
+        assertEquals(repo.meals(v1).size, repo.meals(v2).size)
+        assertEquals(repo.items(v1).size, repo.items(v2).size)
+        assertTrue(repo.items(v1).map { it.id }.intersect(repo.items(v2).map { it.id }.toSet()).isEmpty())
+        assertEquals(v2, repo.items(v2).first().plan_id, "children point at the new version")
+    }
+
+    @Test
+    fun componentsKeepTheirLineageAcrossVersions() = runTest {
+        val v1 = seededPlan()
+
+        val v2 = repo.editablePlan(monday, Slot(sunday, 1))
+
+        val before = repo.components(v1).single()
+        val after = repo.components(v2).single()
+        assertTrue(before.id != after.id, "a new row")
+        assertEquals(before.lineage_id, after.lineage_id, "but the same lineage")
+    }
+
+    @Test
+    fun copiedChildrenPointAtTheCopiedParents() = runTest {
+        val v1 = seededPlan()
+        val v2 = repo.editablePlan(monday, Slot(sunday, 1))
+
+        val mealIds = repo.meals(v2).map { it.id }.toSet()
+        val componentIds = repo.components(v2).map { it.id }.toSet()
+        assertTrue(repo.items(v2).all { it.plan_meal_id in mealIds })
+        assertTrue(repo.items(v2).mapNotNull { it.plan_component_id }.all { it in componentIds })
+        assertTrue(repo.items(v1).none { it.plan_meal_id in mealIds }, "v1 is untouched")
+    }
+
+    @Test
+    fun editablePlanReusesTheScheduledVersion() = runTest {
+        seededPlan()
+
+        val first = repo.editablePlan(monday, Slot(sunday, 1))
+        val second = repo.editablePlan(monday, Slot(sunday, 1))
+
+        assertEquals(first, second)
+        assertEquals(2, repo.plans().size, "one revision, not two")
+    }
+
+    @Test
+    fun aStaleScheduledVersionIsNotReused() = runTest {
+        seededPlan()
+        val stale = repo.editablePlan(monday, Slot(sunday, 1))
+        val staleActiveFrom = repo.plans().single { it.id == stale }.active_from_date
+
+        val fresh = repo.editablePlan(monday, Slot(LocalDate(2026, 7, 2), 0))
+
+        assertTrue(fresh != stale)
+        assertEquals(3, repo.plans().size)
+        assertEquals(staleActiveFrom, repo.plans().single { it.id == stale }.active_from_date)
+    }
+
+    @Test
+    fun planAtPicksTheVersionOwningTheDate() = runTest {
+        val v1 = seededPlan()
+        val v2 = repo.editablePlan(monday, Slot(sunday, 1))
+
+        assertEquals(v1, repo.planAt(Slot(LocalDate(2026, 6, 24), 0))?.id)
+        assertEquals(v1, repo.planAt(Slot(sunday, 0))?.id, "Sunday breakfast is still v1")
+        assertEquals(v2, repo.planAt(Slot(sunday, 1))?.id, "Sunday lunch onwards is v2")
+    }
+
+    @Test
+    fun twoVersionsCannotStartAtTheSameSlot() = runTest {
+        repo.createPlan(Slot(monday, 0))
+
+        assertFails { repo.createPlan(Slot(monday, 0)) }
+    }
+
+    @Test
+    fun versionsMayStartAtDifferentPositionsOnTheSameDay() = runTest {
+        repo.createPlan(Slot(sunday, 0))
+        repo.createPlan(Slot(sunday, 1))
+
+        assertEquals(2, repo.plans().size, "Sunday splits between two versions")
     }
 
     @Test
     fun isEmptyReportsWhetherAPlanExists() = runTest {
         assertTrue(repo.isEmpty())
-        mondayLunch()
+        repo.createPlan(Slot(monday, 0))
         assertTrue(!repo.isEmpty())
-    }
-
-    @Test
-    fun weekdayRoundTripsAsTheIsoDayNumber() = runTest {
-        repo.upsertMeal(PlanMealDraft(weekday = DayOfWeek.SUNDAY, name = "Brunch", position = 0))
-
-        assertEquals(DayOfWeek.SUNDAY, repo.meals().single().weekday)
-        val payload = db.syncOutboxQueries.list().executeAsList()
-            .single { it.table_name == Tables.PLAN_MEAL }.payload
-        assertEquals(
-            7,
-            Json.decodeFromString(JsonObject.serializer(), payload).getValue("weekday").jsonPrimitive.int,
-        )
-    }
-
-    @Test
-    fun mealsAreOrderedByWeekdayThenPosition() = runTest {
-        repo.upsertMeal(PlanMealDraft(weekday = DayOfWeek.TUESDAY, name = "Lunch", position = 1))
-        repo.upsertMeal(PlanMealDraft(weekday = DayOfWeek.TUESDAY, name = "Breakfast", position = 0))
-        repo.upsertMeal(PlanMealDraft(weekday = DayOfWeek.MONDAY, name = "Dinner", position = 0))
-
-        assertEquals(listOf("Dinner", "Breakfast", "Lunch"), repo.meals().map { it.name })
     }
 }

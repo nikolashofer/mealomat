@@ -10,6 +10,7 @@ import com.example.mealomat.data.db.DatabaseSessionScopedData
 import com.example.mealomat.data.db.mealomatDatabase
 import com.example.mealomat.data.repo.IngredientRepository
 import com.example.mealomat.data.repo.PlanRepository
+import com.example.mealomat.data.repo.DayRepository
 import com.example.mealomat.data.repo.PrepBlockRepository
 import com.example.mealomat.feature.auth.SignInViewModel
 import com.example.mealomat.feature.home.HomeViewModel
@@ -30,6 +31,7 @@ val appModule = module {
     single { IngredientRepository(get(), get(), get(), get()) }
     single { PlanRepository(get(), get(), get(), get()) }
     single { PrepBlockRepository(get(), get(), get(), get()) }
+    single { DayRepository(get(), get(), get(), get(), get()) }
     viewModel { SignInViewModel(get()) }
     viewModel { HomeViewModel(get(), get()) }
 }

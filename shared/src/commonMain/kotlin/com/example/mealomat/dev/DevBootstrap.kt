@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.compose.getKoin
 
-// runs the registered DevSetup, then renders `content` unchanged; a no-op when none is bound.
+// Runs the registered DevSetup, then renders `content` unchanged; a no-op when none is bound.
 @Composable
 fun DevBootstrap(content: @Composable () -> Unit) {
     val setup = getKoin().getOrNull<DevSetup>() ?: return content()
