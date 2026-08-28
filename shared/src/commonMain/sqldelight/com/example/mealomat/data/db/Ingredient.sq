@@ -34,6 +34,9 @@ SELECT * FROM ingredient WHERE deleted_at IS NULL ORDER BY name;
 findById:
 SELECT * FROM ingredient WHERE id = ?;
 
+countWithArchived:
+SELECT count(*) FROM ingredient WHERE deleted_at IS NULL;
+
 upsert:
 INSERT OR REPLACE INTO ingredient VALUES ?;
 

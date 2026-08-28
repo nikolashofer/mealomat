@@ -6,6 +6,6 @@ import com.example.mealomat.di.startKoinAndroid
 class MealomatApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        startKoinAndroid(this)
+        startKoinAndroid(this, debug = BuildConfig.DEBUG)
     }
 }

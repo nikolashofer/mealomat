@@ -10,9 +10,9 @@ actual val platformModule: Module = module {
     single { DriverFactory(get()) }
 }
 
-fun startKoinAndroid(context: android.content.Context) {
+fun startKoinAndroid(context: android.content.Context, debug: Boolean) {
     startKoin {
         androidContext(context)
-        modules(appModule, platformModule)
+        modules(listOfNotNull(appModule, platformModule, devModule.takeIf { debug }))
     }
 }

@@ -1,0 +1,1704 @@
+{
+  "version": 1,
+  "ingredients": [
+    {
+      "key": "ananas-dose-140g",
+      "name": "Ananas (Dose 140g)",
+      "basis": "UNIT",
+      "kcal": 76,
+      "proteinG": 0,
+      "carbsG": 18,
+      "fatG": 0,
+      "fiberG": 1.4
+    },
+    {
+      "key": "apfel",
+      "name": "Apfel",
+      "basis": "G100",
+      "kcal": 61,
+      "proteinG": 0.3,
+      "carbsG": 14,
+      "fatG": 0,
+      "fiberG": 2
+    },
+    {
+      "key": "apfel-stueck-gross-250g",
+      "name": "Apfel (Stück gross 250g)",
+      "basis": "UNIT",
+      "kcal": 153,
+      "proteinG": 0.8,
+      "carbsG": 35,
+      "fatG": 0,
+      "fiberG": 5
+    },
+    {
+      "key": "apfel-stueck-klein-130g",
+      "name": "Apfel (Stück klein 130g)",
+      "basis": "UNIT",
+      "kcal": 79,
+      "proteinG": 0.4,
+      "carbsG": 18,
+      "fatG": 0,
+      "fiberG": 2.6
+    },
+    {
+      "key": "apfel-stueck-mittel-180g",
+      "name": "Apfel (Stück mittel 180g)",
+      "basis": "UNIT",
+      "kcal": 110,
+      "proteinG": 0.5,
+      "carbsG": 25,
+      "fatG": 0,
+      "fiberG": 3.6
+    },
+    {
+      "key": "aubergine",
+      "name": "Aubergine",
+      "basis": "G100",
+      "kcal": 20,
+      "proteinG": 1.2,
+      "carbsG": 2.5,
+      "fatG": 0.2,
+      "fiberG": 1.4
+    },
+    {
+      "key": "aubergine-stueck-350g",
+      "name": "Aubergine (Stück 350g)",
+      "basis": "UNIT",
+      "kcal": 70,
+      "proteinG": 4.2,
+      "carbsG": 8.8,
+      "fatG": 0.7,
+      "fiberG": 4.9
+    },
+    {
+      "key": "avocado",
+      "name": "Avocado",
+      "basis": "G100",
+      "kcal": 144,
+      "proteinG": 1.8,
+      "carbsG": 0.8,
+      "fatG": 14.2,
+      "fiberG": 3
+    },
+    {
+      "key": "avocado-stueck-140g",
+      "name": "Avocado (Stück 140g)",
+      "basis": "UNIT",
+      "kcal": 202,
+      "proteinG": 2.5,
+      "carbsG": 1.1,
+      "fatG": 19.9,
+      "fiberG": 4.2
+    },
+    {
+      "key": "banane",
+      "name": "Banane",
+      "basis": "G100",
+      "kcal": 93,
+      "proteinG": 1.2,
+      "carbsG": 20,
+      "fatG": 0.2,
+      "fiberG": 2
+    },
+    {
+      "key": "banane-stueck-gross-180g",
+      "name": "Banane (Stück gross 180g)",
+      "basis": "UNIT",
+      "kcal": 167,
+      "proteinG": 2.2,
+      "carbsG": 36,
+      "fatG": 0.4,
+      "fiberG": 3.6
+    },
+    {
+      "key": "banane-stueck-klein-110g",
+      "name": "Banane (Stück klein 110g)",
+      "basis": "UNIT",
+      "kcal": 102,
+      "proteinG": 1.3,
+      "carbsG": 22,
+      "fatG": 0.2,
+      "fiberG": 2.2
+    },
+    {
+      "key": "banane-stueck-mittel-140g",
+      "name": "Banane (Stück mittel 140g)",
+      "basis": "UNIT",
+      "kcal": 130,
+      "proteinG": 1.7,
+      "carbsG": 28,
+      "fatG": 0.3,
+      "fiberG": 2.8
+    },
+    {
+      "key": "beerenmischung",
+      "name": "Beerenmischung",
+      "basis": "G100",
+      "kcal": 47,
+      "proteinG": 1,
+      "carbsG": 7,
+      "fatG": 0.6,
+      "fiberG": 5
+    },
+    {
+      "key": "bohnen-gruen",
+      "name": "Bohnen grün",
+      "basis": "G100",
+      "kcal": 33,
+      "proteinG": 2.4,
+      "carbsG": 5,
+      "fatG": 0,
+      "fiberG": 1.9
+    },
+    {
+      "key": "borlottibohnen",
+      "name": "Borlottibohnen",
+      "basis": "G100",
+      "kcal": 170,
+      "proteinG": 8.8,
+      "carbsG": 27,
+      "fatG": 0.5,
+      "fiberG": 11
+    },
+    {
+      "key": "borlottibohnen-dose-gross-250g",
+      "name": "Borlottibohnen (Dose gross 250g)",
+      "basis": "UNIT",
+      "kcal": 425,
+      "proteinG": 22,
+      "carbsG": 67.5,
+      "fatG": 1.3,
+      "fiberG": 27.5
+    },
+    {
+      "key": "broccoli",
+      "name": "Broccoli",
+      "basis": "G100",
+      "kcal": 34,
+      "proteinG": 3.8,
+      "carbsG": 2.7,
+      "fatG": 0.2,
+      "fiberG": 3
+    },
+    {
+      "key": "broccoli-stueck-400g",
+      "name": "Broccoli (Stück 400g)",
+      "basis": "UNIT",
+      "kcal": 136,
+      "proteinG": 15.2,
+      "carbsG": 10.8,
+      "fatG": 0.8,
+      "fiberG": 12
+    },
+    {
+      "key": "brombeeren",
+      "name": "Brombeeren",
+      "basis": "G100",
+      "kcal": 41,
+      "proteinG": 1,
+      "carbsG": 6.2,
+      "fatG": 0,
+      "fiberG": 6
+    },
+    {
+      "key": "buchweizenflocken",
+      "name": "Buchweizenflocken",
+      "basis": "G100",
+      "kcal": 334,
+      "proteinG": 9,
+      "carbsG": 69,
+      "fatG": 1.5,
+      "fiberG": 4
+    },
+    {
+      "key": "champignons",
+      "name": "Champignons",
+      "basis": "G100",
+      "kcal": 19,
+      "proteinG": 3,
+      "carbsG": 0.8,
+      "fatG": 0,
+      "fiberG": 2
+    },
+    {
+      "key": "cherrytomaten",
+      "name": "Cherrytomaten",
+      "basis": "G100",
+      "kcal": 19,
+      "proteinG": 1,
+      "carbsG": 3,
+      "fatG": 0.3,
+      "fiberG": 1
+    },
+    {
+      "key": "chiasamen",
+      "name": "Chiasamen",
+      "basis": "G100",
+      "kcal": 443,
+      "proteinG": 21,
+      "carbsG": 4.5,
+      "fatG": 31,
+      "fiberG": 31
+    },
+    {
+      "key": "cocobohnen",
+      "name": "Cocobohnen",
+      "basis": "G100",
+      "kcal": 24,
+      "proteinG": 1.4,
+      "carbsG": 3.6,
+      "fatG": 0,
+      "fiberG": 2.1
+    },
+    {
+      "key": "datteln",
+      "name": "Datteln",
+      "basis": "G100",
+      "kcal": 291,
+      "proteinG": 2.3,
+      "carbsG": 65,
+      "fatG": 0.5,
+      "fiberG": 8.7
+    },
+    {
+      "key": "datteln-stueck-22g",
+      "name": "Datteln (Stück 22g)",
+      "basis": "UNIT",
+      "kcal": 64,
+      "proteinG": 0.5,
+      "carbsG": 14.3,
+      "fatG": 0.1,
+      "fiberG": 1.9
+    },
+    {
+      "key": "ei",
+      "name": "Ei",
+      "basis": "UNIT",
+      "kcal": 77,
+      "proteinG": 7,
+      "carbsG": 0.2,
+      "fatG": 5.4,
+      "fiberG": 0
+    },
+    {
+      "key": "eiklar",
+      "name": "Eiklar",
+      "basis": "G100",
+      "kcal": 44,
+      "proteinG": 10,
+      "carbsG": 1,
+      "fatG": 0,
+      "fiberG": 0
+    },
+    {
+      "key": "erbsen",
+      "name": "Erbsen",
+      "basis": "G100",
+      "kcal": 86,
+      "proteinG": 7,
+      "carbsG": 12,
+      "fatG": 0,
+      "fiberG": 5
+    },
+    {
+      "key": "erdbeeren",
+      "name": "Erdbeeren",
+      "basis": "G100",
+      "kcal": 35,
+      "proteinG": 0.7,
+      "carbsG": 7,
+      "fatG": 0,
+      "fiberG": 2.2
+    },
+    {
+      "key": "essig-balsamico-weiss",
+      "name": "Essig balsamico weiss",
+      "basis": "G100",
+      "kcal": 145,
+      "proteinG": 0,
+      "carbsG": 32,
+      "fatG": 0,
+      "fiberG": 0
+    },
+    {
+      "key": "feta",
+      "name": "Feta",
+      "basis": "G100",
+      "kcal": 314,
+      "proteinG": 17,
+      "carbsG": 0.7,
+      "fatG": 27,
+      "fiberG": 0
+    },
+    {
+      "key": "forellenfilets-packung-125g",
+      "name": "Forellenfilets (Packung 125g)",
+      "basis": "UNIT",
+      "kcal": 173,
+      "proteinG": 25,
+      "carbsG": 0,
+      "fatG": 8,
+      "fiberG": 0
+    },
+    {
+      "key": "fruehlingszwiebeln",
+      "name": "Frühlingszwiebeln",
+      "basis": "G100",
+      "kcal": 33,
+      "proteinG": 2,
+      "carbsG": 3,
+      "fatG": 0.5,
+      "fiberG": 1.5
+    },
+    {
+      "key": "grantapfel",
+      "name": "Grantapfel",
+      "basis": "G100",
+      "kcal": 80,
+      "proteinG": 0.7,
+      "carbsG": 16.1,
+      "fatG": 0.6,
+      "fiberG": 2.2
+    },
+    {
+      "key": "gurke",
+      "name": "Gurke",
+      "basis": "G100",
+      "kcal": 12,
+      "proteinG": 0.6,
+      "carbsG": 1.8,
+      "fatG": 0.2,
+      "fiberG": 0.9
+    },
+    {
+      "key": "gurke-stueck-400g",
+      "name": "Gurke (Stück 400g)",
+      "basis": "UNIT",
+      "kcal": 48,
+      "proteinG": 2.4,
+      "carbsG": 7.2,
+      "fatG": 0.8,
+      "fiberG": 3.6
+    },
+    {
+      "key": "haferflocken",
+      "name": "Haferflocken",
+      "basis": "G100",
+      "kcal": 380,
+      "proteinG": 15,
+      "carbsG": 60,
+      "fatG": 6.7,
+      "fiberG": 9.7
+    },
+    {
+      "key": "heidelbeeren",
+      "name": "Heidelbeeren",
+      "basis": "G100",
+      "kcal": 45,
+      "proteinG": 0,
+      "carbsG": 7.4,
+      "fatG": 0.6,
+      "fiberG": 4.9
+    },
+    {
+      "key": "himbeeren",
+      "name": "Himbeeren",
+      "basis": "G100",
+      "kcal": 52,
+      "proteinG": 1.2,
+      "carbsG": 7,
+      "fatG": 0.6,
+      "fiberG": 6.7
+    },
+    {
+      "key": "kaex-beutel-28-1g",
+      "name": "Kaex (Beutel 28.1g)",
+      "basis": "UNIT",
+      "kcal": 95,
+      "proteinG": 0,
+      "carbsG": 19,
+      "fatG": 0,
+      "fiberG": 1
+    },
+    {
+      "key": "karotten",
+      "name": "Karotten",
+      "basis": "G100",
+      "kcal": 34,
+      "proteinG": 0.9,
+      "carbsG": 6.1,
+      "fatG": 0,
+      "fiberG": 2.9
+    },
+    {
+      "key": "kartoffeln",
+      "name": "Kartoffeln",
+      "basis": "G100",
+      "kcal": 76,
+      "proteinG": 2,
+      "carbsG": 15,
+      "fatG": 0,
+      "fiberG": 1.2
+    },
+    {
+      "key": "kicherbsen-dose-gross-245g",
+      "name": "Kicherbsen (Dose gross 245g)",
+      "basis": "UNIT",
+      "kcal": 323,
+      "proteinG": 17.2,
+      "carbsG": 36.8,
+      "fatG": 8.6,
+      "fiberG": 15.9
+    },
+    {
+      "key": "kicherbsen-dose-klein-120g",
+      "name": "Kicherbsen (Dose klein 120g)",
+      "basis": "UNIT",
+      "kcal": 159,
+      "proteinG": 8.4,
+      "carbsG": 18,
+      "fatG": 4.2,
+      "fiberG": 7.8
+    },
+    {
+      "key": "kichererbsen",
+      "name": "Kichererbsen",
+      "basis": "G100",
+      "kcal": 132,
+      "proteinG": 7,
+      "carbsG": 15,
+      "fatG": 3.5,
+      "fiberG": 6.5
+    },
+    {
+      "key": "kidneybohnen",
+      "name": "Kidneybohnen",
+      "basis": "G100",
+      "kcal": 137,
+      "proteinG": 9.8,
+      "carbsG": 19,
+      "fatG": 0.6,
+      "fiberG": 8.4
+    },
+    {
+      "key": "kidneybohnen-dose-gross-290g",
+      "name": "Kidneybohnen (Dose gross 290g)",
+      "basis": "UNIT",
+      "kcal": 397,
+      "proteinG": 28.4,
+      "carbsG": 55,
+      "fatG": 1.7,
+      "fiberG": 24.4
+    },
+    {
+      "key": "kidneybohnen-dose-klein-140g",
+      "name": "Kidneybohnen (Dose klein 140g)",
+      "basis": "UNIT",
+      "kcal": 192,
+      "proteinG": 13.7,
+      "carbsG": 26.6,
+      "fatG": 0.8,
+      "fiberG": 11.8
+    },
+    {
+      "key": "kiwi",
+      "name": "Kiwi",
+      "basis": "G100",
+      "kcal": 61,
+      "proteinG": 1,
+      "carbsG": 10.8,
+      "fatG": 0.6,
+      "fiberG": 3.9
+    },
+    {
+      "key": "kiwi-stueck-90g",
+      "name": "Kiwi (Stück 90g)",
+      "basis": "UNIT",
+      "kcal": 55,
+      "proteinG": 0.9,
+      "carbsG": 9.7,
+      "fatG": 0.5,
+      "fiberG": 3.5
+    },
+    {
+      "key": "knoblauch",
+      "name": "Knoblauch",
+      "basis": "G100",
+      "kcal": 145,
+      "proteinG": 6,
+      "carbsG": 28.4,
+      "fatG": 0.1,
+      "fiberG": 1.8
+    },
+    {
+      "key": "knoblauch-stueck-6g",
+      "name": "Knoblauch (Stück 6g)",
+      "basis": "UNIT",
+      "kcal": 9,
+      "proteinG": 0.4,
+      "carbsG": 1.7,
+      "fatG": 0,
+      "fiberG": 0.1
+    },
+    {
+      "key": "kokosnusswasser",
+      "name": "Kokosnusswasser",
+      "basis": "ML100",
+      "kcal": 19,
+      "proteinG": 0,
+      "carbsG": 4.8,
+      "fatG": 0,
+      "fiberG": 0
+    },
+    {
+      "key": "kuerbis-butternuss",
+      "name": "Kürbis butternuss",
+      "basis": "G100",
+      "kcal": 22,
+      "proteinG": 0.6,
+      "carbsG": 4.5,
+      "fatG": 0,
+      "fiberG": 1
+    },
+    {
+      "key": "lachs",
+      "name": "Lachs",
+      "basis": "G100",
+      "kcal": 180,
+      "proteinG": 19.9,
+      "carbsG": 0,
+      "fatG": 11.2,
+      "fiberG": 0
+    },
+    {
+      "key": "lammnierstueck",
+      "name": "Lammnierstück",
+      "basis": "G100",
+      "kcal": 113,
+      "proteinG": 21,
+      "carbsG": 0,
+      "fatG": 3.2,
+      "fiberG": 0
+    },
+    {
+      "key": "linsen-beluga",
+      "name": "Linsen beluga",
+      "basis": "G100",
+      "kcal": 324,
+      "proteinG": 24,
+      "carbsG": 45,
+      "fatG": 1.5,
+      "fiberG": 17
+    },
+    {
+      "key": "linsen-rot",
+      "name": "Linsen rot",
+      "basis": "G100",
+      "kcal": 350,
+      "proteinG": 27,
+      "carbsG": 48,
+      "fatG": 1.5,
+      "fiberG": 18
+    },
+    {
+      "key": "magerquark",
+      "name": "Magerquark",
+      "basis": "G100",
+      "kcal": 62,
+      "proteinG": 11,
+      "carbsG": 4,
+      "fatG": 0.2,
+      "fiberG": 0
+    },
+    {
+      "key": "maniok",
+      "name": "Maniok",
+      "basis": "G100",
+      "kcal": 140,
+      "proteinG": 1.2,
+      "carbsG": 32,
+      "fatG": 0.3,
+      "fiberG": 2.9
+    },
+    {
+      "key": "olivenoel",
+      "name": "Olivenöl",
+      "basis": "G100",
+      "kcal": 828,
+      "proteinG": 0,
+      "carbsG": 0,
+      "fatG": 92,
+      "fiberG": 0
+    },
+    {
+      "key": "orange",
+      "name": "Orange",
+      "basis": "G100",
+      "kcal": 42,
+      "proteinG": 1,
+      "carbsG": 8.3,
+      "fatG": 0.2,
+      "fiberG": 1.6
+    },
+    {
+      "key": "orange-stueck-mittel-200g",
+      "name": "Orange (Stück mittel 200g)",
+      "basis": "UNIT",
+      "kcal": 84,
+      "proteinG": 2,
+      "carbsG": 16.6,
+      "fatG": 0.4,
+      "fiberG": 3.2
+    },
+    {
+      "key": "pangasiusfilets",
+      "name": "Pangasiusfilets",
+      "basis": "G100",
+      "kcal": 74,
+      "proteinG": 17,
+      "carbsG": 0,
+      "fatG": 0.7,
+      "fiberG": 0
+    },
+    {
+      "key": "parmesan",
+      "name": "Parmesan",
+      "basis": "G100",
+      "kcal": 383,
+      "proteinG": 35,
+      "carbsG": 0,
+      "fatG": 27,
+      "fiberG": 0
+    },
+    {
+      "key": "peperoni-rot",
+      "name": "Peperoni rot",
+      "basis": "G100",
+      "kcal": 37,
+      "proteinG": 1,
+      "carbsG": 6,
+      "fatG": 0.2,
+      "fiberG": 4
+    },
+    {
+      "key": "pouletbrust",
+      "name": "Pouletbrust",
+      "basis": "G100",
+      "kcal": 109,
+      "proteinG": 25,
+      "carbsG": 0,
+      "fatG": 1,
+      "fiberG": 0
+    },
+    {
+      "key": "randensaft",
+      "name": "Randensaft",
+      "basis": "ML100",
+      "kcal": 41,
+      "proteinG": 1,
+      "carbsG": 9,
+      "fatG": 0,
+      "fiberG": 0
+    },
+    {
+      "key": "reis",
+      "name": "Reis",
+      "basis": "G100",
+      "kcal": 353,
+      "proteinG": 8,
+      "carbsG": 79,
+      "fatG": 0.5,
+      "fiberG": 0.4
+    },
+    {
+      "key": "rhabarber",
+      "name": "Rhabarber",
+      "basis": "G100",
+      "kcal": 13,
+      "proteinG": 0.6,
+      "carbsG": 1.4,
+      "fatG": 0.1,
+      "fiberG": 3.2
+    },
+    {
+      "key": "rindsgeschnetzeltes",
+      "name": "Rindsgeschnetzeltes",
+      "basis": "G100",
+      "kcal": 113,
+      "proteinG": 23,
+      "carbsG": 0,
+      "fatG": 2.3,
+      "fiberG": 0
+    },
+    {
+      "key": "rosenkohl",
+      "name": "Rosenkohl",
+      "basis": "G100",
+      "kcal": 38,
+      "proteinG": 4,
+      "carbsG": 3.4,
+      "fatG": 0,
+      "fiberG": 4.2
+    },
+    {
+      "key": "sauerkraut-roh",
+      "name": "Sauerkraut roh",
+      "basis": "G100",
+      "kcal": 15,
+      "proteinG": 1.4,
+      "carbsG": 0.8,
+      "fatG": 0,
+      "fiberG": 3
+    },
+    {
+      "key": "spargel-gruen",
+      "name": "Spargel grün",
+      "basis": "G100",
+      "kcal": 18,
+      "proteinG": 1.9,
+      "carbsG": 1.9,
+      "fatG": 0.1,
+      "fiberG": 1.4
+    },
+    {
+      "key": "spinat",
+      "name": "Spinat",
+      "basis": "G100",
+      "kcal": 19,
+      "proteinG": 2.7,
+      "carbsG": 0.8,
+      "fatG": 0,
+      "fiberG": 2.6
+    },
+    {
+      "key": "suesskartoffeln",
+      "name": "Süsskartoffeln",
+      "basis": "G100",
+      "kcal": 86,
+      "proteinG": 1.6,
+      "carbsG": 20.1,
+      "fatG": 0.1,
+      "fiberG": 3
+    },
+    {
+      "key": "suessmais",
+      "name": "Süssmais",
+      "basis": "G100",
+      "kcal": 78,
+      "proteinG": 2.4,
+      "carbsG": 12,
+      "fatG": 1.7,
+      "fiberG": 2.5
+    },
+    {
+      "key": "suessmais-dose-klein-140g",
+      "name": "Süssmais (Dose klein 140g)",
+      "basis": "UNIT",
+      "kcal": 109,
+      "proteinG": 3.4,
+      "carbsG": 17,
+      "fatG": 2.4,
+      "fiberG": 3.5
+    },
+    {
+      "key": "thon-rose-dose-155g",
+      "name": "Thon rose (Dose 155g)",
+      "basis": "UNIT",
+      "kcal": 171,
+      "proteinG": 40.3,
+      "carbsG": 0,
+      "fatG": 1.1,
+      "fiberG": 0
+    },
+    {
+      "key": "tomaten",
+      "name": "Tomaten",
+      "basis": "G100",
+      "kcal": 17,
+      "proteinG": 1,
+      "carbsG": 2.6,
+      "fatG": 0.2,
+      "fiberG": 1.3
+    },
+    {
+      "key": "trauben",
+      "name": "Trauben",
+      "basis": "G100",
+      "kcal": 70,
+      "proteinG": 0.7,
+      "carbsG": 15.2,
+      "fatG": 0.3,
+      "fiberG": 1.6
+    },
+    {
+      "key": "whey-isoclear",
+      "name": "Whey isoclear",
+      "basis": "G100",
+      "kcal": 346,
+      "proteinG": 80,
+      "carbsG": 2.7,
+      "fatG": 0.2,
+      "fiberG": 0
+    },
+    {
+      "key": "zucchetti",
+      "name": "Zucchetti",
+      "basis": "G100",
+      "kcal": 19,
+      "proteinG": 1.6,
+      "carbsG": 2.2,
+      "fatG": 0.4,
+      "fiberG": 1.1
+    },
+    {
+      "key": "zucchetti-stueck-350g",
+      "name": "Zucchetti (Stück 350g)",
+      "basis": "UNIT",
+      "kcal": 67,
+      "proteinG": 5.6,
+      "carbsG": 7.7,
+      "fatG": 1.4,
+      "fiberG": 3.9
+    },
+    {
+      "key": "zwetschgen",
+      "name": "Zwetschgen",
+      "basis": "G100",
+      "kcal": 42,
+      "proteinG": 0.6,
+      "carbsG": 8.8,
+      "fatG": 0,
+      "fiberG": 2.3
+    },
+    {
+      "key": "zwiebeln",
+      "name": "Zwiebeln",
+      "basis": "G100",
+      "kcal": 28,
+      "proteinG": 1.2,
+      "carbsG": 5,
+      "fatG": 0.3,
+      "fiberG": 1.4
+    },
+    {
+      "key": "zwiebeln-stueck-150g",
+      "name": "Zwiebeln (Stück 150g)",
+      "basis": "UNIT",
+      "kcal": 42,
+      "proteinG": 1.8,
+      "carbsG": 7.5,
+      "fatG": 0.5,
+      "fiberG": 2.1
+    },
+    {
+      "key": "zwiebeln-rot",
+      "name": "Zwiebeln rot",
+      "basis": "G100",
+      "kcal": 42,
+      "proteinG": 0.9,
+      "carbsG": 10.1,
+      "fatG": 0.1,
+      "fiberG": 1.4
+    },
+    {
+      "key": "zwiebeln-rot-stueck-150g",
+      "name": "Zwiebeln rot (Stück 150g)",
+      "basis": "UNIT",
+      "kcal": 63,
+      "proteinG": 1.4,
+      "carbsG": 15.2,
+      "fatG": 0.2,
+      "fiberG": 2.1
+    }
+  ],
+  "prepBlocks": [
+    {
+      "key": "midweek",
+      "name": "Midweek",
+      "shoppingWeekday": 3,
+      "prepWeekday": 3,
+      "coversFromWeekday": 4,
+      "coversFromPosition": 0
+    },
+    {
+      "key": "weekend",
+      "name": "Weekend",
+      "shoppingWeekday": 6,
+      "prepWeekday": 7,
+      "coversFromWeekday": 7,
+      "coversFromPosition": 1
+    }
+  ],
+  "planMeals": [
+    {
+      "weekday": 1,
+      "name": "Breakfast",
+      "position": 0,
+      "items": [
+        {
+          "ingredient": "magerquark",
+          "amount": 250
+        },
+        {
+          "ingredient": "haferflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "buchweizenflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "chiasamen",
+          "amount": 15
+        },
+        {
+          "ingredient": "beerenmischung",
+          "amount": 100
+        },
+        {
+          "ingredient": "zwetschgen",
+          "amount": 100
+        },
+        {
+          "ingredient": "kokosnusswasser",
+          "amount": 250
+        }
+      ]
+    },
+    {
+      "weekday": 1,
+      "name": "Lunch",
+      "position": 1,
+      "items": [
+        {
+          "ingredient": "ei",
+          "amount": 2
+        },
+        {
+          "ingredient": "kartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "suesskartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "rosenkohl",
+          "amount": 200
+        }
+      ]
+    },
+    {
+      "weekday": 1,
+      "name": "Pre/Post",
+      "position": 2,
+      "items": [
+        {
+          "ingredient": "banane-stueck-mittel-140g",
+          "amount": 1
+        },
+        {
+          "ingredient": "kaex-beutel-28-1g",
+          "amount": 1
+        },
+        {
+          "ingredient": "whey-isoclear",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "weekday": 1,
+      "name": "Dinner",
+      "position": 3,
+      "items": [
+        {
+          "ingredient": "lammnierstueck",
+          "amount": 200
+        },
+        {
+          "ingredient": "borlottibohnen-dose-gross-250g",
+          "amount": 1
+        },
+        {
+          "ingredient": "apfel-stueck-mittel-180g",
+          "amount": 1
+        },
+        {
+          "ingredient": "zwiebeln-rot-stueck-150g",
+          "amount": 1
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        },
+        {
+          "ingredient": "essig-balsamico-weiss",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "weekday": 2,
+      "name": "Breakfast",
+      "position": 0,
+      "items": [
+        {
+          "ingredient": "magerquark",
+          "amount": 250
+        },
+        {
+          "ingredient": "haferflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "buchweizenflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "chiasamen",
+          "amount": 15
+        },
+        {
+          "ingredient": "beerenmischung",
+          "amount": 100
+        },
+        {
+          "ingredient": "ananas-dose-140g",
+          "amount": 1
+        },
+        {
+          "ingredient": "kokosnusswasser",
+          "amount": 250
+        }
+      ]
+    },
+    {
+      "weekday": 2,
+      "name": "Lunch",
+      "position": 1,
+      "items": [
+        {
+          "ingredient": "ei",
+          "amount": 2
+        },
+        {
+          "ingredient": "linsen-rot",
+          "amount": 50
+        },
+        {
+          "ingredient": "linsen-beluga",
+          "amount": 50
+        },
+        {
+          "ingredient": "spinat",
+          "amount": 200
+        }
+      ]
+    },
+    {
+      "weekday": 2,
+      "name": "Dinner",
+      "position": 2,
+      "items": [
+        {
+          "ingredient": "reis",
+          "amount": 100
+        },
+        {
+          "ingredient": "rindsgeschnetzeltes",
+          "amount": 300
+        },
+        {
+          "ingredient": "kuerbis-butternuss",
+          "amount": 200
+        },
+        {
+          "ingredient": "zucchetti-stueck-350g",
+          "amount": 1
+        },
+        {
+          "ingredient": "grantapfel",
+          "amount": 125
+        },
+        {
+          "ingredient": "knoblauch-stueck-6g",
+          "amount": 3
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        }
+      ]
+    },
+    {
+      "weekday": 3,
+      "name": "Breakfast",
+      "position": 0,
+      "items": [
+        {
+          "ingredient": "magerquark",
+          "amount": 250
+        },
+        {
+          "ingredient": "haferflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "buchweizenflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "chiasamen",
+          "amount": 15
+        },
+        {
+          "ingredient": "beerenmischung",
+          "amount": 100
+        },
+        {
+          "ingredient": "kiwi-stueck-90g",
+          "amount": 1
+        },
+        {
+          "ingredient": "kokosnusswasser",
+          "amount": 250
+        }
+      ]
+    },
+    {
+      "weekday": 3,
+      "name": "Lunch",
+      "position": 1,
+      "items": [
+        {
+          "ingredient": "forellenfilets-packung-125g",
+          "amount": 1
+        },
+        {
+          "ingredient": "kartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "suesskartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "cherrytomaten",
+          "amount": 200
+        }
+      ]
+    },
+    {
+      "weekday": 3,
+      "name": "Pre/Post",
+      "position": 2,
+      "items": [
+        {
+          "ingredient": "datteln-stueck-22g",
+          "amount": 2
+        },
+        {
+          "ingredient": "whey-isoclear",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "weekday": 3,
+      "name": "Dinner",
+      "position": 3,
+      "items": [
+        {
+          "ingredient": "reis",
+          "amount": 150
+        },
+        {
+          "ingredient": "pouletbrust",
+          "amount": 200
+        },
+        {
+          "ingredient": "peperoni-rot",
+          "amount": 240
+        },
+        {
+          "ingredient": "avocado-stueck-140g",
+          "amount": 1
+        },
+        {
+          "ingredient": "knoblauch-stueck-6g",
+          "amount": 3
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        }
+      ]
+    },
+    {
+      "weekday": 4,
+      "name": "Breakfast",
+      "position": 0,
+      "items": [
+        {
+          "ingredient": "magerquark",
+          "amount": 250
+        },
+        {
+          "ingredient": "haferflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "buchweizenflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "chiasamen",
+          "amount": 15
+        },
+        {
+          "ingredient": "beerenmischung",
+          "amount": 100
+        },
+        {
+          "ingredient": "apfel-stueck-mittel-180g",
+          "amount": 1
+        },
+        {
+          "ingredient": "kokosnusswasser",
+          "amount": 250
+        }
+      ]
+    },
+    {
+      "weekday": 4,
+      "name": "Lunch",
+      "position": 1,
+      "items": [
+        {
+          "ingredient": "pouletbrust",
+          "amount": 100
+        },
+        {
+          "ingredient": "kicherbsen-dose-klein-120g",
+          "amount": 1
+        },
+        {
+          "ingredient": "zwiebeln-rot-stueck-150g",
+          "amount": 1
+        },
+        {
+          "ingredient": "cherrytomaten",
+          "amount": 200
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 15
+        },
+        {
+          "ingredient": "essig-balsamico-weiss",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "weekday": 4,
+      "name": "Pre/Post",
+      "position": 2,
+      "items": [
+        {
+          "ingredient": "banane-stueck-mittel-140g",
+          "amount": 1
+        },
+        {
+          "ingredient": "whey-isoclear",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "weekday": 4,
+      "name": "Dinner",
+      "position": 3,
+      "items": [
+        {
+          "ingredient": "reis",
+          "amount": 150
+        },
+        {
+          "ingredient": "rindsgeschnetzeltes",
+          "amount": 200
+        },
+        {
+          "ingredient": "zucchetti-stueck-350g",
+          "amount": 1
+        },
+        {
+          "ingredient": "aubergine-stueck-350g",
+          "amount": 1
+        },
+        {
+          "ingredient": "champignons",
+          "amount": 250
+        },
+        {
+          "ingredient": "knoblauch-stueck-6g",
+          "amount": 3
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        }
+      ]
+    },
+    {
+      "weekday": 5,
+      "name": "Breakfast",
+      "position": 0,
+      "items": [
+        {
+          "ingredient": "magerquark",
+          "amount": 250
+        },
+        {
+          "ingredient": "haferflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "buchweizenflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "chiasamen",
+          "amount": 15
+        },
+        {
+          "ingredient": "beerenmischung",
+          "amount": 100
+        },
+        {
+          "ingredient": "rhabarber",
+          "amount": 200
+        },
+        {
+          "ingredient": "kokosnusswasser",
+          "amount": 250
+        }
+      ]
+    },
+    {
+      "weekday": 5,
+      "name": "Lunch",
+      "position": 1,
+      "items": [
+        {
+          "ingredient": "pouletbrust",
+          "amount": 100
+        },
+        {
+          "ingredient": "kartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "suesskartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "gurke-stueck-400g",
+          "amount": 0.5
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        }
+      ]
+    },
+    {
+      "weekday": 5,
+      "name": "Pre/Post",
+      "position": 2,
+      "items": [
+        {
+          "ingredient": "banane-stueck-mittel-140g",
+          "amount": 1
+        },
+        {
+          "ingredient": "whey-isoclear",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "weekday": 5,
+      "name": "Dinner",
+      "position": 3,
+      "items": [
+        {
+          "ingredient": "reis",
+          "amount": 150
+        },
+        {
+          "ingredient": "rindsgeschnetzeltes",
+          "amount": 200
+        },
+        {
+          "ingredient": "ei",
+          "amount": 2
+        },
+        {
+          "ingredient": "broccoli-stueck-400g",
+          "amount": 1
+        },
+        {
+          "ingredient": "cherrytomaten",
+          "amount": 100
+        },
+        {
+          "ingredient": "knoblauch-stueck-6g",
+          "amount": 3
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        }
+      ]
+    },
+    {
+      "weekday": 6,
+      "name": "Breakfast",
+      "position": 0,
+      "items": [
+        {
+          "ingredient": "magerquark",
+          "amount": 250
+        },
+        {
+          "ingredient": "haferflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "buchweizenflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "chiasamen",
+          "amount": 15
+        },
+        {
+          "ingredient": "beerenmischung",
+          "amount": 100
+        },
+        {
+          "ingredient": "kokosnusswasser",
+          "amount": 250
+        }
+      ]
+    },
+    {
+      "weekday": 6,
+      "name": "Pre/Post",
+      "position": 1,
+      "items": [
+        {
+          "ingredient": "datteln-stueck-22g",
+          "amount": 2
+        },
+        {
+          "ingredient": "kaex-beutel-28-1g",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "weekday": 6,
+      "name": "Lunch",
+      "position": 2,
+      "items": [
+        {
+          "ingredient": "eiklar",
+          "amount": 300
+        },
+        {
+          "ingredient": "kartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "peperoni-rot",
+          "amount": 240
+        },
+        {
+          "ingredient": "zwiebeln-rot-stueck-150g",
+          "amount": 1
+        },
+        {
+          "ingredient": "knoblauch-stueck-6g",
+          "amount": 3
+        },
+        {
+          "ingredient": "gurke-stueck-400g",
+          "amount": 0.5
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        }
+      ]
+    },
+    {
+      "weekday": 6,
+      "name": "Dinner",
+      "position": 3,
+      "items": [
+        {
+          "ingredient": "reis",
+          "amount": 125
+        },
+        {
+          "ingredient": "pouletbrust",
+          "amount": 200
+        },
+        {
+          "ingredient": "ei",
+          "amount": 2
+        },
+        {
+          "ingredient": "parmesan",
+          "amount": 25
+        },
+        {
+          "ingredient": "cocobohnen",
+          "amount": 500
+        },
+        {
+          "ingredient": "knoblauch-stueck-6g",
+          "amount": 3
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        }
+      ]
+    },
+    {
+      "weekday": 7,
+      "name": "Breakfast",
+      "position": 0,
+      "items": [
+        {
+          "ingredient": "magerquark",
+          "amount": 250
+        },
+        {
+          "ingredient": "haferflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "buchweizenflocken",
+          "amount": 25
+        },
+        {
+          "ingredient": "chiasamen",
+          "amount": 15
+        },
+        {
+          "ingredient": "beerenmischung",
+          "amount": 100
+        },
+        {
+          "ingredient": "orange-stueck-mittel-200g",
+          "amount": 1
+        },
+        {
+          "ingredient": "kokosnusswasser",
+          "amount": 250
+        }
+      ]
+    },
+    {
+      "weekday": 7,
+      "name": "Pre/Post",
+      "position": 1,
+      "items": [
+        {
+          "ingredient": "datteln-stueck-22g",
+          "amount": 2
+        },
+        {
+          "ingredient": "banane-stueck-mittel-140g",
+          "amount": 1
+        },
+        {
+          "ingredient": "kaex-beutel-28-1g",
+          "amount": 1
+        },
+        {
+          "ingredient": "kokosnusswasser",
+          "amount": 250
+        }
+      ]
+    },
+    {
+      "weekday": 7,
+      "name": "Lunch",
+      "position": 2,
+      "items": [
+        {
+          "ingredient": "ei",
+          "amount": 2
+        },
+        {
+          "ingredient": "kartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "suesskartoffeln",
+          "amount": 200
+        },
+        {
+          "ingredient": "sauerkraut-roh",
+          "amount": 250
+        },
+        {
+          "ingredient": "karotten",
+          "amount": 200
+        }
+      ]
+    },
+    {
+      "weekday": 7,
+      "name": "Dinner",
+      "position": 3,
+      "items": [
+        {
+          "ingredient": "reis",
+          "amount": 100
+        },
+        {
+          "ingredient": "pouletbrust",
+          "amount": 300
+        },
+        {
+          "ingredient": "ei",
+          "amount": 1
+        },
+        {
+          "ingredient": "peperoni-rot",
+          "amount": 240
+        },
+        {
+          "ingredient": "knoblauch-stueck-6g",
+          "amount": 3
+        },
+        {
+          "ingredient": "olivenoel",
+          "amount": 10
+        },
+        {
+          "ingredient": "randensaft",
+          "amount": 250
+        }
+      ]
+    }
+  ]
+}

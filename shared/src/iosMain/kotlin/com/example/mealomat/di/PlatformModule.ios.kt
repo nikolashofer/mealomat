@@ -9,6 +9,6 @@ actual val platformModule: Module = module {
     single { DriverFactory() }
 }
 
-fun startKoinIos() {
-    startKoin { modules(appModule, platformModule) }
+fun startKoinIos(debug: Boolean) {
+    startKoin { modules(listOfNotNull(appModule, platformModule, devModule.takeIf { debug })) }
 }

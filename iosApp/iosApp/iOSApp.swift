@@ -3,7 +3,13 @@ import Shared
 
 @main
 struct iOSApp: App {
-    init() { PlatformModule_iosKt.startKoinIos() }
+    init() {
+        #if DEBUG
+        PlatformModule_iosKt.startKoinIos(debug: true)
+        #else
+        PlatformModule_iosKt.startKoinIos(debug: false)
+        #endif
+    }
 
     var body: some Scene {
         WindowGroup {

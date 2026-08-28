@@ -49,6 +49,8 @@ class IngredientRepository(
 
     fun byId(id: String): Ingredient? = queries.findById(id).executeAsOneOrNull()
 
+    fun isEmpty(): Boolean = queries.countWithArchived().executeAsOne() == 0L
+
     suspend fun upsert(draft: IngredientDraft): String {
         val row = draft.toRow(
             id = newId(draft.id),
