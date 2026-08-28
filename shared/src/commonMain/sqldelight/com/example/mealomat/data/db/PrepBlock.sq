@@ -1,0 +1,22 @@
+import kotlinx.datetime.DayOfWeek;
+
+CREATE TABLE prep_block (
+  id                   TEXT    NOT NULL PRIMARY KEY,
+  user_id              TEXT    NOT NULL,
+  updated_at           INTEGER NOT NULL,
+  deleted_at           INTEGER,
+  name                 TEXT    NOT NULL,
+  prep_weekday         INTEGER AS DayOfWeek NOT NULL,
+  shopping_weekday     INTEGER AS DayOfWeek NOT NULL,
+  covers_from_weekday  INTEGER AS DayOfWeek NOT NULL,  -- weekday the coverage window opens on
+  covers_from_position INTEGER NOT NULL                -- meal position within that day where it opens
+);
+
+CREATE INDEX prep_block_user_id ON prep_block(user_id);
+
+list:
+SELECT * FROM prep_block WHERE deleted_at IS NULL
+ORDER BY covers_from_weekday, covers_from_position;
+
+upsert:
+INSERT OR REPLACE INTO prep_block VALUES ?;

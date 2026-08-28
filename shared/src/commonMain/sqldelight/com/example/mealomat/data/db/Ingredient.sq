@@ -23,19 +23,19 @@ CREATE TABLE ingredient (
 
 CREATE INDEX ingredient_user_id ON ingredient(user_id);
 
-upsert:
-INSERT OR REPLACE INTO ingredient VALUES ?;
-
-findById:
-SELECT * FROM ingredient WHERE id = ?;
-
-listActive:
+list:
 SELECT * FROM ingredient
 WHERE deleted_at IS NULL AND archived = 0
 ORDER BY name;
 
 listWithArchived:
 SELECT * FROM ingredient WHERE deleted_at IS NULL ORDER BY name;
+
+findById:
+SELECT * FROM ingredient WHERE id = ?;
+
+upsert:
+INSERT OR REPLACE INTO ingredient VALUES ?;
 
 softDelete:
 UPDATE ingredient SET deleted_at = ?, updated_at = ? WHERE id = ?;

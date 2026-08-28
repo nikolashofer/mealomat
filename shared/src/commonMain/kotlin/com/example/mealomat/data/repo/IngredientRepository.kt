@@ -9,15 +9,12 @@ import com.example.mealomat.data.db.Ingredient
 import com.example.mealomat.data.db.MealomatDatabase
 import com.example.mealomat.data.sync.OutboxOp
 import com.example.mealomat.data.sync.OutboxWriter
+import com.example.mealomat.data.sync.Tables
+import com.example.mealomat.data.sync.payloadOf
 import kotlin.time.Clock
-import kotlin.uuid.Uuid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-
-const val TABLE_INGREDIENT = "ingredient"
 
 data class IngredientDraft(
     val id: String? = null,
@@ -44,8 +41,8 @@ class IngredientRepository(
 ) {
     private val queries = db.ingredientQueries
 
-    fun observeActive(): Flow<List<Ingredient>> =
-        queries.listActive().asFlow().mapToList(Dispatchers.Default)
+    fun observe(): Flow<List<Ingredient>> =
+        queries.list().asFlow().mapToList(Dispatchers.Default)
 
     fun observeWithArchived(): Flow<List<Ingredient>> =
         queries.listWithArchived().asFlow().mapToList(Dispatchers.Default)
@@ -54,32 +51,30 @@ class IngredientRepository(
 
     suspend fun upsert(draft: IngredientDraft): String {
         val row = draft.toRow(
-            id = draft.id ?: Uuid.generateV7().toString(),
+            id = newId(draft.id),
             userId = auth.requireUserId(),
-            now = clock.now().toEpochMilliseconds(),
+            now = clock.nowMillis(),
         )
-        db.transaction {
+        db.writeWithOutbox(outbox, Tables.INGREDIENT, row.id, OutboxOp.UPSERT) {
             queries.upsert(row)
-            outbox.enqueue(TABLE_INGREDIENT, row.id, OutboxOp.UPSERT, row.toPayload())
+            row.toPayload()
         }
         return row.id
     }
 
     suspend fun softDelete(id: String) {
-        val now = clock.now().toEpochMilliseconds()
-        db.transaction {
+        val now = clock.nowMillis()
+        db.writeWithOutbox(outbox, Tables.INGREDIENT, id, OutboxOp.DELETE) {
             queries.softDelete(deleted_at = now, updated_at = now, id = id)
-            val row = queries.findById(id).executeAsOneOrNull() ?: return@transaction
-            outbox.enqueue(TABLE_INGREDIENT, id, OutboxOp.DELETE, row.toPayload())
+            queries.findById(id).executeAsOneOrNull()?.toPayload()
         }
     }
 
     suspend fun setArchived(id: String, archived: Boolean) {
-        val now = clock.now().toEpochMilliseconds()
-        db.transaction {
+        val now = clock.nowMillis()
+        db.writeWithOutbox(outbox, Tables.INGREDIENT, id, OutboxOp.UPSERT) {
             queries.setArchived(archived = archived, updated_at = now, id = id)
-            val row = queries.findById(id).executeAsOneOrNull() ?: return@transaction
-            outbox.enqueue(TABLE_INGREDIENT, id, OutboxOp.UPSERT, row.toPayload())
+            queries.findById(id).executeAsOneOrNull()?.toPayload()
         }
     }
 }
@@ -104,27 +99,22 @@ private fun IngredientDraft.toRow(id: String, userId: String, now: Long) = Ingre
     note = note,
 )
 
-private fun Ingredient.toPayload() = Json.encodeToString(
-    JsonObject.serializer(),
-    JsonObject(
-        mapOf(
-            "id" to JsonPrimitive(id),
-            "user_id" to JsonPrimitive(user_id),
-            "updated_at" to JsonPrimitive(updated_at),
-            "deleted_at" to JsonPrimitive(deleted_at),
-            "name" to JsonPrimitive(name),
-            "basis" to JsonPrimitive(basis.name),
-            "kcal" to JsonPrimitive(kcal),
-            "protein_g" to JsonPrimitive(protein_g),
-            "carbs_g" to JsonPrimitive(carbs_g),
-            "fat_g" to JsonPrimitive(fat_g),
-            "fiber_g" to JsonPrimitive(fiber_g),
-            "sugar_g" to JsonPrimitive(sugar_g),
-            "saturated_fat_g" to JsonPrimitive(saturated_fat_g),
-            "salt_g" to JsonPrimitive(salt_g),
-            "pack_size" to JsonPrimitive(pack_size),
-            "archived" to JsonPrimitive(archived),
-            "note" to JsonPrimitive(note),
-        )
-    )
+private fun Ingredient.toPayload() = payloadOf(
+    "id" to JsonPrimitive(id),
+    "user_id" to JsonPrimitive(user_id),
+    "updated_at" to JsonPrimitive(updated_at),
+    "deleted_at" to JsonPrimitive(deleted_at),
+    "name" to JsonPrimitive(name),
+    "basis" to JsonPrimitive(basis.name),
+    "kcal" to JsonPrimitive(kcal),
+    "protein_g" to JsonPrimitive(protein_g),
+    "carbs_g" to JsonPrimitive(carbs_g),
+    "fat_g" to JsonPrimitive(fat_g),
+    "fiber_g" to JsonPrimitive(fiber_g),
+    "sugar_g" to JsonPrimitive(sugar_g),
+    "saturated_fat_g" to JsonPrimitive(saturated_fat_g),
+    "salt_g" to JsonPrimitive(salt_g),
+    "pack_size" to JsonPrimitive(pack_size),
+    "archived" to JsonPrimitive(archived),
+    "note" to JsonPrimitive(note),
 )

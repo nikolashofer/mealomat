@@ -1,0 +1,23 @@
+import kotlinx.datetime.DayOfWeek;
+
+CREATE TABLE plan_meal (
+  id         TEXT    NOT NULL PRIMARY KEY,
+  user_id    TEXT    NOT NULL,
+  updated_at INTEGER NOT NULL,
+  deleted_at INTEGER,
+  weekday    INTEGER AS DayOfWeek NOT NULL,
+  name       TEXT    NOT NULL,
+  position   INTEGER NOT NULL
+);
+
+CREATE INDEX plan_meal_user_id ON plan_meal(user_id);
+CREATE INDEX plan_meal_weekday ON plan_meal(weekday);
+
+list:
+SELECT * FROM plan_meal WHERE deleted_at IS NULL ORDER BY weekday, position;
+
+count:
+SELECT count(*) FROM plan_meal WHERE deleted_at IS NULL;
+
+upsert:
+INSERT OR REPLACE INTO plan_meal VALUES ?;

@@ -11,7 +11,7 @@ class OutboxWriter(
     private val clock: Clock,
 ) {
     fun enqueue(tableName: String, rowId: String, op: OutboxOp, payload: String) {
-        db.syncQueries.enqueue(
+        db.syncOutboxQueries.enqueue(
             table_name = tableName,
             row_id = rowId,
             op = op.name,

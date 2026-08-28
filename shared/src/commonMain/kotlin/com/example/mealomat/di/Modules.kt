@@ -9,7 +9,10 @@ import com.example.mealomat.data.db.DriverFactory
 import com.example.mealomat.data.db.DatabaseSessionScopedData
 import com.example.mealomat.data.db.mealomatDatabase
 import com.example.mealomat.data.repo.IngredientRepository
+import com.example.mealomat.data.repo.PlanRepository
+import com.example.mealomat.data.repo.PrepBlockRepository
 import com.example.mealomat.feature.auth.SignInViewModel
+import com.example.mealomat.feature.home.HomeViewModel
 import com.example.mealomat.data.sync.OutboxWriter
 import app.cash.sqldelight.db.SqlDriver
 import org.koin.core.module.dsl.viewModel
@@ -25,5 +28,8 @@ val appModule = module {
     single { mealomatDatabase(get()) }
     single { OutboxWriter(get(), get()) }
     single { IngredientRepository(get(), get(), get(), get()) }
+    single { PlanRepository(get(), get(), get(), get()) }
+    single { PrepBlockRepository(get(), get(), get(), get()) }
     viewModel { SignInViewModel(get()) }
+    viewModel { HomeViewModel(get(), get()) }
 }

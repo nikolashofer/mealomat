@@ -1,0 +1,5 @@
+CREATE TABLE sync_state (
+  table_name      TEXT    NOT NULL PRIMARY KEY,
+  last_pulled_at  INTEGER NOT NULL DEFAULT 0,
+  last_success_at INTEGER
+);

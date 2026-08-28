@@ -10,21 +10,15 @@ CREATE TABLE sync_outbox (
   last_error      TEXT
 );
 
-CREATE TABLE sync_state (
-  table_name      TEXT    NOT NULL PRIMARY KEY,
-  last_pulled_at  INTEGER NOT NULL DEFAULT 0,
-  last_success_at INTEGER
-);
+list:
+SELECT * FROM sync_outbox ORDER BY id;
+
+listForRow:
+SELECT * FROM sync_outbox WHERE table_name = ? AND row_id = ? ORDER BY id;
+
+count:
+SELECT count(*) FROM sync_outbox;
 
 enqueue:
 INSERT INTO sync_outbox (table_name, row_id, op, payload, created_at)
 VALUES (?, ?, ?, ?, ?);
-
-listPending:
-SELECT * FROM sync_outbox ORDER BY id;
-
-countPending:
-SELECT count(*) FROM sync_outbox;
-
-listPendingForRow:
-SELECT * FROM sync_outbox WHERE table_name = ? AND row_id = ? ORDER BY id;

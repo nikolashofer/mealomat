@@ -1,0 +1,21 @@
+import com.example.mealomat.data.db.PrepMode;
+
+CREATE TABLE plan_component (
+  id           TEXT    NOT NULL PRIMARY KEY,
+  user_id      TEXT    NOT NULL,
+  plan_meal_id TEXT    NOT NULL,
+  updated_at   INTEGER NOT NULL,
+  deleted_at   INTEGER,
+  name         TEXT    NOT NULL,
+  position     INTEGER NOT NULL,
+  prep_mode    TEXT AS PrepMode NOT NULL
+);
+
+CREATE INDEX plan_component_user_id ON plan_component(user_id);
+CREATE INDEX plan_component_meal ON plan_component(plan_meal_id);
+
+list:
+SELECT * FROM plan_component WHERE deleted_at IS NULL ORDER BY plan_meal_id, position;
+
+upsert:
+INSERT OR REPLACE INTO plan_component VALUES ?;

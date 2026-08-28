@@ -48,7 +48,7 @@ class IngredientRepositoryTest {
         assertEquals(clock.now, row.updated_at)
         assertNull(row.deleted_at)
 
-        val entries = db.syncQueries.listPendingForRow("ingredient", id).executeAsList()
+        val entries = db.syncOutboxQueries.listForRow("ingredient", id).executeAsList()
         assertEquals(1, entries.size)
         assertEquals("UPSERT", entries.single().op)
     }
@@ -61,8 +61,8 @@ class IngredientRepositoryTest {
 
         val row = assertNotNull(repo.byId(id), "row must still physically exist")
         assertEquals(clock.now, row.deleted_at)
-        assertTrue(db.ingredientQueries.listActive().executeAsList().none { it.id == id })
-        assertEquals("DELETE", db.syncQueries.listPendingForRow("ingredient", id).executeAsList().last().op)
+        assertTrue(db.ingredientQueries.list().executeAsList().none { it.id == id })
+        assertEquals("DELETE", db.syncOutboxQueries.listForRow("ingredient", id).executeAsList().last().op)
     }
 
     @Test
@@ -71,14 +71,14 @@ class IngredientRepositoryTest {
         val row = assertNotNull(repo.byId(id))
         assertNull(row.deleted_at)
         assertTrue(row.archived)
-        assertTrue(db.ingredientQueries.listActive().executeAsList().none { it.id == id })
+        assertTrue(db.ingredientQueries.list().executeAsList().none { it.id == id })
         assertTrue(db.ingredientQueries.listWithArchived().executeAsList().any { it.id == id })
     }
 
     @Test
     fun outboxPayloadUsesColumnNames() = runTest {
         val id = repo.upsert(draft())
-        val payload = db.syncQueries.listPendingForRow("ingredient", id).executeAsList().single().payload
+        val payload = db.syncOutboxQueries.listForRow("ingredient", id).executeAsList().single().payload
         val keys = Json.decodeFromString(JsonObject.serializer(), payload).keys
         assertTrue(keys.containsAll(listOf("user_id", "updated_at", "deleted_at", "protein_g", "saturated_fat_g", "pack_size")))
         assertTrue(keys.none { it.any(Char::isUpperCase) }, "camelCase leaked into the payload: $keys")
@@ -94,11 +94,11 @@ class IngredientRepositoryTest {
     fun clearingLocalDataEmptiesEveryTable() = runTest {
         repo.upsert(draft())
         assertEquals(1, db.ingredientQueries.listWithArchived().executeAsList().size)
-        assertEquals(1L, db.syncQueries.countPending().executeAsOne())
+        assertEquals(1L, db.syncOutboxQueries.count().executeAsOne())
 
         DatabaseSessionScopedData(driver).clear()
 
         assertTrue(db.ingredientQueries.listWithArchived().executeAsList().isEmpty())
-        assertEquals(0L, db.syncQueries.countPending().executeAsOne())
+        assertEquals(0L, db.syncOutboxQueries.count().executeAsOne())
     }
 }
