@@ -110,13 +110,13 @@ class DayRepositoryTest {
         val v1 = plan.create(Slot(monday, 0))
         val item = mondayLunch(v1)
 
-        days.markCommitted(monday, item)
+        days.setExcluded(monday, item, excluded = true)
         days.markPrepped(monday, item)
         days.tickOff(monday, item)
 
         val rows = db.dayItemQueries.listForDate(monday.toString()).executeAsList()
         assertEquals(1, rows.size)
-        assertTrue(rows.single().committed_at != null && rows.single().prepped_at != null)
+        assertTrue(rows.single().excluded && rows.single().prepped_at != null)
         assertTrue(rows.single().ticked_at != null)
     }
 

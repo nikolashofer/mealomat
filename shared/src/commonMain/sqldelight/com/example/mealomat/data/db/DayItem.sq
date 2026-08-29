@@ -6,7 +6,6 @@ CREATE TABLE day_item (
   plan_item_id TEXT    NOT NULL,
   updated_at   INTEGER NOT NULL,
   deleted_at   INTEGER,
-  committed_at INTEGER,                  -- a shopping or prep session covered this line
   prepped_at   INTEGER,                  -- set by the prep wizard
   ticked_at    INTEGER,                  -- set by the logbook
   date         TEXT    NOT NULL,
@@ -23,4 +22,5 @@ listForDate:
 SELECT * FROM day_item WHERE deleted_at IS NULL AND date = ?;
 
 findByDateAndPlanItem:
-SELECT * FROM day_item WHERE deleted_at IS NULL AND date = ? AND plan_item_id = ?;
+SELECT * FROM day_item
+WHERE deleted_at IS NULL AND date = ? AND plan_item_id = ?;

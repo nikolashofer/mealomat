@@ -22,7 +22,6 @@ data class DayItemView(
     val prepMode: PrepMode,
     val componentId: String? = null,
     val excluded: Boolean = false,
-    val committedAt: Long? = null,
     val preppedAt: Long? = null,
     val tickedAt: Long? = null,
 ) {
@@ -80,7 +79,6 @@ fun projectDay(
                         prepMode = resolvePrepMode(item.prep_mode, byId[item.plan_component_id]?.prep_mode),
                         componentId = item.plan_component_id,
                         excluded = recorded?.excluded ?: false,
-                        committedAt = recorded?.committed_at,
                         preppedAt = recorded?.prepped_at,
                         tickedAt = recorded?.ticked_at,
                     )

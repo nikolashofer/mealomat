@@ -24,24 +24,27 @@ class ActivationTest {
 
     @Test
     fun withNothingCommittedItStartsAtTheNextBoundary() {
-        assertEquals(Slot(thursday, 0), earliestActivation(thursday, blocks, emptySet()))
+        assertEquals(Slot(thursday, 0), earliestActivation(thursday, blocks, emptyList()))
     }
 
     @Test
     fun aBoundaryCanFallMidDay() {
-        assertEquals(Slot(sunday, 1), earliestActivation(friday, blocks, emptySet()))
+        assertEquals(Slot(sunday, 1), earliestActivation(friday, blocks, emptyList()))
     }
 
     @Test
     fun aCommittedWindowIsSkipped() {
-        val committed = setOf(Slot(friday, 0))   // inside the Midweek window Thu#0 -> Sun#1
+        val committed = listOf(Window(Slot(thursday, 0), Slot(sunday, 1)))   // the Midweek window
 
         assertEquals(Slot(sunday, 1), earliestActivation(thursday, blocks, committed))
     }
 
     @Test
     fun twoCommittedWindowsInARowAreBothSkipped() {
-        val committed = setOf(Slot(friday, 0), Slot(LocalDate(2026, 6, 29), 0))   // Midweek and Weekend
+        val committed = listOf(
+            Window(Slot(thursday, 0), Slot(sunday, 1)),                          // Midweek
+            Window(Slot(sunday, 1), Slot(LocalDate(2026, 7, 2), 0)),             // Weekend
+        )
 
         val activation = earliestActivation(thursday, blocks, committed)
 
@@ -50,6 +53,6 @@ class ActivationTest {
 
     @Test
     fun noBlocksMeansStartNow() {
-        assertEquals(Slot(thursday, 0), earliestActivation(thursday, emptyList(), emptySet()))
+        assertEquals(Slot(thursday, 0), earliestActivation(thursday, emptyList(), emptyList()))
     }
 }

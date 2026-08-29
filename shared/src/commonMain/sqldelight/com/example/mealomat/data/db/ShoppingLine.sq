@@ -1,0 +1,28 @@
+CREATE TABLE shopping_line (
+  id               TEXT    NOT NULL PRIMARY KEY,
+  user_id          TEXT    NOT NULL,
+  shopping_trip_id TEXT    NOT NULL,
+  ingredient_id    TEXT    NOT NULL,
+  updated_at       INTEGER NOT NULL,
+  deleted_at       INTEGER,
+  skipped_at       INTEGER,            -- decided against; the need carries into the next trip
+  needed_amount    REAL    NOT NULL,   -- planned across the window when the action was taken
+  have_amount      REAL    NOT NULL,   -- pantry stock then, less what this trip had already bought
+  suggested_amount REAL    NOT NULL,   -- max(0, needed - have), rounded to whole packs
+  bought_amount    REAL                -- entering this is what makes the line bought
+);
+
+CREATE INDEX shopping_line_user_id ON shopping_line(user_id);
+CREATE INDEX shopping_line_trip ON shopping_line(shopping_trip_id);
+CREATE UNIQUE INDEX shopping_line_ingredient ON shopping_line(shopping_trip_id, ingredient_id) WHERE deleted_at IS NULL;
+
+upsert:
+INSERT OR REPLACE INTO shopping_line VALUES ?;
+
+listForTrip:
+SELECT * FROM shopping_line
+WHERE deleted_at IS NULL AND shopping_trip_id = ? ORDER BY ingredient_id;
+
+findByTripAndIngredient:
+SELECT * FROM shopping_line
+WHERE deleted_at IS NULL AND shopping_trip_id = ? AND ingredient_id = ?;

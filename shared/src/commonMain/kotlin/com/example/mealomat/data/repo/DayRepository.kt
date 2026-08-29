@@ -46,9 +46,6 @@ class DayRepository(
     suspend fun markPrepped(date: LocalDate, planItemId: String) =
         writeItem(date, planItemId) { row, now -> row.copy(prepped_at = now) }
 
-    suspend fun markCommitted(date: LocalDate, planItemId: String) =
-        writeItem(date, planItemId) { row, now -> row.copy(committed_at = now) }
-
     suspend fun setExcluded(date: LocalDate, planItemId: String, excluded: Boolean) =
         writeItem(date, planItemId) { row, _ -> row.copy(excluded = excluded) }
     
@@ -102,7 +99,6 @@ private fun newRow(date: LocalDate, planItemId: String, userId: String, now: Lon
     plan_item_id = planItemId,
     updated_at = now,
     deleted_at = null,
-    committed_at = null,
     prepped_at = null,
     ticked_at = null,
     date = date.toString(),
@@ -115,7 +111,6 @@ private fun Day_item.toPayload() = payloadOf(
     "plan_item_id" to JsonPrimitive(plan_item_id),
     "updated_at" to JsonPrimitive(updated_at),
     "deleted_at" to JsonPrimitive(deleted_at),
-    "committed_at" to JsonPrimitive(committed_at),
     "prepped_at" to JsonPrimitive(prepped_at),
     "ticked_at" to JsonPrimitive(ticked_at),
     "date" to JsonPrimitive(date),

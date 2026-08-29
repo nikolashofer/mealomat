@@ -20,7 +20,7 @@ class PantryTest {
         excluded: Boolean = false,
     ) = Day_item(
         id = "day-1", user_id = "user-1", plan_item_id = "item-1", updated_at = 0, deleted_at = null,
-        committed_at = null, prepped_at = prepped, ticked_at = ticked,
+        prepped_at = prepped, ticked_at = ticked,
         date = "2026-06-22", excluded = excluded,
     )
 
