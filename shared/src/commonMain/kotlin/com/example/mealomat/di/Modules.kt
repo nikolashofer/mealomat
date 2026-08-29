@@ -13,6 +13,7 @@ import com.example.mealomat.data.repo.PlanRepository
 import com.example.mealomat.data.repo.DayRepository
 import com.example.mealomat.data.repo.PantryRepository
 import com.example.mealomat.data.repo.PrepBlockRepository
+import com.example.mealomat.data.repo.PrepRepository
 import com.example.mealomat.data.repo.ShoppingRepository
 import com.example.mealomat.feature.auth.SignInViewModel
 import com.example.mealomat.feature.home.HomeViewModel
@@ -36,6 +37,7 @@ val appModule = module {
     single { PantryRepository(get(), get(), get(), get()) }
     single { DayRepository(get(), get(), get(), get(), get(), get()) }
     single { ShoppingRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { PrepRepository(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { SignInViewModel(get()) }
     viewModel { HomeViewModel(get(), get()) }
 }

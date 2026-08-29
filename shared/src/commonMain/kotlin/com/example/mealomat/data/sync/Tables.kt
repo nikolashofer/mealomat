@@ -13,6 +13,7 @@ object Tables {
     const val PANTRY_LEDGER = "pantry_ledger"
     const val SHOPPING_TRIP = "shopping_trip"
     const val SHOPPING_STEP = "shopping_step"
+    const val PREP_SESSION = "prep_session"
 
     // pantry_stock is absent on purpose: it is a local derived cache of pantry_ledger and never syncs.
 }

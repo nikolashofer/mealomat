@@ -5,7 +5,7 @@ import com.example.mealomat.data.db.Basis
 import com.example.mealomat.data.db.LedgerReason
 import com.example.mealomat.data.db.LedgerSource
 import com.example.mealomat.data.db.MealomatDatabase
-import com.example.mealomat.data.db.TripStatus
+import com.example.mealomat.data.db.SessionStatus
 import com.example.mealomat.data.db.mealomatDatabase
 import com.example.mealomat.data.sync.OutboxWriter
 import com.example.mealomat.domain.Slot
@@ -206,7 +206,7 @@ class ShoppingRepositoryTest {
         shopping.complete(trip)
 
         val row = assertNotNull(db.shoppingTripQueries.findById(trip).executeAsOneOrNull())
-        assertEquals(TripStatus.DONE, row.status)
+        assertEquals(SessionStatus.DONE, row.status)
         assertEquals(clock.now, row.completed_at)
         assertNull(shopping.open(), "and it is no longer the open trip")
     }
@@ -232,7 +232,7 @@ class ShoppingRepositoryTest {
         val next = shopping.forBlock(weekend, thursday)
 
         assertEquals(
-            TripStatus.ABANDONED,
+            SessionStatus.ABANDONED,
             db.shoppingTripQueries.findById(forgotten).executeAsOne().status,
             "nothing happened on it",
         )
@@ -251,7 +251,7 @@ class ShoppingRepositoryTest {
         shopping.forBlock(weekend, thursday)
 
         assertEquals(
-            TripStatus.DONE,
+            SessionStatus.DONE,
             db.shoppingTripQueries.findById(forgotten).executeAsOne().status,
             "the food is in the pantry, so it happened",
         )

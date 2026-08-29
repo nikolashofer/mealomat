@@ -25,3 +25,6 @@ UPDATE plan_component SET deleted_at = ?, updated_at = ? WHERE id = ?;
 
 listForPlan:
 SELECT * FROM plan_component WHERE deleted_at IS NULL AND plan_id = ? ORDER BY plan_meal_id, position;
+
+findById:
+SELECT * FROM plan_component WHERE id = ?;

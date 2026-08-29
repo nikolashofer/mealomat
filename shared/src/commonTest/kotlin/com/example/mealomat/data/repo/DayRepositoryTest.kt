@@ -45,9 +45,16 @@ class DayRepositoryTest {
         days = DayRepository(db, outbox, auth, clock, plan, pantry)
     }
 
-    private suspend fun mondayLunch(planId: String, amount: Double = 180.0): String {
+    private suspend fun mondayLunch(
+        planId: String,
+        amount: Double = 180.0,
+        prepMode: PrepMode? = null,
+    ): String {
         val meal = plan.upsertMeal(planId, PlanMealDraft(weekday = DayOfWeek.MONDAY, name = "Lunch", position = 0))
-        return plan.upsertItem(planId, PlanItemDraft(planMealId = meal, ingredientId = "rice", amount = amount, position = 0))
+        return plan.upsertItem(
+            planId,
+            PlanItemDraft(planMealId = meal, ingredientId = "rice", amount = amount, position = 0, prepMode = prepMode),
+        )
     }
 
     private fun itemOn(date: LocalDate) = days.byDate(date)!!.meals.single().items.single()
@@ -108,7 +115,7 @@ class DayRepositoryTest {
     @Test
     fun repeatedTouchesUpdateOneRow() = runTest {
         val v1 = plan.create(Slot(monday, 0))
-        val item = mondayLunch(v1)
+        val item = mondayLunch(v1, prepMode = PrepMode.PREP)
 
         days.setExcluded(monday, item, excluded = true)
         days.markPrepped(monday, item)
@@ -148,7 +155,7 @@ class DayRepositoryTest {
     fun aMealIsDoneWhenEveryLineIsReadyOrTicked() = runTest {
         val v1 = plan.create(Slot(monday, 0))
         val meal = plan.upsertMeal(v1, PlanMealDraft(weekday = DayOfWeek.MONDAY, name = "Lunch", position = 0))
-        val rice = plan.upsertItem(v1, PlanItemDraft(planMealId = meal, ingredientId = "rice", amount = 180.0, position = 0))
+        val rice = plan.upsertItem(v1, PlanItemDraft(planMealId = meal, ingredientId = "rice", amount = 180.0, position = 0, prepMode = PrepMode.PREP))
         val egg = plan.upsertItem(v1, PlanItemDraft(planMealId = meal, ingredientId = "egg", amount = 2.0, position = 1))
 
         assertTrue(!days.byDate(monday)!!.meals.single().isDone)
@@ -210,13 +217,22 @@ class DayRepositoryTest {
     @Test
     fun tickingAPreppedItemDeductsNothing() = runTest {
         val v1 = plan.create(Slot(monday, 0))
-        val item = mondayLunch(v1)
+        val item = mondayLunch(v1, prepMode = PrepMode.PREP)
 
         days.markPrepped(monday, item)
         days.tickOff(monday, item)
 
-        assertEquals(0.0, pantry.amountOf("rice"), "it already left the pantry at prep time")
-        assertTrue(pantry.movementsOf("rice").isEmpty())
+        assertEquals(-180.0, pantry.amountOf("rice"), "deducted once, at prep time")
+        assertEquals(LedgerReason.PREP, pantry.movementsOf("rice").single().reason)
+    }
+
+    @Test
+    fun aFreshLineCannotBeMarkedPrepped() = runTest {
+        val v1 = plan.create(Slot(monday, 0))
+        val item = mondayLunch(v1)
+
+        assertFailsWith<IllegalArgumentException> { days.markPrepped(monday, item) }
+        assertNull(itemOn(monday).preppedAt, "otherwise its tick-off deduction would be suppressed")
     }
 
     @Test

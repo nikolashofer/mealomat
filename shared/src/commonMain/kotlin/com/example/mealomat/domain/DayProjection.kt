@@ -89,5 +89,5 @@ fun projectDay(
 }
 
 // NULL on a plan item means inherit from its component; with no component it is FRESH.
-private fun resolvePrepMode(itemPrepMode: PrepMode?, componentPrepMode: PrepMode?): PrepMode =
+fun resolvePrepMode(itemPrepMode: PrepMode?, componentPrepMode: PrepMode?): PrepMode =
     itemPrepMode ?: componentPrepMode ?: PrepMode.FRESH

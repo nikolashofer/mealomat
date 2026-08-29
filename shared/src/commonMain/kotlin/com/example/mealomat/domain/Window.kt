@@ -3,6 +3,7 @@ package com.example.mealomat.domain
 import com.example.mealomat.data.db.Prep_block
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
 
@@ -12,6 +13,10 @@ data class Window(val from: Slot, val to: Slot)
 data class Boundary(val slot: Slot, val blockId: String)
 
 operator fun Window.contains(slot: Slot) = slot in from..<to
+
+// every date the window touches, including the partial ones at each end.
+fun Window.dates(): List<LocalDate> =
+    (0..from.date.daysUntil(to.date)).map { from.date.plus(it, DateTimeUnit.DAY) }
 
 // every block boundary in the two weeks from `from`. long enough to hold any block's own and the next.
 fun boundariesFrom(from: LocalDate, blocks: List<Prep_block>): List<Boundary> =

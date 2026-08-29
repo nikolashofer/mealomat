@@ -2,6 +2,7 @@ package com.example.mealomat.domain
 
 import com.example.mealomat.data.db.Day_item
 import com.example.mealomat.data.db.Plan_item
+import com.example.mealomat.data.db.PrepMode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -51,5 +52,22 @@ class PantryTest {
         assertEquals(70.0, adjustDelta(current = 30.0, real = 100.0))
         assertEquals(120.0, adjustDelta(current = -20.0, real = 100.0), "from negative stock")
         assertEquals(0.0, adjustDelta(current = 100.0, real = 100.0))
+    }
+
+    @Test
+    fun aFreshItemIsNeverPrepped() {
+        assertNull(prepDeduction(null, planItem, PrepMode.FRESH), "the prep wizard does not touch it")
+    }
+
+    @Test
+    fun prepDeductsThePlannedAmount() {
+        assertEquals(IngredientUse("rice", 180.0), prepDeduction(null, planItem, PrepMode.PREP))
+    }
+
+    @Test
+    fun prepDeductsNothingTwiceNorAfterTheFact() {
+        assertNull(prepDeduction(recorded(prepped = 1), planItem, PrepMode.PREP), "already made")
+        assertNull(prepDeduction(recorded(excluded = true), planItem, PrepMode.PREP), "planned eat-out")
+        assertNull(prepDeduction(recorded(ticked = 1), planItem, PrepMode.PREP), "already cooked fresh")
     }
 }

@@ -7,7 +7,7 @@ import com.example.mealomat.data.db.LedgerSource
 import com.example.mealomat.data.db.MealomatDatabase
 import com.example.mealomat.data.db.Shopping_step
 import com.example.mealomat.data.db.Shopping_trip
-import com.example.mealomat.data.db.TripStatus
+import com.example.mealomat.data.db.SessionStatus
 import com.example.mealomat.data.sync.OutboxOp
 import com.example.mealomat.data.sync.OutboxWriter
 import com.example.mealomat.data.sync.Tables
@@ -15,14 +15,12 @@ import com.example.mealomat.data.sync.payloadOf
 import com.example.mealomat.domain.Need
 import com.example.mealomat.domain.Slot
 import com.example.mealomat.domain.Window
+import com.example.mealomat.domain.dates
 import com.example.mealomat.domain.needsFrom
 import com.example.mealomat.domain.usesIn
 import com.example.mealomat.domain.windowOf
 import kotlin.time.Clock
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.daysUntil
-import kotlinx.datetime.plus
 import kotlinx.serialization.json.JsonPrimitive
 
 class ShoppingRepository(
@@ -74,7 +72,7 @@ class ShoppingRepository(
             covers_from_position = window.from.position.toLong(),
             covers_to_date = window.to.date.toString(),
             covers_to_position = window.to.position.toLong(),
-            status = TripStatus.IN_PROGRESS,
+            status = SessionStatus.IN_PROGRESS,
         )
         db.writeWithOutbox(outbox, Tables.SHOPPING_TRIP, row.id, OutboxOp.UPSERT) {
             tripQueries.insert(row)
@@ -84,10 +82,10 @@ class ShoppingRepository(
     }
 
     suspend fun complete(tripId: String) =
-        writeTrip(tripId) { trip, now -> trip.copy(status = TripStatus.DONE, completed_at = now) }
+        writeTrip(tripId) { trip, now -> trip.copy(status = SessionStatus.DONE, completed_at = now) }
 
     suspend fun abandon(tripId: String) =
-        writeTrip(tripId) { trip, _ -> trip.copy(status = TripStatus.ABANDONED) }
+        writeTrip(tripId) { trip, _ -> trip.copy(status = SessionStatus.ABANDONED) }
 
     suspend fun buyStep(tripId: String, ingredientId: String, amount: Double) =
         writeStep(tripId, ingredientId) { step, _ -> step.copy(bought_amount = amount, skipped_at = null) }
@@ -158,9 +156,7 @@ class ShoppingRepository(
     }
 
     private fun needsIn(window: Window, boughtHere: (String) -> Double): List<Need> {
-        val dates = (0..window.from.date.daysUntil(window.to.date))
-            .map { window.from.date.plus(it, DateTimeUnit.DAY) }
-        val projected = dates.mapNotNull { days.byDate(it) }
+        val projected = window.dates().mapNotNull { days.byDate(it) }
         return needsFrom(
             uses = usesIn(window, projected),
             have = { pantry.amountOf(it) - boughtHere(it) },

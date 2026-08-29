@@ -1,7 +1,6 @@
 import com.example.mealomat.data.db.SessionStatus;
 
-// TODO: maybe rename to shooping_session for parity
-CREATE TABLE shopping_trip (
+CREATE TABLE prep_session (
   id                   TEXT    NOT NULL PRIMARY KEY,
   user_id              TEXT    NOT NULL,
   prep_block_id        TEXT    NOT NULL,
@@ -10,29 +9,29 @@ CREATE TABLE shopping_trip (
   started_at           INTEGER,
   completed_at         INTEGER,
   planned_date         TEXT    NOT NULL,
-  covers_from_date     TEXT    NOT NULL,   -- the window this trip shopped for, frozen at start
+  covers_from_date     TEXT    NOT NULL,   -- the window this session prepped for, frozen at start
   covers_from_position INTEGER NOT NULL,
   covers_to_date       TEXT    NOT NULL,   -- exclusive: the next block's boundary
   covers_to_position   INTEGER NOT NULL,
   status               TEXT AS SessionStatus NOT NULL
 );
 
-CREATE INDEX shopping_trip_user_id ON shopping_trip(user_id);
-CREATE INDEX shopping_trip_block ON shopping_trip(prep_block_id);
-CREATE UNIQUE INDEX shopping_trip_open ON shopping_trip(user_id) WHERE status = 'IN_PROGRESS' AND deleted_at IS NULL;
+CREATE INDEX prep_session_user_id ON prep_session(user_id);
+CREATE INDEX prep_session_block ON prep_session(prep_block_id);
+CREATE UNIQUE INDEX prep_session_open ON prep_session(user_id) WHERE status = 'IN_PROGRESS' AND deleted_at IS NULL;
 
 insert:
-INSERT INTO shopping_trip VALUES ?;
+INSERT INTO prep_session VALUES ?;
 
 upsert:
-INSERT OR REPLACE INTO shopping_trip VALUES ?;
+INSERT OR REPLACE INTO prep_session VALUES ?;
 
 listCommitted:
-SELECT * FROM shopping_trip
+SELECT * FROM prep_session
 WHERE deleted_at IS NULL AND status IN ('IN_PROGRESS', 'DONE') AND covers_to_date >= ?;
 
 findById:
-SELECT * FROM shopping_trip WHERE id = ?;
+SELECT * FROM prep_session WHERE id = ?;
 
 findOpen:
-SELECT * FROM shopping_trip WHERE deleted_at IS NULL AND status = 'IN_PROGRESS';
+SELECT * FROM prep_session WHERE deleted_at IS NULL AND status = 'IN_PROGRESS';

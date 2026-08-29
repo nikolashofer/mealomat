@@ -6,6 +6,7 @@ import com.example.mealomat.data.db.Day_item
 import com.example.mealomat.data.db.LedgerReason
 import com.example.mealomat.data.db.LedgerSource
 import com.example.mealomat.data.db.MealomatDatabase
+import com.example.mealomat.data.db.PrepMode
 import com.example.mealomat.data.sync.OutboxOp
 import com.example.mealomat.data.sync.OutboxWriter
 import com.example.mealomat.data.sync.Tables
@@ -14,6 +15,8 @@ import com.example.mealomat.domain.Day
 import com.example.mealomat.domain.PlanVersion
 import com.example.mealomat.domain.Slot
 import com.example.mealomat.domain.cookDeduction
+import com.example.mealomat.domain.prepDeduction
+import com.example.mealomat.domain.resolvePrepMode
 import com.example.mealomat.domain.projectDay
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
@@ -29,6 +32,7 @@ class DayRepository(
 ) {
     private val dayItemQueries = db.dayItemQueries
     private val planItemQueries = db.planItemQueries
+    private val planComponentQueries = db.planComponentQueries
 
     fun byDate(date: LocalDate): Day? {
         val version = plan.activeAt(Slot(date, 0)) ?: return null
@@ -43,12 +47,15 @@ class DayRepository(
     suspend fun tickOff(date: LocalDate, planItemId: String) =
         writeItem(date, planItemId) { row, now -> row.copy(ticked_at = now) }
 
-    suspend fun markPrepped(date: LocalDate, planItemId: String) =
-        writeItem(date, planItemId) { row, now -> row.copy(prepped_at = now) }
+    // TODO: maybe make atomic, so a step, prepping multiple items is written in same transaction with same timestamp
+    suspend fun markPrepped(date: LocalDate, planItemId: String): String {
+        require(modeOf(planItemId) == PrepMode.PREP) { "$planItemId is cooked fresh, not prepped" }
+        return writeItem(date, planItemId) { row, now -> row.copy(prepped_at = now) }
+    }
 
     suspend fun setExcluded(date: LocalDate, planItemId: String, excluded: Boolean) =
         writeItem(date, planItemId) { row, _ -> row.copy(excluded = excluded) }
-    
+
     private suspend fun writeItem(
         date: LocalDate,
         planItemId: String,
@@ -73,6 +80,7 @@ class DayRepository(
 
     private fun moveFor(previous: Day_item?, row: Day_item, now: Long): PantryMove? = when {
         previous?.ticked_at == null && row.ticked_at != null -> cookMove(previous, row, now)
+        previous?.prepped_at == null && row.prepped_at != null -> prepMove(previous, row, now)
         else -> null
     }
 
@@ -87,6 +95,26 @@ class DayRepository(
             sourceId = row.id,
             occurredAt = now,
         )
+    }
+
+    private fun prepMove(previous: Day_item?, row: Day_item, now: Long): PantryMove? {
+        val planItem = planItemQueries.findById(row.plan_item_id).executeAsOneOrNull() ?: return null
+        val use = prepDeduction(previous, planItem, modeOf(planItem.id) ?: PrepMode.FRESH) ?: return null
+        return PantryMove(
+            ingredientId = use.ingredientId,
+            delta = -use.amount,
+            reason = LedgerReason.PREP,
+            sourceKind = LedgerSource.DAY_ITEM,
+            sourceId = row.id,
+            occurredAt = now,
+        )
+    }
+
+    private fun modeOf(planItemId: String): PrepMode? {
+        val planItem = planItemQueries.findById(planItemId).executeAsOneOrNull() ?: return null
+        val component = planItem.plan_component_id
+            ?.let { planComponentQueries.findById(it).executeAsOneOrNull() }
+        return resolvePrepMode(planItem.prep_mode, component?.prep_mode)
     }
 
     private fun findItem(date: LocalDate, planItemId: String) =

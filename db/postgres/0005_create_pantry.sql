@@ -11,7 +11,7 @@ create table pantry_ledger (
   occurred_at   timestamptz not null,   -- when the movement happened, not when the row was written
   delta         double precision not null,   -- signed, in the ingredient's basis unit
   reason        text not null,   -- BUY | PREP | COOK | CONSUME | SPOILAGE | ADJUST
-  source_kind   text not null,   -- SHOPPING_STEP | PREP_STEP | DAY_ITEM | MANUAL
+  source_kind   text not null,   -- SHOPPING_STEP | DAY_ITEM | MANUAL
   source_id     uuid,            -- the causing row, null when source_kind is MANUAL
   note          text
 );
