@@ -111,7 +111,7 @@ class ShoppingRepositoryTest {
 
         val trip = shopping.forBlock(midweek, thursday)
 
-        assertTrue(shopping.linesOf(trip).isEmpty(), "a line exists because something happened to it")
+        assertTrue(shopping.stepsOf(trip).isEmpty(), "a line exists because something happened to it")
         assertTrue(db.dayItemQueries.listForDate(friday.toString()).executeAsList().isEmpty())
     }
 
@@ -133,7 +133,7 @@ class ShoppingRepositoryTest {
         planWithFridayRice()
         val trip = shopping.forBlock(midweek, thursday)
 
-        shopping.buyLine(trip, "rice", 500.0)
+        shopping.buyStep(trip, "rice", 500.0)
 
         val need = shopping.needsOf(trip).single()
         assertEquals(0.0, need.have, "the trip's own purchase is netted out")
@@ -146,13 +146,13 @@ class ShoppingRepositoryTest {
         planWithFridayRice()
         val trip = shopping.forBlock(midweek, thursday)
 
-        shopping.buyLine(trip, "rice", 800.0)
+        shopping.buyStep(trip, "rice", 800.0)
 
         assertEquals(800.0, pantry.amountOf("rice"))
         val movement = pantry.movementsOf("rice").single()
         assertEquals(LedgerReason.BUY, movement.reason)
-        assertEquals(LedgerSource.SHOPPING_LINE, movement.source_kind)
-        assertEquals(shopping.linesOf(trip).single().id, movement.source_id)
+        assertEquals(LedgerSource.SHOPPING_STEP, movement.source_kind)
+        assertEquals(shopping.stepsOf(trip).single().id, movement.source_id)
     }
 
     @Test
@@ -162,9 +162,9 @@ class ShoppingRepositoryTest {
         pantry.addAhead("rice", 200.0)
         val trip = shopping.forBlock(midweek, thursday)
 
-        shopping.buyLine(trip, "rice", 300.0)
+        shopping.buyStep(trip, "rice", 300.0)
 
-        val line = shopping.linesOf(trip).single()
+        val line = shopping.stepsOf(trip).single()
         assertEquals(500.0, line.needed_amount)
         assertEquals(200.0, line.have_amount, "what the wizard showed when the call was made")
         assertEquals(300.0, line.suggested_amount)
@@ -176,11 +176,11 @@ class ShoppingRepositoryTest {
         planWithFridayRice()
         val trip = shopping.forBlock(midweek, thursday)
 
-        shopping.buyLine(trip, "rice", 800.0)
-        shopping.buyLine(trip, "rice", 500.0)
+        shopping.buyStep(trip, "rice", 800.0)
+        shopping.buyStep(trip, "rice", 500.0)
 
         assertEquals(500.0, pantry.amountOf("rice"), "stock matches the corrected amount")
-        assertEquals(1, shopping.linesOf(trip).size, "one line, corrected")
+        assertEquals(1, shopping.stepsOf(trip).size, "one line, corrected")
         assertEquals(listOf(800.0, -300.0), pantry.movementsOf("rice").map { it.delta }.reversed())
     }
 
@@ -190,10 +190,10 @@ class ShoppingRepositoryTest {
         planWithFridayRice()
         val trip = shopping.forBlock(midweek, thursday)
 
-        shopping.skipLine(trip, "rice")
+        shopping.skipStep(trip, "rice")
 
         assertEquals(0.0, pantry.amountOf("rice"))
-        assertEquals(clock.now, shopping.linesOf(trip).single().skipped_at)
+        assertEquals(clock.now, shopping.stepsOf(trip).single().skipped_at)
         assertTrue(pantry.movementsOf("rice").isEmpty())
     }
 
@@ -245,7 +245,7 @@ class ShoppingRepositoryTest {
         val midweek = blocks()
         planWithFridayRice()
         val forgotten = shopping.forBlock(midweek, thursday)
-        shopping.buyLine(forgotten, "rice", 500.0)
+        shopping.buyStep(forgotten, "rice", 500.0)
 
         val weekend = prepBlocks.list().single { it.name == "Weekend" }.id
         shopping.forBlock(weekend, thursday)
@@ -287,13 +287,13 @@ class ShoppingRepositoryTest {
         val midweek = blocks()
         planWithFridayRice()
         val trip = shopping.forBlock(midweek, thursday)
-        shopping.buyLine(trip, "rice", 800.0)
+        shopping.buyStep(trip, "rice", 800.0)
 
-        shopping.skipLine(trip, "rice")
+        shopping.skipStep(trip, "rice")
 
         assertEquals(0.0, pantry.amountOf("rice"), "it never entered the pantry")
         assertEquals(listOf(800.0, -800.0), pantry.movementsOf("rice").map { it.delta }.reversed())
-        val line = shopping.linesOf(trip).single()
+        val line = shopping.stepsOf(trip).single()
         assertNull(line.bought_amount)
         assertEquals(clock.now, line.skipped_at)
     }

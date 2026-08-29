@@ -33,7 +33,7 @@ create policy shopping_trip_owner on shopping_trip
   using      ( user_id = auth.uid() )
   with check ( user_id = auth.uid() );
 
-create table shopping_line (
+create table shopping_step (
   id               uuid        primary key,
   user_id          uuid        not null,
   shopping_trip_id uuid        not null,
@@ -47,17 +47,17 @@ create table shopping_line (
   bought_amount    double precision             -- entering this is what makes the line bought
 );
 
-create index shopping_line_user_id on shopping_line(user_id);
-create index shopping_line_trip on shopping_line(shopping_trip_id);
+create index shopping_step_user_id on shopping_step(user_id);
+create index shopping_step_trip on shopping_step(shopping_trip_id);
 
 -- shopping_trip_id is a client-generated UUIDv7 that only appears in one user's rows, so it scopes
 -- this index on its own.
-create unique index shopping_line_ingredient on shopping_line(shopping_trip_id, ingredient_id)
+create unique index shopping_step_ingredient on shopping_step(shopping_trip_id, ingredient_id)
   where deleted_at is null;
 
-alter table shopping_line enable row level security;
+alter table shopping_step enable row level security;
 
-create policy shopping_line_owner on shopping_line
+create policy shopping_step_owner on shopping_step
   for all
   using      ( user_id = auth.uid() )
   with check ( user_id = auth.uid() );

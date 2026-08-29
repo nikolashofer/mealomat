@@ -5,7 +5,7 @@ import com.example.mealomat.auth.requireUserId
 import com.example.mealomat.data.db.LedgerReason
 import com.example.mealomat.data.db.LedgerSource
 import com.example.mealomat.data.db.MealomatDatabase
-import com.example.mealomat.data.db.Shopping_line
+import com.example.mealomat.data.db.Shopping_step
 import com.example.mealomat.data.db.Shopping_trip
 import com.example.mealomat.data.db.TripStatus
 import com.example.mealomat.data.sync.OutboxOp
@@ -36,12 +36,12 @@ class ShoppingRepository(
     private val prepBlocks: PrepBlockRepository,
 ) {
     private val tripQueries = db.shoppingTripQueries
-    private val lineQueries = db.shoppingLineQueries
+    private val stepQueries = db.shoppingStepQueries
 
     fun open(): Shopping_trip? = tripQueries.findOpen().executeAsOneOrNull()
 
-    fun linesOf(tripId: String): List<Shopping_line> =
-        lineQueries.listForTrip(tripId).executeAsList()
+    fun stepsOf(tripId: String): List<Shopping_step> =
+        stepQueries.listForTrip(tripId).executeAsList()
 
     fun committedWindows(from: LocalDate): List<Window> =
         tripQueries.listCommitted(from.toString()).executeAsList().map { it.window() }
@@ -53,7 +53,7 @@ class ShoppingRepository(
 
     fun needsOf(tripId: String): List<Need> {
         val trip = tripQueries.findById(tripId).executeAsOneOrNull() ?: return emptyList()
-        val bought = linesOf(tripId).associate { it.ingredient_id to (it.bought_amount ?: 0.0) }
+        val bought = stepsOf(tripId).associate { it.ingredient_id to (it.bought_amount ?: 0.0) }
         return needsIn(trip.window()) { bought[it] ?: 0.0 }
     }
 
@@ -89,11 +89,11 @@ class ShoppingRepository(
     suspend fun abandon(tripId: String) =
         writeTrip(tripId) { trip, _ -> trip.copy(status = TripStatus.ABANDONED) }
 
-    suspend fun buyLine(tripId: String, ingredientId: String, amount: Double) =
-        writeLine(tripId, ingredientId) { line, _ -> line.copy(bought_amount = amount, skipped_at = null) }
+    suspend fun buyStep(tripId: String, ingredientId: String, amount: Double) =
+        writeStep(tripId, ingredientId) { step, _ -> step.copy(bought_amount = amount, skipped_at = null) }
 
-    suspend fun skipLine(tripId: String, ingredientId: String) =
-        writeLine(tripId, ingredientId) { line, now -> line.copy(skipped_at = now, bought_amount = null) }
+    suspend fun skipStep(tripId: String, ingredientId: String) =
+        writeStep(tripId, ingredientId) { step, now -> step.copy(skipped_at = now, bought_amount = null) }
 
     private suspend fun writeTrip(
         tripId: String,
@@ -110,21 +110,21 @@ class ShoppingRepository(
         return row.id
     }
 
-    private suspend fun writeLine(
+    private suspend fun writeStep(
         tripId: String,
         ingredientId: String,
-        change: (Shopping_line, Long) -> Shopping_line,
+        change: (Shopping_step, Long) -> Shopping_step,
     ): String {
         val userId = auth.requireUserId()
         val now = clock.nowMillis()
-        val previous = findLine(tripId, ingredientId)
-        val row = change(previous ?: newLineRow(tripId, ingredientId, userId, now), now)
+        val previous = findStep(tripId, ingredientId)
+        val row = change(previous ?: newStepRow(tripId, ingredientId, userId, now), now)
             .stamped(now, needsOf(tripId).firstOrNull { it.ingredientId == ingredientId })
         val move = moveFor(previous, row, now)
 
         db.transaction {
-            db.writeWithOutbox(outbox, Tables.SHOPPING_LINE, row.id, OutboxOp.UPSERT) {
-                lineQueries.upsert(row)
+            db.writeWithOutbox(outbox, Tables.SHOPPING_STEP, row.id, OutboxOp.UPSERT) {
+                stepQueries.upsert(row)
                 row.toPayload()
             }
             if (move != null) pantry.record(move, userId = userId, now = now)
@@ -133,23 +133,23 @@ class ShoppingRepository(
     }
 
     private suspend fun closeForgotten(trip: Shopping_trip) {
-        if (linesOf(trip.id).any { it.bought_amount != null }) complete(trip.id) else abandon(trip.id)
+        if (stepsOf(trip.id).any { it.bought_amount != null }) complete(trip.id) else abandon(trip.id)
     }
 
-    private fun moveFor(previous: Shopping_line?, row: Shopping_line, now: Long): PantryMove? {
+    private fun moveFor(previous: Shopping_step?, row: Shopping_step, now: Long): PantryMove? {
         val delta = (row.bought_amount ?: 0.0) - (previous?.bought_amount ?: 0.0)
         return if (delta == 0.0) null else PantryMove(
             ingredientId = row.ingredient_id,
             delta = delta,
             reason = LedgerReason.BUY,
-            sourceKind = LedgerSource.SHOPPING_LINE,
+            sourceKind = LedgerSource.SHOPPING_STEP,
             sourceId = row.id,
             occurredAt = now,
         )
     }
 
-    private fun findLine(tripId: String, ingredientId: String) =
-        lineQueries.findByTripAndIngredient(tripId, ingredientId).executeAsOneOrNull()
+    private fun findStep(tripId: String, ingredientId: String) =
+        stepQueries.findByTripAndIngredient(tripId, ingredientId).executeAsOneOrNull()
 
     private fun windowFor(prepBlockId: String, on: LocalDate): Window? {
         val blocks = prepBlocks.list()
@@ -174,7 +174,7 @@ private fun Shopping_trip.window() = Window(
     to = Slot(LocalDate.parse(covers_to_date), covers_to_position.toInt()),
 )
 
-private fun newLineRow(tripId: String, ingredientId: String, userId: String, now: Long) = Shopping_line(
+private fun newStepRow(tripId: String, ingredientId: String, userId: String, now: Long) = Shopping_step(
     id = newId(null),
     user_id = userId,
     shopping_trip_id = tripId,
@@ -188,7 +188,7 @@ private fun newLineRow(tripId: String, ingredientId: String, userId: String, now
     bought_amount = null,
 )
 
-private fun Shopping_line.stamped(now: Long, need: Need?) = copy(
+private fun Shopping_step.stamped(now: Long, need: Need?) = copy(
     updated_at = now,
     needed_amount = need?.need ?: needed_amount,
     have_amount = need?.have ?: have_amount,
@@ -211,7 +211,7 @@ private fun Shopping_trip.toPayload() = payloadOf(
     "status" to JsonPrimitive(status.name),
 )
 
-private fun Shopping_line.toPayload() = payloadOf(
+private fun Shopping_step.toPayload() = payloadOf(
     "id" to JsonPrimitive(id),
     "user_id" to JsonPrimitive(user_id),
     "shopping_trip_id" to JsonPrimitive(shopping_trip_id),

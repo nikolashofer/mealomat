@@ -1,4 +1,4 @@
-CREATE TABLE shopping_line (
+CREATE TABLE shopping_step (
   id               TEXT    NOT NULL PRIMARY KEY,
   user_id          TEXT    NOT NULL,
   shopping_trip_id TEXT    NOT NULL,
@@ -12,17 +12,17 @@ CREATE TABLE shopping_line (
   bought_amount    REAL                -- entering this is what makes the line bought
 );
 
-CREATE INDEX shopping_line_user_id ON shopping_line(user_id);
-CREATE INDEX shopping_line_trip ON shopping_line(shopping_trip_id);
-CREATE UNIQUE INDEX shopping_line_ingredient ON shopping_line(shopping_trip_id, ingredient_id) WHERE deleted_at IS NULL;
+CREATE INDEX shopping_step_user_id ON shopping_step(user_id);
+CREATE INDEX shopping_step_trip ON shopping_step(shopping_trip_id);
+CREATE UNIQUE INDEX shopping_step_ingredient ON shopping_step(shopping_trip_id, ingredient_id) WHERE deleted_at IS NULL;
 
 upsert:
-INSERT OR REPLACE INTO shopping_line VALUES ?;
+INSERT OR REPLACE INTO shopping_step VALUES ?;
 
 listForTrip:
-SELECT * FROM shopping_line
+SELECT * FROM shopping_step
 WHERE deleted_at IS NULL AND shopping_trip_id = ? ORDER BY ingredient_id;
 
 findByTripAndIngredient:
-SELECT * FROM shopping_line
+SELECT * FROM shopping_step
 WHERE deleted_at IS NULL AND shopping_trip_id = ? AND ingredient_id = ?;
