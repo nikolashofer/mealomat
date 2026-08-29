@@ -43,7 +43,7 @@ class SeedImporterTest {
         importer = SeedImporter(ingredients, plan, prepBlocks)
     }
 
-    private fun planId() = plan.plans().single().id
+    private fun planId() = plan.list().single().id
 
     private fun oats() = SeedIngredient(
         key = "oats", name = "Haferflocken", basis = Basis.G100,
@@ -63,10 +63,10 @@ class SeedImporterTest {
     fun resolvesSeedKeysToGeneratedIds() = runTest {
         importer.import(seed(planMeals = breakfast(SeedItem("oats", 80.0))), activeFrom)
 
-        val item = plan.items(planId()).single()
+        val item = plan.itemsOf(planId()).single()
         val oats = db.ingredientQueries.listWithArchived().executeAsList().single()
         assertEquals(oats.id, item.ingredient_id, "the seed key must become the real id")
-        assertEquals(plan.meals(planId()).single().id, item.plan_meal_id)
+        assertEquals(plan.mealsOf(planId()).single().id, item.plan_meal_id)
     }
 
     @Test
@@ -81,14 +81,14 @@ class SeedImporterTest {
         importer.import(Seed(version = 1, ingredients = listOf(oats())), activeFrom)
 
         assertEquals(1, db.ingredientQueries.listWithArchived().executeAsList().size)
-        assertTrue(plan.meals(planId()).isEmpty())
+        assertTrue(plan.mealsOf(planId()).isEmpty())
     }
 
     @Test
     fun seededItemsHaveNoPrepModeOrComponent() = runTest {
         importer.import(seed(planMeals = breakfast(SeedItem("oats", 80.0))), activeFrom)
 
-        val item = plan.items(planId()).single()
+        val item = plan.itemsOf(planId()).single()
         assertNull(item.prep_mode, "NULL means inherit; with no component that is FRESH")
         assertNull(item.plan_component_id)
     }
@@ -103,7 +103,7 @@ class SeedImporterTest {
             activeFrom,
         )
 
-        val items = plan.items(planId()).sortedBy { it.position }
+        val items = plan.itemsOf(planId()).sortedBy { it.position }
         assertEquals(listOf(0L, 1L), items.map { it.position })
         assertEquals(250.0, items.first().amount)
     }
@@ -118,7 +118,7 @@ class SeedImporterTest {
             activeFrom,
         )
 
-        val block = prepBlocks.blocks().single()
+        val block = prepBlocks.list().single()
         assertEquals(DayOfWeek.SUNDAY, block.prep_weekday)
         assertEquals(DayOfWeek.SATURDAY, block.shopping_weekday)
         assertEquals(DayOfWeek.SUNDAY, block.covers_from_weekday)
@@ -129,8 +129,8 @@ class SeedImporterTest {
     fun theSeededPlanStartsWhereItWasTold() = runTest {
         importer.import(seed(planMeals = breakfast(SeedItem("oats", 80.0))), activeFrom)
 
-        assertEquals(planId(), plan.planAt(activeFrom)?.id)
-        assertNull(plan.planAt(Slot(LocalDate(2026, 6, 21), 0)), "before the seed there is no plan")
+        assertEquals(planId(), plan.activeAt(activeFrom)?.id)
+        assertNull(plan.activeAt(Slot(LocalDate(2026, 6, 21), 0)), "before the seed there is no plan")
     }
 
     @Test

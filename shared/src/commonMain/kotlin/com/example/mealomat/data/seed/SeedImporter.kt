@@ -20,9 +20,9 @@ class SeedImporter(
     suspend fun import(seed: Seed, activeFrom: Slot) {
         val ingredientIds = seed.ingredients.associate { it.key to ingredients.upsert(it.toDraft()) }
 
-        seed.prepBlocks.forEach { prepBlocks.upsertBlock(it.toDraft()) }
+        seed.prepBlocks.forEach { prepBlocks.upsert(it.toDraft()) }
 
-        val planId = plan.createPlan(activeFrom)
+        val planId = plan.create(activeFrom)
         seed.planMeals.forEach { meal ->
             val mealId = plan.upsertMeal(planId, meal.toDraft())
             meal.items.forEachIndexed { index, item ->

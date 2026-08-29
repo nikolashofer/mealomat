@@ -22,6 +22,3 @@ UPDATE plan_meal SET deleted_at = ?, updated_at = ? WHERE id = ?;
 
 listForPlan:
 SELECT * FROM plan_meal WHERE deleted_at IS NULL AND plan_id = ? ORDER BY weekday, position;
-
-countForPlan:
-SELECT count(*) FROM plan_meal WHERE deleted_at IS NULL AND plan_id = ?;

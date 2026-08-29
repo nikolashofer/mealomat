@@ -1,0 +1,26 @@
+CREATE TABLE pantry_stock (
+  ingredient_id TEXT    NOT NULL PRIMARY KEY,
+  amount        REAL    NOT NULL,
+  updated_at    INTEGER NOT NULL
+);
+
+upsert:
+INSERT OR REPLACE INTO pantry_stock VALUES ?;
+
+-- Runs after clear, never alone: on a non-empty table this conflicts on the primary key.
+rebuild:
+INSERT INTO pantry_stock
+SELECT ingredient_id, SUM(delta), ? FROM pantry_ledger GROUP BY ingredient_id;
+
+clear:
+DELETE FROM pantry_stock;
+
+listWithIngredient:
+SELECT s.ingredient_id, s.amount, s.updated_at, i.name, i.basis
+FROM pantry_stock s
+JOIN ingredient i ON i.id = s.ingredient_id
+WHERE i.deleted_at IS NULL
+ORDER BY i.name;
+
+findByIngredient:
+SELECT * FROM pantry_stock WHERE ingredient_id = ?;

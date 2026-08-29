@@ -52,11 +52,7 @@ class IngredientRepository(
     fun isEmpty(): Boolean = queries.countWithArchived().executeAsOne() == 0L
 
     suspend fun upsert(draft: IngredientDraft): String {
-        val row = draft.toRow(
-            id = newId(draft.id),
-            userId = auth.requireUserId(),
-            now = clock.nowMillis(),
-        )
+        val row = draft.toRow(newId(draft.id), auth.requireUserId(), clock.nowMillis())
         db.writeWithOutbox(outbox, Tables.INGREDIENT, row.id, OutboxOp.UPSERT) {
             queries.upsert(row)
             row.toPayload()

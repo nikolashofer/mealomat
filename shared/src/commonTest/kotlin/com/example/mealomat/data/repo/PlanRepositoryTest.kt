@@ -42,7 +42,7 @@ class PlanRepositoryTest {
     }
 
     private suspend fun seededPlan(): String {
-        val plan = repo.createPlan(Slot(monday, 0))
+        val plan = repo.create(Slot(monday, 0))
         val meal = repo.upsertMeal(plan, PlanMealDraft(weekday = DayOfWeek.MONDAY, name = "Lunch", position = 0))
         val component = repo.upsertComponent(
             plan, PlanComponentDraft(planMealId = meal, name = "Bowl", position = 0, prepMode = PrepMode.PREP),
@@ -64,43 +64,43 @@ class PlanRepositoryTest {
     fun itemPrepModeStaysNullWhenNotOverridden() = runTest {
         val plan = seededPlan()
 
-        val items = repo.items(plan)
+        val items = repo.itemsOf(plan)
         assertNull(items.single { it.ingredient_id == "egg" }.prep_mode, "NULL means inherit")
         assertNull(items.single { it.ingredient_id == "rice" }.prep_mode)
     }
 
     @Test
     fun weekdayRoundTripsAsTheIsoDayNumber() = runTest {
-        val plan = repo.createPlan(Slot(monday, 0))
+        val plan = repo.create(Slot(monday, 0))
         repo.upsertMeal(plan, PlanMealDraft(weekday = DayOfWeek.SUNDAY, name = "Brunch", position = 0))
 
-        assertEquals(DayOfWeek.SUNDAY, repo.meals(plan).single().weekday)
+        assertEquals(DayOfWeek.SUNDAY, repo.mealsOf(plan).single().weekday)
         val payload = db.syncOutboxQueries.list().executeAsList()
             .single { it.table_name == Tables.PLAN_MEAL }.payload
         assertEquals(7, Json.decodeFromString(JsonObject.serializer(), payload).getValue("weekday").jsonPrimitive.int)
     }
 
     @Test
-    fun editablePlanCopiesEveryRowWithFreshIds() = runTest {
+    fun editingCopiesEveryRowWithFreshIds() = runTest {
         val v1 = seededPlan()
 
-        val v2 = repo.editablePlan(monday, Slot(sunday, 1))
+        val v2 = repo.forEditing(monday, Slot(sunday, 1))
 
         assertTrue(v2 != v1)
-        assertEquals(repo.meals(v1).size, repo.meals(v2).size)
-        assertEquals(repo.items(v1).size, repo.items(v2).size)
-        assertTrue(repo.items(v1).map { it.id }.intersect(repo.items(v2).map { it.id }.toSet()).isEmpty())
-        assertEquals(v2, repo.items(v2).first().plan_id, "children point at the new version")
+        assertEquals(repo.mealsOf(v1).size, repo.mealsOf(v2).size)
+        assertEquals(repo.itemsOf(v1).size, repo.itemsOf(v2).size)
+        assertTrue(repo.itemsOf(v1).map { it.id }.intersect(repo.itemsOf(v2).map { it.id }.toSet()).isEmpty())
+        assertEquals(v2, repo.itemsOf(v2).first().plan_id, "children point at the new version")
     }
 
     @Test
     fun componentsKeepTheirLineageAcrossVersions() = runTest {
         val v1 = seededPlan()
 
-        val v2 = repo.editablePlan(monday, Slot(sunday, 1))
+        val v2 = repo.forEditing(monday, Slot(sunday, 1))
 
-        val before = repo.components(v1).single()
-        val after = repo.components(v2).single()
+        val before = repo.componentsOf(v1).single()
+        val after = repo.componentsOf(v2).single()
         assertTrue(before.id != after.id, "a new row")
         assertEquals(before.lineage_id, after.lineage_id, "but the same lineage")
     }
@@ -108,68 +108,68 @@ class PlanRepositoryTest {
     @Test
     fun copiedChildrenPointAtTheCopiedParents() = runTest {
         val v1 = seededPlan()
-        val v2 = repo.editablePlan(monday, Slot(sunday, 1))
+        val v2 = repo.forEditing(monday, Slot(sunday, 1))
 
-        val mealIds = repo.meals(v2).map { it.id }.toSet()
-        val componentIds = repo.components(v2).map { it.id }.toSet()
-        assertTrue(repo.items(v2).all { it.plan_meal_id in mealIds })
-        assertTrue(repo.items(v2).mapNotNull { it.plan_component_id }.all { it in componentIds })
-        assertTrue(repo.items(v1).none { it.plan_meal_id in mealIds }, "v1 is untouched")
+        val mealIds = repo.mealsOf(v2).map { it.id }.toSet()
+        val componentIds = repo.componentsOf(v2).map { it.id }.toSet()
+        assertTrue(repo.itemsOf(v2).all { it.plan_meal_id in mealIds })
+        assertTrue(repo.itemsOf(v2).mapNotNull { it.plan_component_id }.all { it in componentIds })
+        assertTrue(repo.itemsOf(v1).none { it.plan_meal_id in mealIds }, "v1 is untouched")
     }
 
     @Test
-    fun editablePlanReusesTheScheduledVersion() = runTest {
+    fun editingReusesTheScheduledVersion() = runTest {
         seededPlan()
 
-        val first = repo.editablePlan(monday, Slot(sunday, 1))
-        val second = repo.editablePlan(monday, Slot(sunday, 1))
+        val first = repo.forEditing(monday, Slot(sunday, 1))
+        val second = repo.forEditing(monday, Slot(sunday, 1))
 
         assertEquals(first, second)
-        assertEquals(2, repo.plans().size, "one revision, not two")
+        assertEquals(2, repo.list().size, "one revision, not two")
     }
 
     @Test
     fun aStaleScheduledVersionIsNotReused() = runTest {
         seededPlan()
-        val stale = repo.editablePlan(monday, Slot(sunday, 1))
-        val staleActiveFrom = repo.plans().single { it.id == stale }.active_from_date
+        val stale = repo.forEditing(monday, Slot(sunday, 1))
+        val staleActiveFrom = repo.list().single { it.id == stale }.active_from_date
 
-        val fresh = repo.editablePlan(monday, Slot(LocalDate(2026, 7, 2), 0))
+        val fresh = repo.forEditing(monday, Slot(LocalDate(2026, 7, 2), 0))
 
         assertTrue(fresh != stale)
-        assertEquals(3, repo.plans().size)
-        assertEquals(staleActiveFrom, repo.plans().single { it.id == stale }.active_from_date)
+        assertEquals(3, repo.list().size)
+        assertEquals(staleActiveFrom, repo.list().single { it.id == stale }.active_from_date)
     }
 
     @Test
     fun planAtPicksTheVersionOwningTheDate() = runTest {
         val v1 = seededPlan()
-        val v2 = repo.editablePlan(monday, Slot(sunday, 1))
+        val v2 = repo.forEditing(monday, Slot(sunday, 1))
 
-        assertEquals(v1, repo.planAt(Slot(LocalDate(2026, 6, 24), 0))?.id)
-        assertEquals(v1, repo.planAt(Slot(sunday, 0))?.id, "Sunday breakfast is still v1")
-        assertEquals(v2, repo.planAt(Slot(sunday, 1))?.id, "Sunday lunch onwards is v2")
+        assertEquals(v1, repo.activeAt(Slot(LocalDate(2026, 6, 24), 0))?.id)
+        assertEquals(v1, repo.activeAt(Slot(sunday, 0))?.id, "Sunday breakfast is still v1")
+        assertEquals(v2, repo.activeAt(Slot(sunday, 1))?.id, "Sunday lunch onwards is v2")
     }
 
     @Test
     fun twoVersionsCannotStartAtTheSameSlot() = runTest {
-        repo.createPlan(Slot(monday, 0))
+        repo.create(Slot(monday, 0))
 
-        assertFails { repo.createPlan(Slot(monday, 0)) }
+        assertFails { repo.create(Slot(monday, 0)) }
     }
 
     @Test
     fun versionsMayStartAtDifferentPositionsOnTheSameDay() = runTest {
-        repo.createPlan(Slot(sunday, 0))
-        repo.createPlan(Slot(sunday, 1))
+        repo.create(Slot(sunday, 0))
+        repo.create(Slot(sunday, 1))
 
-        assertEquals(2, repo.plans().size, "Sunday splits between two versions")
+        assertEquals(2, repo.list().size, "Sunday splits between two versions")
     }
 
     @Test
     fun isEmptyReportsWhetherAPlanExists() = runTest {
         assertTrue(repo.isEmpty())
-        repo.createPlan(Slot(monday, 0))
+        repo.create(Slot(monday, 0))
         assertTrue(!repo.isEmpty())
     }
 }

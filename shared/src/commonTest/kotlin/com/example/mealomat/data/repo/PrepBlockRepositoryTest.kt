@@ -33,7 +33,7 @@ class PrepBlockRepositoryTest {
         repo = PrepBlockRepository(db, OutboxWriter(db, clock), FakeAuth("user-1"), clock)
     }
 
-    private suspend fun midweek() = repo.upsertBlock(
+    private suspend fun midweek() = repo.upsert(
         PrepBlockDraft(
             name = "Midweek",
             prepWeekday = DayOfWeek.WEDNESDAY,
@@ -43,7 +43,7 @@ class PrepBlockRepositoryTest {
         ),
     )
 
-    private suspend fun weekend() = repo.upsertBlock(
+    private suspend fun weekend() = repo.upsert(
         PrepBlockDraft(
             name = "Weekend",
             prepWeekday = DayOfWeek.SUNDAY,
@@ -58,7 +58,7 @@ class PrepBlockRepositoryTest {
         midweek()
         weekend()
 
-        val blocks = repo.blocks()
+        val blocks = repo.list()
         assertEquals(listOf("Midweek", "Weekend"), blocks.map { it.name })
         assertEquals(listOf(DayOfWeek.WEDNESDAY, DayOfWeek.SUNDAY), blocks.map { it.prep_weekday })
         assertEquals(listOf(DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY), blocks.map { it.shopping_weekday })
@@ -68,7 +68,7 @@ class PrepBlockRepositoryTest {
     fun blocksCarryTheirCoverageBoundary() = runTest {
         weekend()
 
-        val block = repo.blocks().single()
+        val block = repo.list().single()
         assertEquals(DayOfWeek.SUNDAY, block.covers_from_weekday)
         assertEquals(1L, block.covers_from_position)
     }
@@ -81,8 +81,8 @@ class PrepBlockRepositoryTest {
         repo.upsertOverride(PrepStepOverrideDraft(prepBlockId = block, targetKey = "component:sauce", position = 0))
         repo.upsertOverride(PrepStepOverrideDraft(prepBlockId = other, targetKey = "ingredient:oats", position = 0))
 
-        assertEquals(listOf("component:sauce", "ingredient:rice"), repo.overrides(block).map { it.target_key })
-        assertEquals(listOf("ingredient:oats"), repo.overrides(other).map { it.target_key })
+        assertEquals(listOf("component:sauce", "ingredient:rice"), repo.overridesOf(block).map { it.target_key })
+        assertEquals(listOf("ingredient:oats"), repo.overridesOf(other).map { it.target_key })
     }
 
     @Test

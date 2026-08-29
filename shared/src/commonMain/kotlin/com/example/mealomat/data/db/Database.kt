@@ -15,6 +15,16 @@ val prepModeAdapter = object : ColumnAdapter<PrepMode, String> {
     override fun encode(value: PrepMode) = value.name
 }
 
+val ledgerReasonAdapter = object : ColumnAdapter<LedgerReason, String> {
+    override fun decode(databaseValue: String) = LedgerReason.valueOf(databaseValue)
+    override fun encode(value: LedgerReason) = value.name
+}
+
+val ledgerSourceAdapter = object : ColumnAdapter<LedgerSource, String> {
+    override fun decode(databaseValue: String) = LedgerSource.valueOf(databaseValue)
+    override fun encode(value: LedgerSource) = value.name
+}
+
 // the ISO day number (1 = monday, ... 7 = sunday)
 val dayOfWeekAdapter = object : ColumnAdapter<DayOfWeek, Long> {
     override fun decode(databaseValue: Long) = DayOfWeek(databaseValue.toInt())
@@ -27,6 +37,10 @@ fun mealomatDatabase(driver: SqlDriver) = MealomatDatabase(
     plan_mealAdapter = Plan_meal.Adapter(weekdayAdapter = dayOfWeekAdapter),
     plan_componentAdapter = Plan_component.Adapter(prep_modeAdapter = prepModeAdapter),
     plan_itemAdapter = Plan_item.Adapter(prep_modeAdapter = prepModeAdapter),
+    pantry_ledgerAdapter = Pantry_ledger.Adapter(
+        reasonAdapter = ledgerReasonAdapter,
+        source_kindAdapter = ledgerSourceAdapter,
+    ),
     prep_blockAdapter = Prep_block.Adapter(
         prep_weekdayAdapter = dayOfWeekAdapter,
         shopping_weekdayAdapter = dayOfWeekAdapter,

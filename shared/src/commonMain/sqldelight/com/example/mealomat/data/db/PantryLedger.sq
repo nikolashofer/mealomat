@@ -1,0 +1,25 @@
+import com.example.mealomat.data.db.LedgerReason;
+import com.example.mealomat.data.db.LedgerSource;
+
+CREATE TABLE pantry_ledger (
+  id            TEXT    NOT NULL PRIMARY KEY,
+  user_id       TEXT    NOT NULL,
+  ingredient_id TEXT    NOT NULL,
+  updated_at    INTEGER NOT NULL,
+  occurred_at   INTEGER NOT NULL,   -- when the movement happened, not when the row was written
+  delta         REAL    NOT NULL,   -- signed, in the ingredient's basis unit
+  reason        TEXT AS LedgerReason NOT NULL,
+  source_kind   TEXT AS LedgerSource NOT NULL,   -- what caused it; MANUAL for the pantry's own actions
+  source_id     TEXT,               -- the causing row, NULL when source_kind is MANUAL
+  note          TEXT
+);
+
+CREATE INDEX pantry_ledger_user_id ON pantry_ledger(user_id);
+CREATE INDEX pantry_ledger_ingredient ON pantry_ledger(ingredient_id, occurred_at);
+
+insert:
+INSERT INTO pantry_ledger VALUES ?;
+
+-- Newest first. id orders movements within one millisecond, since ids are UUIDv7.
+listForIngredient:
+SELECT * FROM pantry_ledger WHERE ingredient_id = ? ORDER BY occurred_at DESC, id DESC;

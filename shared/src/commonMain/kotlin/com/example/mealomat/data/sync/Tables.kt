@@ -10,4 +10,7 @@ object Tables {
     const val PREP_BLOCK = "prep_block"
     const val PREP_STEP_OVERRIDE = "prep_step_override"
     const val DAY_ITEM = "day_item"
+    const val PANTRY_LEDGER = "pantry_ledger"
+
+    // pantry_stock is absent on purpose: it is a local derived cache of pantry_ledger and never syncs.
 }

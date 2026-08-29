@@ -9,9 +9,9 @@ import com.example.mealomat.data.sync.OutboxOp
 import com.example.mealomat.data.sync.OutboxWriter
 import com.example.mealomat.data.sync.Tables
 import com.example.mealomat.data.sync.payloadOf
+import kotlin.time.Clock
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
-import kotlin.time.Clock
 import kotlinx.serialization.json.JsonPrimitive
 
 data class PrepBlockDraft(
@@ -39,12 +39,12 @@ class PrepBlockRepository(
     private val blockQueries = db.prepBlockQueries
     private val overrideQueries = db.prepStepOverrideQueries
 
-    fun blocks(): List<Prep_block> = blockQueries.list().executeAsList()
+    fun list(): List<Prep_block> = blockQueries.list().executeAsList()
 
-    fun overrides(prepBlockId: String): List<Prep_step_override> =
+    fun overridesOf(prepBlockId: String): List<Prep_step_override> =
         overrideQueries.listForBlock(prepBlockId).executeAsList()
 
-    suspend fun upsertBlock(draft: PrepBlockDraft): String {
+    suspend fun upsert(draft: PrepBlockDraft): String {
         val row = draft.toRow(newId(draft.id), auth.requireUserId(), clock.nowMillis())
         db.writeWithOutbox(outbox, Tables.PREP_BLOCK, row.id, OutboxOp.UPSERT) {
             blockQueries.upsert(row)
@@ -61,7 +61,6 @@ class PrepBlockRepository(
         }
         return row.id
     }
-
 }
 
 private fun PrepBlockDraft.toRow(id: String, userId: String, now: Long) = Prep_block(

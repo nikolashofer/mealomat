@@ -58,20 +58,20 @@ class PlanRepository(
     private val componentQueries = db.planComponentQueries
     private val itemQueries = db.planItemQueries
 
-    fun plans(): List<Plan> = planQueries.list().executeAsList()
+    fun list(): List<Plan> = planQueries.list().executeAsList()
 
-    fun planAt(slot: Slot): Plan? = planFor(slot, plans())
+    fun activeAt(slot: Slot): Plan? = planFor(slot, list())
 
-    fun meals(planId: String): List<Plan_meal> = mealQueries.listForPlan(planId).executeAsList()
+    fun mealsOf(planId: String): List<Plan_meal> = mealQueries.listForPlan(planId).executeAsList()
 
-    fun components(planId: String): List<Plan_component> =
+    fun componentsOf(planId: String): List<Plan_component> =
         componentQueries.listForPlan(planId).executeAsList()
 
-    fun items(planId: String): List<Plan_item> = itemQueries.listForPlan(planId).executeAsList()
+    fun itemsOf(planId: String): List<Plan_item> = itemQueries.listForPlan(planId).executeAsList()
 
-    fun isEmpty(): Boolean = plans().isEmpty()
+    fun isEmpty(): Boolean = list().isEmpty()
 
-    suspend fun createPlan(activeFrom: Slot): String {
+    suspend fun create(activeFrom: Slot): String {
         val row = Plan(
             id = newId(null), user_id = auth.requireUserId(),
             updated_at = clock.nowMillis(), deleted_at = null,
@@ -85,12 +85,12 @@ class PlanRepository(
         return row.id
     }
 
-    suspend fun editablePlan(now: LocalDate, earliest: Slot): String {
-        val scheduled = plans().lastOrNull { it.activeFrom() > Slot(now, Int.MAX_VALUE) }
+    suspend fun forEditing(now: LocalDate, earliest: Slot): String {
+        val scheduled = list().lastOrNull { it.activeFrom().date > now }
         if (scheduled != null && scheduled.activeFrom() >= earliest) return scheduled.id
 
-        val source = planFor(Slot(now, 0), plans())
-        val copy = createPlan(earliest)
+        val source = activeAt(Slot(now, 0))
+        val copy = create(earliest)
         if (source != null) copyInto(copy, source.id)
         return copy
     }
@@ -141,7 +141,7 @@ class PlanRepository(
         val mealIds = mutableMapOf<String, String>()
         val componentIds = mutableMapOf<String, String>()
 
-        meals(sourceId).forEach { source ->
+        mealsOf(sourceId).forEach { source ->
             val row = source.copy(id = newId(null), plan_id = planId, user_id = userId, updated_at = now)
             mealIds[source.id] = row.id
             db.writeWithOutbox(outbox, Tables.PLAN_MEAL, row.id, OutboxOp.UPSERT) {
@@ -149,7 +149,7 @@ class PlanRepository(
                 row.toPayload()
             }
         }
-        components(sourceId).forEach { source ->
+        componentsOf(sourceId).forEach { source ->
             val row = source.copy(
                 id = newId(null), plan_id = planId, user_id = userId, updated_at = now,
                 plan_meal_id = mealIds.getValue(source.plan_meal_id),
@@ -160,7 +160,7 @@ class PlanRepository(
                 row.toPayload()
             }
         }
-        items(sourceId).forEach { source ->
+        itemsOf(sourceId).forEach { source ->
             val row = source.copy(
                 id = newId(null), plan_id = planId, user_id = userId, updated_at = now,
                 plan_meal_id = mealIds.getValue(source.plan_meal_id),
