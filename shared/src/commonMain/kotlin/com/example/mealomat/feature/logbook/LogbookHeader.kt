@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -23,6 +24,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.example.mealomat.domain.DayTotals
 import com.example.mealomat.domain.grams
+import com.example.mealomat.ui.components.Button
+import com.example.mealomat.ui.components.ButtonSize
 import com.example.mealomat.ui.components.Mascot
 import com.example.mealomat.ui.components.MascotImage
 import com.example.mealomat.ui.components.edge
@@ -30,14 +33,17 @@ import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.MonthNames
-import kotlinx.datetime.format
 import kotlinx.datetime.format.DayOfWeekNames
 import kotlinx.datetime.format.char
-import kotlinx.datetime.isoDayNumber
 import kotlin.math.roundToInt
 
 @Composable
-fun LogbookHeader(date: LocalDate, totals: DayTotals, modifier: Modifier = Modifier) {
+fun LogbookHeader(
+    date: LocalDate,
+    totals: DayTotals,
+    sessions: List<SessionTile>,
+    modifier: Modifier = Modifier,
+) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
     val shape = MealomatTheme.shapes.header
@@ -99,6 +105,18 @@ fun LogbookHeader(date: LocalDate, totals: DayTotals, modifier: Modifier = Modif
 
         MacroBar(totals)
         Legend(totals)
+
+        if (sessions.isNotEmpty()) {
+            Column(
+                modifier = Modifier.padding(top = Space.S4),
+                verticalArrangement = Arrangement.spacedBy(Space.S14),
+            ) {
+                Spacer(Modifier.fillMaxWidth().height(1.dp).background(colors.border.subtle))
+                Row(horizontalArrangement = Arrangement.spacedBy(Space.S8)) {
+                    sessions.forEach { SessionButton(it, Modifier.weight(1f)) }
+                }
+            }
+        }
     }
 }
 
@@ -182,3 +200,34 @@ private val HEADER_DATE = LocalDate.Format {
 // space between thousands
 private fun Int.grouped(): String =
     toString().reversed().chunked(3).joinToString(" ").reversed()
+
+@Composable
+private fun SessionButton(session: SessionTile, modifier: Modifier = Modifier) {
+    val colors = MealomatTheme.colors
+    val typography = MealomatTheme.typography
+    val tone = when (session.kind) {
+        SessionKind.Shopping -> colors.tone.shopping
+        SessionKind.Prep -> colors.tone.prep
+    }
+
+    Button(onClick = {}, tone = tone, modifier = modifier, size = ButtonSize.Md) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Space.S2)) {
+            BasicText(
+                text = when (session.kind) {
+                    SessionKind.Shopping -> "Shopping trip"
+                    SessionKind.Prep -> "Prep session"
+                },
+                style = typography.label.lg.copy(color = tone.onFill),
+            )
+            BasicText(
+                text = when (session.kind) {
+                    SessionKind.Shopping -> "${session.done} of ${session.total} items bought"
+                    SessionKind.Prep -> "${session.done} of ${session.total} steps done"
+                },
+                style = typography.field.label.copy(color = tone.tint),
+            )
+        }
+        // TODO: make icon
+        BasicText("›", style = typography.display.sm.copy(color = tone.onFill))
+    }
+}

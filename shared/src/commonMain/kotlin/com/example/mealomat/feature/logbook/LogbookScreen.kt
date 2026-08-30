@@ -29,6 +29,7 @@ fun LogbookScreen(
 ) {
     val totals by viewModel.totals.collectAsStateWithLifecycle()
     val meals by viewModel.meals.collectAsStateWithLifecycle()
+    val sessions by viewModel.sessions.collectAsStateWithLifecycle()
     val colors = MealomatTheme.colors
 
     LaunchedEffect(date) { viewModel.show(date) }
@@ -37,7 +38,7 @@ fun LogbookScreen(
         modifier = Modifier.background(colors.surface.canvas).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        totals?.let { LogbookHeader(date, it, modifier = Modifier.zIndex(1f)) }
+        totals?.let { LogbookHeader(date, it, sessions, modifier = Modifier.zIndex(1f)) }
 
         // TODO: proper empty state...
         Column(

@@ -1,0 +1,28 @@
+package com.example.mealomat.feature.logbook
+
+import com.example.mealomat.data.db.Shopping_step
+import com.example.mealomat.domain.Need
+import com.example.mealomat.domain.PrepStep
+
+enum class SessionKind { Shopping, Prep }
+
+data class SessionTile(
+    val kind: SessionKind,
+    val blockId: String,
+    val done: Int,
+    val total: Int,
+)
+
+fun shoppingTile(blockId: String, needs: List<Need>, steps: List<Shopping_step>) = SessionTile(
+    kind = SessionKind.Shopping,
+    blockId = blockId,
+    done = steps.size,
+    total = steps.size + needs.count { it.buy > 0.0 },
+)
+
+fun prepTile(blockId: String, steps: List<PrepStep>) = SessionTile(
+    kind = SessionKind.Prep,
+    blockId = blockId,
+    done = steps.count { it.doneAt != null },
+    total = steps.size,
+)

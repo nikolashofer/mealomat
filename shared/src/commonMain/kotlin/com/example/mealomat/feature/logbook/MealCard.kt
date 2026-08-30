@@ -95,7 +95,8 @@ private fun ItemLine(item: ItemRow, onTick: (String) -> Unit) {
     }
 }
 
-// TODO: make component out of this
+// TODO: make component out of this and make it fun to tick off, similar to button
+// TODO: use icon
 @Composable
 private fun CheckBox(ticked: Boolean) {
     val colors = MealomatTheme.colors
