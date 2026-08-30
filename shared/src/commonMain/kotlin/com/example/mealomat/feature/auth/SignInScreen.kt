@@ -49,7 +49,7 @@ fun SignInScreen(viewModel: SignInViewModel = koinViewModel()) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MascotImage(Mascot.Happy, contentDescription = null, modifier = Modifier.size(MealomatTheme.sizes.mascot.hero))
-            BasicText("Mealomat", style = typography.display.copy(color = colors.tone.brand.onFill))
+            BasicText("Mealomat", style = typography.display.lg.copy(color = colors.tone.brand.onFill))
             Spacer(Modifier.height(Space.S4))
             BasicText(
                 text = TAGLINE,

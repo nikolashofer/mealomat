@@ -8,6 +8,8 @@ import androidx.compose.ui.unit.dp
 data class MealomatSizes(
     val mascot: MascotSizes = MascotSizes(),
     val nav: NavSizes = NavSizes(),
+    val check: Dp = 26.dp,
+    val badge: Dp = 20.dp,
 )
 
 @Immutable

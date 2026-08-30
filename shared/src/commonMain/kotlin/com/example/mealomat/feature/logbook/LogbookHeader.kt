@@ -49,12 +49,13 @@ fun LogbookHeader(date: LocalDate, totals: DayTotals, modifier: Modifier = Modif
             .clip(shape)
             .background(colors.surface.raised)
             .statusBarsPadding()
-            .padding(top = Space.S20, bottom = Space.S20)
+            .padding(bottom = Space.S20)
+            // .padding(top = Space.S20, bottom = Space.S20)
             .padding(horizontal = Space.S20),
         verticalArrangement = Arrangement.spacedBy(Space.S12),
     ) {
         // TODO: pretty redundant
-        Row(
+        /*Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -71,8 +72,9 @@ fun LogbookHeader(date: LocalDate, totals: DayTotals, modifier: Modifier = Modif
                     .padding(horizontal = Space.S10, vertical = Space.S4),
                 style = typography.field.label.copy(color = colors.text.secondary),
             )
-        }
+        }*/
 
+        // TODO: fix alignment of numbers with mascot
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(Space.S10),

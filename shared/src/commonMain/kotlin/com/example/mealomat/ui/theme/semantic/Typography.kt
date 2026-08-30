@@ -12,11 +12,24 @@ import com.example.mealomat.ui.theme.primitives.nunito
 // INCOMPLETE. Only the kinds the built screens actually use live here; headings, body, etc...
 @Immutable
 data class MealomatTypography(
-    val display: TextStyle,
+    val display: DisplayStyles,
+    val item: ItemStyles,
     val body: BodyStyles,
     val label: LabelStyles,
     val number: NumberStyles,
     val field: FieldStyles,
+)
+
+@Immutable
+data class DisplayStyles(
+    val sm: TextStyle,
+    val lg: TextStyle,
+)
+
+@Immutable
+data class ItemStyles(
+    val name: TextStyle,
+    val amount: TextStyle,
 )
 
 @Immutable
@@ -72,10 +85,13 @@ fun mealomatTypography(family: FontFamily = nunito()) = MealomatTypography(
         ),
         unit = TextStyle(fontFamily = family, fontWeight = FontWeight.Black, fontSize = 15.sp),
     ),
-    display = TextStyle(
-        fontFamily = family,
-        fontWeight = FontWeight.Black,
-        fontSize = 40.sp,
+    display = DisplayStyles(
+        sm = TextStyle(fontFamily = family, fontWeight = FontWeight.Black, fontSize = 18.sp),
+        lg = TextStyle(fontFamily = family, fontWeight = FontWeight.Black, fontSize = 40.sp),
+    ),
+    item = ItemStyles(
+        name = TextStyle(fontFamily = family, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp),
+        amount = TextStyle(fontFamily = family, fontWeight = FontWeight.Bold, fontSize = 15.sp),
     ),
     body = BodyStyles(
         md = TextStyle(fontFamily = family, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp),

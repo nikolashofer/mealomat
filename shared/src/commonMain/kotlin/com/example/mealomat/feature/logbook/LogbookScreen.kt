@@ -1,6 +1,8 @@
 package com.example.mealomat.feature.logbook
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space
@@ -25,6 +28,7 @@ fun LogbookScreen(
     viewModel: LogbookViewModel = koinViewModel(),
 ) {
     val totals by viewModel.totals.collectAsStateWithLifecycle()
+    val meals by viewModel.meals.collectAsStateWithLifecycle()
     val colors = MealomatTheme.colors
 
     LaunchedEffect(date) { viewModel.show(date) }
@@ -33,13 +37,20 @@ fun LogbookScreen(
         modifier = Modifier.background(colors.surface.canvas).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        totals?.let { LogbookHeader(date, it) }
+        totals?.let { LogbookHeader(date, it, modifier = Modifier.zIndex(1f)) }
 
         // TODO: proper empty state...
         Column(
-            modifier = Modifier.weight(1f).padding(contentPadding).padding(Space.S20),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(contentPadding)
+                .padding(horizontal = Space.S20, vertical = Space.S16),
+            verticalArrangement = Arrangement.spacedBy(Space.S14),
         ) {
+            meals.forEach { meal ->
+                MealCard(meal, onTick = { viewModel.tick(date, it) })
+            }
             if (totals == null) {
                 BasicText(
                     text = "No plan for $date",
