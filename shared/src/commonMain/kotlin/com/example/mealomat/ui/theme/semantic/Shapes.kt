@@ -12,6 +12,7 @@ data class MealomatShapes(
     // split up later into sm/md/lg, etc...
     val field: CornerBasedShape = RoundedCornerShape(Radius.Xl2),
     val nav: CornerBasedShape = RoundedCornerShape(Radius.Xl5),
+    val header: CornerBasedShape = RoundedCornerShape(bottomStart = Radius.Xl5, bottomEnd = Radius.Xl5),
     val pill: CornerBasedShape = RoundedCornerShape(percent = 50),
     val sheet: CornerBasedShape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
 )

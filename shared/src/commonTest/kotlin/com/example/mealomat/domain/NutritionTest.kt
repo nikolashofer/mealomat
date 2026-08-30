@@ -2,6 +2,8 @@ package com.example.mealomat.domain
 
 import com.example.mealomat.data.db.Basis
 import com.example.mealomat.data.db.Ingredient
+import com.example.mealomat.data.db.PrepMode
+import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -65,5 +67,64 @@ class NutritionTest {
         )
 
         assertEquals(350.0, total.kcal)
+    }
+
+    private val oats = ingredient("oats", Basis.G100, kcal = 370.0)
+
+    private val thursday = LocalDate(2026, 6, 25)
+
+    private fun line(
+        ingredientId: String,
+        amount: Double,
+        ticked: Long? = null,
+        prepped: Long? = null,
+        excluded: Boolean = false,
+    ) = DayItemView(
+        planItemId = "$ingredientId-$amount",
+        ingredientId = ingredientId,
+        amount = amount,
+        position = 0,
+        prepMode = PrepMode.FRESH,
+        excluded = excluded,
+        preppedAt = prepped,
+        tickedAt = ticked,
+    )
+
+    private fun dayOf(vararg items: DayItemView) =
+        Day(thursday, listOf(DayMealView("meal", "Lunch", 0, emptyList(), items.toList())))
+
+    @Test
+    fun eatenCountsTickedLinesAndPlannedCountsAll() {
+        val totals = totalsOf(
+            dayOf(line("oats", 100.0, ticked = 1), line("oats", 100.0)),
+            mapOf("oats" to oats),
+        )
+
+        assertEquals(740.0, totals.planned.kcal)
+        assertEquals(370.0, totals.eaten.kcal, "only what was ticked off")
+    }
+
+    @Test
+    fun preppedIsReadyRatherThanEaten() {
+        val totals = totalsOf(dayOf(line("oats", 100.0, prepped = 1)), mapOf("oats" to oats))
+
+        assertEquals(370.0, totals.planned.kcal)
+        assertEquals(0.0, totals.eaten.kcal, "prepped food has left the pantry, not been eaten")
+    }
+
+    @Test
+    fun anExcludedLineIsNeitherPlannedNorEaten() {
+        val totals = totalsOf(
+            dayOf(line("oats", 100.0, ticked = 1, excluded = true)),
+            mapOf("oats" to oats),
+        )
+
+        assertEquals(0.0, totals.planned.kcal)
+        assertEquals(0.0, totals.eaten.kcal)
+    }
+
+    @Test
+    fun gramsIsTheThreeMacrosTogether() {
+        assertEquals(35.0, Macros(kcal = 500.0, proteinG = 10.0, carbsG = 20.0, fatG = 5.0).grams)
     }
 }

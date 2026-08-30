@@ -17,6 +17,10 @@ data class Macros(
     )
 }
 
+val Macros.grams: Double get() = proteinG + carbsG + fatG
+
+data class DayTotals(val eaten: Macros, val planned: Macros)
+
 data class IngredientUse(
     val ingredientId: String,
     val amount: Double,
@@ -44,3 +48,8 @@ fun totalOf(uses: List<IngredientUse>, ingredients: Map<String, Ingredient>): Ma
             val ingredient = ingredients[use.ingredientId] ?: return@fold total
             total + macrosOf(ingredient, use.amount)
         }
+
+fun totalsOf(day: Day, ingredients: Map<String, Ingredient>): DayTotals = DayTotals(
+    eaten = totalOf(day.ingredientUses { it.tickedAt != null }, ingredients),
+    planned = totalOf(day.ingredientUses(), ingredients),
+)

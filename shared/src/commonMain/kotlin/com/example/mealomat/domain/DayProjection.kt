@@ -41,8 +41,9 @@ data class DayMealView(
 
 data class Day(val date: LocalDate, val meals: List<DayMealView>)
 
-fun Day.ingredientUses(): List<IngredientUse> = meals
+fun Day.ingredientUses(of: (DayItemView) -> Boolean = { true }): List<IngredientUse> = meals
     .flatMap { it.items }
+    .filter(of)
     .map { IngredientUse(it.ingredientId, it.amount, it.excluded) }
 
 // TODO: not tested for now it is pretty trivial, maybe add tests later

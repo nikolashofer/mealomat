@@ -12,6 +12,7 @@ data class MealomatColors(
     val edge: EdgeColors,
     val tone: ToneScheme,
     val status: StatusScheme,
+    val macro: MacroColors,
 )
 
 @Immutable
@@ -81,6 +82,14 @@ data class StatusScheme(
     val success: StatusColors,
     val warning: StatusColors,
     val danger: StatusColors,
+)
+
+// TODO: have completely separate colors for macros, isntead of using area ones
+@Immutable
+data class MacroColors(
+    val protein: Color,
+    val carbs: Color,
+    val fat: Color,
 )
 
 fun lightColors(): MealomatColors = MealomatColors(
@@ -186,5 +195,10 @@ fun lightColors(): MealomatColors = MealomatColors(
             text = Palette.Red700,
             edge = Palette.Red700,
         ),
+    ),
+    macro = MacroColors(
+        protein = Palette.Teal500,
+        carbs = Palette.Amber500,
+        fat = Palette.Purple500,
     ),
 )

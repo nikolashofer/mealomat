@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,24 +24,28 @@ fun LogbookScreen(
     contentPadding: PaddingValues,
     viewModel: LogbookViewModel = koinViewModel(),
 ) {
-    val day by viewModel.day.collectAsStateWithLifecycle()
+    val totals by viewModel.totals.collectAsStateWithLifecycle()
     val colors = MealomatTheme.colors
 
     LaunchedEffect(date) { viewModel.show(date) }
 
     Column(
-        modifier = Modifier
-            .background(colors.surface.canvas)
-            .fillMaxSize()
-            .safeContentPadding()
-            .padding(contentPadding)
-            .padding(horizontal = Space.S20),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.background(colors.surface.canvas).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BasicText(
-            text = day?.date?.toString() ?: "No plan for $date",
-            style = MealomatTheme.typography.label.lg.copy(color = colors.text.primary),
-        )
+        totals?.let { LogbookHeader(date, it) }
+
+        // TODO: proper empty state...
+        Column(
+            modifier = Modifier.weight(1f).padding(contentPadding).padding(Space.S20),
+            verticalArrangement = Arrangement.Center,
+        ) {
+            if (totals == null) {
+                BasicText(
+                    text = "No plan for $date",
+                    style = MealomatTheme.typography.label.lg.copy(color = colors.text.tertiary),
+                )
+            }
+        }
     }
 }

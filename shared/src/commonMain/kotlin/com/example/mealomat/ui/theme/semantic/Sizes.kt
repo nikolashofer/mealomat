@@ -20,4 +20,5 @@ data class NavSizes(
 @Immutable
 data class MascotSizes(
     val hero: Dp = 160.dp,
+    val header: Dp = 48.dp,
 )

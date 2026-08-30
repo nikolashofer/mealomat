@@ -40,6 +40,6 @@ val appModule = module {
     single { ShoppingRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PrepRepository(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { SignInViewModel(get()) }
-    viewModel { LogbookViewModel(get()) }
+    viewModel { LogbookViewModel(get(), get()) }
     viewModel { NavBarViewModel(get(), get()) }
 }

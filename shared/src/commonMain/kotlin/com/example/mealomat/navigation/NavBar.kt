@@ -76,6 +76,8 @@ fun NavBar(
 }
 
 // TODO: not exactly same height as md button -> fix
+// TODO: maybe render items always square with a hint that it can be scrolled, active one is always centered,
+//  and display week somehow if user moves of current week, so basically infinite scroll list with projected days
 @Composable
 private fun DayNavButton(day: DayNav, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = MealomatTheme.colors
