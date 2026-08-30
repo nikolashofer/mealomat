@@ -16,7 +16,8 @@ import com.example.mealomat.data.repo.PrepBlockRepository
 import com.example.mealomat.data.repo.PrepRepository
 import com.example.mealomat.data.repo.ShoppingRepository
 import com.example.mealomat.feature.auth.SignInViewModel
-import com.example.mealomat.feature.home.HomeViewModel
+import com.example.mealomat.feature.logbook.LogbookViewModel
+import com.example.mealomat.navigation.NavBarViewModel
 import com.example.mealomat.data.sync.OutboxWriter
 import app.cash.sqldelight.db.SqlDriver
 import org.koin.core.module.dsl.viewModel
@@ -39,5 +40,6 @@ val appModule = module {
     single { ShoppingRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PrepRepository(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { SignInViewModel(get()) }
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { LogbookViewModel(get()) }
+    viewModel { NavBarViewModel(get(), get()) }
 }

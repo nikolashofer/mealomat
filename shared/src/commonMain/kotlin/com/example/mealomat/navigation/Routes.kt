@@ -1,0 +1,11 @@
+package com.example.mealomat.navigation
+
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Logbook(val date: String)
+
+// whitelist, so a new route is without the nav bar until added here.
+fun NavDestination?.showsNavBar() = this?.hasRoute<Logbook>() == true

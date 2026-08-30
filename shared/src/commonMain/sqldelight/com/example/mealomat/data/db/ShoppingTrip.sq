@@ -1,6 +1,6 @@
 import com.example.mealomat.data.db.SessionStatus;
 
-// TODO: maybe rename to shooping_session for parity
+-- TODO: maybe rename to shopping_session for parity
 CREATE TABLE shopping_trip (
   id                   TEXT    NOT NULL PRIMARY KEY,
   user_id              TEXT    NOT NULL,

@@ -7,6 +7,14 @@ import androidx.compose.ui.unit.dp
 @Immutable
 data class MealomatSizes(
     val mascot: MascotSizes = MascotSizes(),
+    val nav: NavSizes = NavSizes(),
+)
+
+@Immutable
+data class NavSizes(
+    val dot: Dp = 6.dp,
+    val selectedDotWidth: Dp = 16.dp,
+    val divider: Dp = 32.dp,
 )
 
 @Immutable
