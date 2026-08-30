@@ -1,5 +1,7 @@
 package com.example.mealomat.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +37,13 @@ fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
     val density = LocalDensity.current
 
     Box(modifier = Modifier.fillMaxSize()) {
-        NavHost(navController = navController, startDestination = Logbook(navBar.today.toString())) {
+        // TODO: do transitions properly
+        NavHost(
+            navController = navController,
+            startDestination = Logbook(navBar.today.toString()),
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+        ) {
             composable<Logbook> { backStackEntry ->
                 LogbookScreen(
                     date = LocalDate.parse(backStackEntry.toRoute<Logbook>().date),
@@ -48,7 +56,11 @@ fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
             NavBar(
                 days = navBar.week,
                 selected = selected?.let(LocalDate::parse) ?: navBar.today,
-                onSelect = { navController.navigate(Logbook(it.toString())) { launchSingleTop = true } },
+                onSelect = {
+                    navController.navigate(Logbook(it.toString())) {
+                        popUpTo<Logbook> { inclusive = true }
+                    }
+                },
                 onPlan = navBar::signOut,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
