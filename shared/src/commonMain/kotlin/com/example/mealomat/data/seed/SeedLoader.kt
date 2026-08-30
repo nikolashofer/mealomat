@@ -3,6 +3,7 @@ package com.example.mealomat.data.seed
 import com.example.mealomat.data.repo.IngredientRepository
 import com.example.mealomat.data.repo.PlanRepository
 import com.example.mealomat.domain.Slot
+import com.example.mealomat.domain.weekStart
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -22,7 +23,7 @@ class SeedOnFirstRun(
     override suspend fun run() {
         if (!isEmpty()) return
         val today = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        importer.import(load(), Slot(today, 0))
+        importer.import(load(), Slot(weekStart(today), 0))
     }
 
     private fun isEmpty() = ingredients.isEmpty() && plan.isEmpty()

@@ -36,6 +36,7 @@ fun NavBar(
     days: List<DayNav>,
     selected: LocalDate,
     onSelect: (LocalDate) -> Unit,
+    onPlan: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = MealomatTheme.colors
@@ -70,7 +71,7 @@ fun NavBar(
                     .height(MealomatTheme.sizes.nav.divider)
                     .background(colors.border.subtle),
             )
-            Button("Plan", onClick = {}, tone = colors.tone.neutral, size = ButtonSize.Md)
+            Button("Plan", onClick = onPlan, tone = colors.tone.neutral, size = ButtonSize.Md)
         }
     }
 }

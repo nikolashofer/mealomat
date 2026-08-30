@@ -49,6 +49,7 @@ fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
                 days = navBar.week,
                 selected = selected?.let(LocalDate::parse) ?: navBar.today,
                 onSelect = { navController.navigate(Logbook(it.toString())) { launchSingleTop = true } },
+                onPlan = navBar::signOut,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .onSizeChanged { barHeight = with(density) { it.height.toDp() } }
