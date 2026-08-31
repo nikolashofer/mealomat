@@ -9,7 +9,7 @@ import com.example.mealomat.data.db.SessionStatus
 import com.example.mealomat.data.db.mealomatDatabase
 import com.example.mealomat.data.sync.OutboxWriter
 import com.example.mealomat.domain.Slot
-import com.example.mealomat.domain.earliestActivation
+import com.example.mealomat.domain.earliestPlanActivation
 import com.example.mealomat.testing.FakeAuth
 import com.example.mealomat.testing.FixedClock
 import com.example.mealomat.testing.testDriver
@@ -97,11 +97,14 @@ class ShoppingRepositoryTest {
     }
 
     @Test
-    fun theNeedRoundsUpToWholePacks() = runTest {
+    fun aPackSizeIsCarriedAsAHintWithoutRoundingTheAmount() = runTest {
         val midweek = blocks()
         planWithFridayRice(amount = 340.0, packSize = 500.0)
 
-        assertEquals(500.0, shopping.needsFor(midweek, thursday).single().buy)
+        val need = shopping.needsFor(midweek, thursday).single()
+
+        assertEquals(340.0, need.buy, "the exact shortfall, not a whole pack")
+        assertEquals(500.0, need.packSize)
     }
 
     @Test
@@ -277,7 +280,7 @@ class ShoppingRepositoryTest {
         planWithFridayRice()
         shopping.forBlock(midweek, thursday)
 
-        val activation = earliestActivation(thursday, prepBlocks.list(), shopping.committedWindows(thursday))
+        val activation = earliestPlanActivation(thursday, prepBlocks.list(), shopping.committedWindows(thursday))
 
         assertEquals(Slot(sunday, 1), activation, "the Midweek window is shopped for; edits start at Weekend")
     }

@@ -1,42 +1,36 @@
 package com.example.mealomat.domain
 
-import kotlin.math.ceil
-
-data class Need(
+data class IngredientNeed(
     val ingredientId: String,
     val need: Double,
     val have: Double,
     val buy: Double,
+    val packSize: Double? = null,
 )
 
-// the planned amounts inside a window. Meals are filtered by slot, since the end days are partial.
+// Collects the planned amounts inside a window.
 fun usesIn(window: Window, days: List<Day>): List<IngredientUse> = days.flatMap { day ->
     day.meals
         .filter { Slot(day.date, it.position) in window }
-        .flatMap { meal -> meal.items.map { IngredientUse(it.ingredientId, it.amount, it.excluded) } }
+        .flatMap { meal -> meal.items.map { it.use() } }
 }
 
-// Uses summed per ingredient against what the pantry holds. Excluded
-// uses contribute nothing, since a planned eat-out is not bought.
+// Sums uses per ingredient against pantry stock, dropping excluded ones.
 fun needsFrom(
     uses: List<IngredientUse>,
     have: (String) -> Double,
     packSize: (String) -> Double?,
-): List<Need> = uses
+): List<IngredientNeed> = uses
     .filterNot { it.excluded }
     .groupBy { it.ingredientId }
     .map { (ingredientId, forIngredient) ->
         val need = forIngredient.sumOf { it.amount }
         val stock = have(ingredientId)
-        Need(
+        IngredientNeed(
             ingredientId = ingredientId,
             need = need,
             have = stock,
-            buy = packRound(maxOf(0.0, need - stock), packSize(ingredientId)),
+            buy = maxOf(0.0, need - stock),
+            packSize = packSize(ingredientId),
         )
     }
-
-// Round up to whole packs, so the wizard asks for something a shop actually sells.
-fun packRound(amount: Double, packSize: Double?): Double =
-    if (packSize == null || packSize <= 0.0 || amount <= 0.0) amount
-    else ceil(amount / packSize) * packSize

@@ -17,17 +17,12 @@ data class Macros(
     )
 }
 
+// TODO: think about that, if progress bar calculation should be done like that
 val Macros.grams: Double get() = proteinG + carbsG + fatG
 
 data class DayTotals(val eaten: Macros, val planned: Macros)
 
-data class IngredientUse(
-    val ingredientId: String,
-    val amount: Double,
-    val excluded: Boolean = false,
-)
-
-// amount * macros-per-basis. G100/ML100 are per 100, UNIT is per one.
+// Scales an ingredients macros by amount.
 fun macrosOf(ingredient: Ingredient, amount: Double): Macros {
     val factor = when (ingredient.basis) {
         Basis.G100, Basis.ML100 -> amount / 100.0
@@ -41,7 +36,7 @@ fun macrosOf(ingredient: Ingredient, amount: Double): Macros {
     )
 }
 
-// one total from a set of uses: a component, a meal, a day. excluded uses contribute nothing.
+// Sums a set of uses (i.e. a component, a meal, a day).
 fun totalOf(uses: List<IngredientUse>, ingredients: Map<String, Ingredient>): Macros =
     uses.filterNot { it.excluded }
         .fold(Macros()) { total, use ->
@@ -49,6 +44,7 @@ fun totalOf(uses: List<IngredientUse>, ingredients: Map<String, Ingredient>): Ma
             total + macrosOf(ingredient, use.amount)
         }
 
+// Totals a day: `eaten` counts only ticked lines, `planned` every one.
 fun totalsOf(day: Day, ingredients: Map<String, Ingredient>): DayTotals = DayTotals(
     eaten = totalOf(day.ingredientUses { it.tickedAt != null }, ingredients),
     planned = totalOf(day.ingredientUses(), ingredients),

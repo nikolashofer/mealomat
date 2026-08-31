@@ -6,14 +6,14 @@ import com.example.mealomat.data.db.PrepMode
 import kotlinx.datetime.LocalDate
 
 data class PrepStep(
-    val key: String,        // "component:<lineage_id>" | "ingredient:<ingredient_id>"
+    val key: String,
     val label: String,
     val amount: Double,
-    val lines: List<PrepLine>,
-    val doneAt: Long?,      // set once every covered line is prepped; null while partial
+    val items: List<PrepStepItem>,
+    val doneAt: Long?,
 )
 
-data class PrepLine(
+data class PrepStepItem(
     val date: LocalDate,
     val planItemId: String,
     val ingredientId: String,
@@ -21,7 +21,7 @@ data class PrepLine(
     val preppedAt: Long?,
 )
 
-// The steps a session walks: the window's PREP lines, grouped by key, in the block's saved order.
+// Builds a sessions steps: the windows PREP items, grouped by key, in the blocks saved order.
 fun prepStepsIn(
     window: Window,
     days: List<Day>,
@@ -39,8 +39,8 @@ fun prepStepsIn(
                 key = key,
                 label = labels(key),
                 amount = covered.sumOf { (_, _, item) -> item.amount },
-                lines = covered.map { (date, _, item) ->
-                    PrepLine(date, item.planItemId, item.ingredientId, item.amount, item.preppedAt)
+                items = covered.map { (date, _, item) ->
+                    PrepStepItem(date, item.planItemId, item.ingredientId, item.amount, item.preppedAt)
                 },
                 doneAt = covered.mapNotNull { (_, _, item) -> item.preppedAt }
                     .takeIf { it.size == covered.size }?.max(),
@@ -49,7 +49,6 @@ fun prepStepsIn(
         .sortedWith(compareBy({ positions[it.key] ?: Long.MAX_VALUE }, { it.label }))
 }
 
-// A components lineage rather than its row, so a saved ordering survives a plan revision.
 private fun stepKey(item: DayItemView, components: List<Plan_component>): String {
     val lineage = components.firstOrNull { it.id == item.componentId }?.lineage_id
     return if (lineage != null) "component:$lineage" else "ingredient:${item.ingredientId}"

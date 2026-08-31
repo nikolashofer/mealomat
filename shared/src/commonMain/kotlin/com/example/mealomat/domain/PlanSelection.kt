@@ -3,7 +3,7 @@ package com.example.mealomat.domain
 import com.example.mealomat.data.db.Plan
 import kotlinx.datetime.LocalDate
 
-// the version owning a slot: the latest one that had already started; null before the first.
+// Finds the version owning a slot: the latest one that had already started, null before the first.
 fun planFor(slot: Slot, plans: List<Plan>): Plan? =
     plans.filter { it.activeFrom() <= slot }.maxByOrNull { it.activeFrom() }
 

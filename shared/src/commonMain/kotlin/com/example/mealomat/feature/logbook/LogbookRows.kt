@@ -3,9 +3,9 @@ package com.example.mealomat.feature.logbook
 import com.example.mealomat.data.db.Ingredient
 import com.example.mealomat.domain.Day
 import com.example.mealomat.domain.DayItemView
-import com.example.mealomat.domain.IngredientUse
 import com.example.mealomat.domain.amountLabel
 import com.example.mealomat.domain.totalOf
+import com.example.mealomat.domain.use
 
 data class MealRow(
     val id: String,
@@ -34,12 +34,10 @@ fun logbookRows(day: Day, ingredients: Map<String, Ingredient>): List<MealRow> =
     )
 }
 
-private fun DayItemView.use() = IngredientUse(ingredientId, amount, excluded)
-
 private fun DayItemView.toRow(ingredient: Ingredient) = ItemRow(
     planItemId = planItemId,
     name = ingredient.name,
-    amount = amountLabel(amount, ingredient.basis),
+    amount = amountLabel(amount, ingredient.basis).text,
     prepped = preppedAt != null,
     ticked = tickedAt != null,
     excluded = excluded,

@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.shadow.Shadow
-import com.example.mealomat.domain.DayNav
 import com.example.mealomat.ui.components.Button
 import com.example.mealomat.ui.components.ButtonSize
 import com.example.mealomat.ui.components.edge

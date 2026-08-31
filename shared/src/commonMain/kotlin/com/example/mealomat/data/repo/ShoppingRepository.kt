@@ -12,7 +12,7 @@ import com.example.mealomat.data.sync.OutboxOp
 import com.example.mealomat.data.sync.OutboxWriter
 import com.example.mealomat.data.sync.Tables
 import com.example.mealomat.data.sync.payloadOf
-import com.example.mealomat.domain.Need
+import com.example.mealomat.domain.IngredientNeed
 import com.example.mealomat.domain.Slot
 import com.example.mealomat.domain.Window
 import com.example.mealomat.domain.dates
@@ -44,12 +44,12 @@ class ShoppingRepository(
     fun committedWindows(from: LocalDate): List<Window> =
         tripQueries.listCommitted(from.toString()).executeAsList().map { it.window() }
 
-    fun needsFor(prepBlockId: String, on: LocalDate): List<Need> {
+    fun needsFor(prepBlockId: String, on: LocalDate): List<IngredientNeed> {
         val window = windowFor(prepBlockId, on) ?: return emptyList()
         return needsIn(window) { 0.0 }
     }
 
-    fun needsOf(tripId: String): List<Need> {
+    fun needsOf(tripId: String): List<IngredientNeed> {
         val trip = tripQueries.findById(tripId).executeAsOneOrNull() ?: return emptyList()
         val bought = stepsOf(tripId).associate { it.ingredient_id to (it.bought_amount ?: 0.0) }
         return needsIn(trip.window()) { bought[it] ?: 0.0 }
@@ -155,7 +155,7 @@ class ShoppingRepository(
         return windowOf(block, blocks, on)
     }
 
-    private fun needsIn(window: Window, boughtHere: (String) -> Double): List<Need> {
+    private fun needsIn(window: Window, boughtHere: (String) -> Double): List<IngredientNeed> {
         val projected = window.dates().mapNotNull { days.byDate(it) }
         return needsFrom(
             uses = usesIn(window, projected),
@@ -184,7 +184,7 @@ private fun newStepRow(tripId: String, ingredientId: String, userId: String, now
     bought_amount = null,
 )
 
-private fun Shopping_step.stamped(now: Long, need: Need?) = copy(
+private fun Shopping_step.stamped(now: Long, need: IngredientNeed?) = copy(
     updated_at = now,
     needed_amount = need?.need ?: needed_amount,
     have_amount = need?.have ?: have_amount,

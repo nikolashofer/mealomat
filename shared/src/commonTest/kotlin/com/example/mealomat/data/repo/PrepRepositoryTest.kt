@@ -10,7 +10,7 @@ import com.example.mealomat.data.db.SessionStatus
 import com.example.mealomat.data.db.mealomatDatabase
 import com.example.mealomat.data.sync.OutboxWriter
 import com.example.mealomat.domain.Slot
-import com.example.mealomat.domain.earliestActivation
+import com.example.mealomat.domain.earliestPlanActivation
 import com.example.mealomat.testing.FakeAuth
 import com.example.mealomat.testing.FixedClock
 import com.example.mealomat.testing.testDriver
@@ -157,7 +157,7 @@ class PrepRepositoryTest {
 
         assertEquals(
             Slot(sunday, 1),
-            earliestActivation(thursday, prepBlocks.list(), prep.committedWindows(thursday)),
+            earliestPlanActivation(thursday, prepBlocks.list(), prep.committedWindows(thursday)),
             "the plan cannot change inside a window being prepped",
         )
 
@@ -231,7 +231,7 @@ class PrepRepositoryTest {
 
         assertEquals(1L, db.prepSessionQueries.listCommitted(thursday.toString()).executeAsList().size.toLong())
         assertEquals(2, db.dayItemQueries.listForDate(friday.toString()).executeAsList().size + 1, "day_item rows only")
-        assertNull(prep.stepsOf(session).single().lines.firstOrNull { it.preppedAt == null })
+        assertNull(prep.stepsOf(session).single().items.firstOrNull { it.preppedAt == null })
     }
 
     @Test

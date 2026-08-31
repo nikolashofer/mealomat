@@ -56,7 +56,7 @@ class NeedTest {
 
         val needs = needsFrom(usesIn(window, days), have = { 200.0 }, packSize = { null })
 
-        assertEquals(Need("rice", need = 500.0, have = 200.0, buy = 300.0), needs.single())
+        assertEquals(IngredientNeed("rice", need = 500.0, have = 200.0, buy = 300.0), needs.single())
     }
 
     @Test
@@ -70,15 +70,12 @@ class NeedTest {
     }
 
     @Test
-    fun packRoundingGoesUpToWholePacks() {
-        assertEquals(500.0, packRound(340.0, packSize = 500.0))
-        assertEquals(1000.0, packRound(501.0, packSize = 500.0))
-        assertEquals(500.0, packRound(500.0, packSize = 500.0), "an exact fit is one pack")
-    }
+    fun aPackSizeIsAHintAndDoesNotRoundTheAmount() {
+        val days = listOf(day(friday, meal(0, item("rice", 400.0, 0))))
 
-    @Test
-    fun anIngredientWithNoPackSizeIsAskedForExactly() {
-        assertEquals(340.0, packRound(340.0, packSize = null))
-        assertEquals(0.0, packRound(0.0, packSize = 500.0), "nothing to buy stays nothing")
+        val needs = needsFrom(usesIn(window, days), have = { 200.0 }, packSize = { 1000.0 })
+
+        assertEquals(200.0, needs.single().buy, "the shortfall, not a whole pack")
+        assertEquals(1000.0, needs.single().packSize)
     }
 }

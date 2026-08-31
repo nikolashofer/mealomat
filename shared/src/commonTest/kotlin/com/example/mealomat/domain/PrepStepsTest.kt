@@ -57,7 +57,7 @@ class PrepStepsTest {
 
         assertEquals(1, result.size)
         assertEquals(900.0, result.single().amount, "combined across the meals it serves")
-        assertEquals(3, result.single().lines.size)
+        assertEquals(3, result.single().items.size)
     }
 
     @Test

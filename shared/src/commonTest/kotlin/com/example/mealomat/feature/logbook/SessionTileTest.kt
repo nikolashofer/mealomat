@@ -1,7 +1,7 @@
 package com.example.mealomat.feature.logbook
 
 import com.example.mealomat.data.db.Shopping_step
-import com.example.mealomat.domain.Need
+import com.example.mealomat.domain.IngredientNeed
 import com.example.mealomat.domain.PrepStep
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 class SessionTileTest {
 
     private fun need(ingredientId: String, buy: Double) =
-        Need(ingredientId = ingredientId, need = 500.0, have = 500.0 - buy, buy = buy)
+        IngredientNeed(ingredientId = ingredientId, need = 500.0, have = 500.0 - buy, buy = buy)
 
     private fun step(ingredientId: String) = Shopping_step(
         id = "step-$ingredientId", user_id = "user-1", shopping_trip_id = "trip-1",
@@ -18,7 +18,7 @@ class SessionTileTest {
     )
 
     private fun prepStep(key: String, doneAt: Long?) =
-        PrepStep(key = key, label = key, amount = 300.0, lines = emptyList(), doneAt = doneAt)
+        PrepStep(key = key, label = key, amount = 300.0, items = emptyList(), doneAt = doneAt)
 
     @Test
     fun beforeATripNothingIsDoneAndOnlyMissingThingsCount() {

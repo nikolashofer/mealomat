@@ -1,7 +1,7 @@
 package com.example.mealomat.feature.logbook
 
 import com.example.mealomat.data.db.Shopping_step
-import com.example.mealomat.domain.Need
+import com.example.mealomat.domain.IngredientNeed
 import com.example.mealomat.domain.PrepStep
 
 enum class SessionKind { Shopping, Prep }
@@ -13,7 +13,7 @@ data class SessionTile(
     val total: Int,
 )
 
-fun shoppingTile(blockId: String, needs: List<Need>, steps: List<Shopping_step>) = SessionTile(
+fun shoppingTile(blockId: String, needs: List<IngredientNeed>, steps: List<Shopping_step>) = SessionTile(
     kind = SessionKind.Shopping,
     blockId = blockId,
     done = steps.size,

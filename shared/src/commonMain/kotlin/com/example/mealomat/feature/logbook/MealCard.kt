@@ -19,6 +19,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.example.mealomat.domain.kcalLabel
+import com.example.mealomat.ui.components.MeasureText
 import com.example.mealomat.ui.components.edge
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space
@@ -45,9 +47,9 @@ fun MealCard(meal: MealRow, onTick: (String) -> Unit, modifier: Modifier = Modif
             verticalAlignment = Alignment.CenterVertically,
         ) {
             BasicText(meal.name, style = typography.display.sm.copy(color = colors.text.primary))
-            BasicText(
-                text = "${meal.kcal.toInt()} kcal",
-                style = typography.number.unit.copy(color = colors.text.secondary),
+            MeasureText(
+                label = kcalLabel(meal.kcal),
+                valueStyle = typography.number.unit.copy(color = colors.text.secondary),
             )
         }
 

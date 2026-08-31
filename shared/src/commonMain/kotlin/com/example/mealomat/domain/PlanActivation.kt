@@ -3,9 +3,9 @@ package com.example.mealomat.domain
 import com.example.mealomat.data.db.Prep_block
 import kotlinx.datetime.LocalDate
 
-// Where a new plan version may start: the first coverage boundary at or after `from` whose window
-// nothing is committed to. Changes apply from next cycle.
-fun earliestActivation(
+// Finds where a new plan version start: the first coverage boundary at or after `from` whose
+// window nothing is committed to, so changes apply from the next cycle.
+fun earliestPlanActivation(
     from: LocalDate,
     blocks: List<Prep_block>,
     committed: List<Window>,
@@ -19,5 +19,4 @@ fun earliestActivation(
     } ?: boundaries.last()
 }
 
-// `until` is null only past the end of the scan, where everything from `from` on counts.
 private fun Window.reachesInto(from: Slot, until: Slot?) = to > from && (until == null || this.from < until)

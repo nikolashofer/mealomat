@@ -6,7 +6,7 @@ import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ActivationTest {
+class PlanActivationTest {
 
     private fun block(name: String, coversFrom: DayOfWeek, position: Long) = Prep_block(
         id = name, user_id = "user-1", updated_at = 0, deleted_at = null, name = name,
@@ -24,19 +24,19 @@ class ActivationTest {
 
     @Test
     fun withNothingCommittedItStartsAtTheNextBoundary() {
-        assertEquals(Slot(thursday, 0), earliestActivation(thursday, blocks, emptyList()))
+        assertEquals(Slot(thursday, 0), earliestPlanActivation(thursday, blocks, emptyList()))
     }
 
     @Test
     fun aBoundaryCanFallMidDay() {
-        assertEquals(Slot(sunday, 1), earliestActivation(friday, blocks, emptyList()))
+        assertEquals(Slot(sunday, 1), earliestPlanActivation(friday, blocks, emptyList()))
     }
 
     @Test
     fun aCommittedWindowIsSkipped() {
         val committed = listOf(Window(Slot(thursday, 0), Slot(sunday, 1)))   // the Midweek window
 
-        assertEquals(Slot(sunday, 1), earliestActivation(thursday, blocks, committed))
+        assertEquals(Slot(sunday, 1), earliestPlanActivation(thursday, blocks, committed))
     }
 
     @Test
@@ -46,13 +46,13 @@ class ActivationTest {
             Window(Slot(sunday, 1), Slot(LocalDate(2026, 7, 2), 0)),             // Weekend
         )
 
-        val activation = earliestActivation(thursday, blocks, committed)
+        val activation = earliestPlanActivation(thursday, blocks, committed)
 
         assertEquals(Slot(LocalDate(2026, 7, 2), 0), activation, "the following Thursday")
     }
 
     @Test
     fun noBlocksMeansStartNow() {
-        assertEquals(Slot(thursday, 0), earliestActivation(thursday, emptyList(), emptyList()))
+        assertEquals(Slot(thursday, 0), earliestPlanActivation(thursday, emptyList(), emptyList()))
     }
 }

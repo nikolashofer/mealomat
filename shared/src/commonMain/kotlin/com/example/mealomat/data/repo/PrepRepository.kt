@@ -79,7 +79,7 @@ class PrepRepository(
 
     suspend fun completeStep(sessionId: String, stepKey: String) {
         val step = requireNotNull(stepsOf(sessionId).firstOrNull { it.key == stepKey }) { "No step $stepKey on session $sessionId" }
-        step.lines.filter { it.preppedAt == null }.forEach { days.markPrepped(it.date, it.planItemId) }
+        step.items.filter { it.preppedAt == null }.forEach { days.markPrepped(it.date, it.planItemId) }
     }
 
     suspend fun reorder(prepBlockId: String, keys: List<String>) {
@@ -112,7 +112,7 @@ class PrepRepository(
     }
 
     private suspend fun closeForgotten(session: Prep_session) {
-        val prepped = stepsOf(session.id).any { step -> step.lines.any { it.preppedAt != null } }
+        val prepped = stepsOf(session.id).any { step -> step.items.any { it.preppedAt != null } }
         if (prepped) complete(session.id) else abandon(session.id)
     }
 

@@ -24,6 +24,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.example.mealomat.domain.DayTotals
 import com.example.mealomat.domain.grams
+import com.example.mealomat.domain.gramsValue
+import com.example.mealomat.domain.kcalLabel
 import com.example.mealomat.ui.components.Button
 import com.example.mealomat.ui.components.ButtonSize
 import com.example.mealomat.ui.components.Mascot
@@ -32,10 +34,6 @@ import com.example.mealomat.ui.components.edge
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format.MonthNames
-import kotlinx.datetime.format.DayOfWeekNames
-import kotlinx.datetime.format.char
-import kotlin.math.roundToInt
 
 @Composable
 fun LogbookHeader(
@@ -67,7 +65,7 @@ fun LogbookHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             BasicText(
-                text = date.format(HEADER_DATE).uppercase(),
+                text = dayLabel(date).uppercase(),
                 style = typography.label.caps.copy(color = colors.text.tertiary),
             )
             BasicText(
@@ -87,11 +85,11 @@ fun LogbookHeader(
             verticalAlignment = Alignment.Bottom,
         ) {
             BasicText(
-                text = totals.eaten.kcal.roundToInt().grouped(),
+                text = kcalLabel(totals.eaten.kcal).value,
                 style = typography.number.lg.copy(color = colors.text.primary),
             )
             BasicText(
-                text = "/ ${totals.planned.kcal.roundToInt().grouped()} kcal",
+                text = "/ ${kcalLabel(totals.planned.kcal).text}",
                 modifier = Modifier.padding(bottom = Space.S6).weight(1f),
                 style = typography.number.unit.copy(color = colors.text.tertiary),
             )
@@ -180,26 +178,14 @@ private fun LegendEntry(label: String, color: Color, eaten: Double, planned: Dou
             text = buildAnnotatedString {
                 append("$label ")
                 withStyle(SpanStyle(color = colors.text.primary, fontWeight = typography.label.xs.fontWeight)) {
-                    append(eaten.roundToInt().toString())
+                    append(gramsValue(eaten))
                 }
-                append(" / ${planned.roundToInt()}")
+                append(" / ${gramsValue(planned)}")
             },
             style = typography.label.soft.copy(color = colors.text.secondary),
         )
     }
 }
-
-private val HEADER_DATE = LocalDate.Format {
-    dayOfWeek(DayOfWeekNames.ENGLISH_FULL)
-    chars(" · ")
-    day()
-    char(' ')
-    monthName(MonthNames.ENGLISH_FULL)
-}
-
-// space between thousands
-private fun Int.grouped(): String =
-    toString().reversed().chunked(3).joinToString(" ").reversed()
 
 @Composable
 private fun SessionButton(session: SessionTile, modifier: Modifier = Modifier) {

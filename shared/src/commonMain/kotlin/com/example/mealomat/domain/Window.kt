@@ -7,18 +7,22 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
 
-// what one prep block covers, so adjacent windows tile without overlap.
-data class Window(val from: Slot, val to: Slot)
+data class Slot(val date: LocalDate, val position: Int) : Comparable<Slot> {
+    override fun compareTo(other: Slot): Int =
+        compareValuesBy(this, other, { it.date }, { it.position })
+}
 
-data class Boundary(val slot: Slot, val blockId: String)
+data class Window(val from: Slot, val to: Slot)
 
 operator fun Window.contains(slot: Slot) = slot in from..<to
 
-// every date the window touches, including the partial ones at each end.
+// Lists every date the window touches, including the partial ones at each end.
 fun Window.dates(): List<LocalDate> =
     (0..from.date.daysUntil(to.date)).map { from.date.plus(it, DateTimeUnit.DAY) }
 
-// every block boundary in the two weeks from `from`. long enough to hold any block's own and the next.
+data class Boundary(val slot: Slot, val blockId: String)
+
+// Collects every block boundary in the two weeks from `from`.
 fun boundariesFrom(from: LocalDate, blocks: List<Prep_block>): List<Boundary> =
     (0..13).flatMap { offset ->
         val date = from.plus(offset, DateTimeUnit.DAY)
@@ -26,7 +30,7 @@ fun boundariesFrom(from: LocalDate, blocks: List<Prep_block>): List<Boundary> =
             .map { Boundary(Slot(date, it.covers_from_position.toInt()), it.id) }
     }.sortedBy { it.slot }
 
-// the blocks next window at or after `from`: its own boundary up to whichever block opens next.
+// Finds a blocks next window at or after `from`: its own boundary up to whichever block opens next.
 fun windowOf(block: Prep_block, blocks: List<Prep_block>, from: LocalDate): Window? {
     val boundaries = boundariesFrom(from, blocks)
     val start = boundaries.indexOfFirst { it.blockId == block.id }.takeIf { it >= 0 } ?: return null

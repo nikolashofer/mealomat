@@ -14,6 +14,12 @@ data class PlanVersion(
     val items: List<Plan_item>,
 )
 
+data class IngredientUse(
+    val ingredientId: String,
+    val amount: Double,
+    val excluded: Boolean = false,
+)
+
 data class DayItemView(
     val planItemId: String,
     val ingredientId: String,
@@ -28,6 +34,8 @@ data class DayItemView(
     val isReady get() = preppedAt != null
     val isDone get() = preppedAt != null || tickedAt != null || excluded
 }
+
+fun DayItemView.use() = IngredientUse(ingredientId, amount, excluded)
 
 data class DayMealView(
     val planMealId: String,
@@ -44,11 +52,9 @@ data class Day(val date: LocalDate, val meals: List<DayMealView>)
 fun Day.ingredientUses(of: (DayItemView) -> Boolean = { true }): List<IngredientUse> = meals
     .flatMap { it.items }
     .filter(of)
-    .map { IngredientUse(it.ingredientId, it.amount, it.excluded) }
+    .map { it.use() }
 
-// TODO: not tested for now it is pretty trivial, maybe add tests later
-// Builds a day: the version's meals for that weekday, each item carrying whatever state was recorded
-// against it. Amounts are read from the version, never copied, so history cannot drift.
+// Builds a day: the versions meals for that weekday, each item carrying whatever state was recorded against it.
 fun projectDay(
     date: LocalDate,
     weekday: DayOfWeek,
@@ -89,6 +95,7 @@ fun projectDay(
     return Day(date, meals)
 }
 
-// NULL on a plan item means inherit from its component; with no component it is FRESH.
+// Resolves an items prep mode: NULL on a plan item means inherit from its component, and with
+// no component it is FRESH.
 fun resolvePrepMode(itemPrepMode: PrepMode?, componentPrepMode: PrepMode?): PrepMode =
     itemPrepMode ?: componentPrepMode ?: PrepMode.FRESH
