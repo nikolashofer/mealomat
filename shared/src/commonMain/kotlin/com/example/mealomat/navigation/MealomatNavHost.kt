@@ -16,22 +16,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.example.mealomat.feature.logbook.LogbookScreen
 import com.example.mealomat.ui.theme.Space
-import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
     val navController = rememberNavController()
     val entry by navController.currentBackStackEntryAsState()
-    val selected = entry?.takeIf { it.destination.showsNavBar() }?.toRoute<Logbook>()?.date
+    val selected by navBar.selected.collectAsStateWithLifecycle()
 
     var barHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
@@ -40,13 +39,13 @@ fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
         // TODO: do transitions properly
         NavHost(
             navController = navController,
-            startDestination = Logbook(navBar.today.toString()),
+            startDestination = Logbook,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {
-            composable<Logbook> { backStackEntry ->
+            composable<Logbook> {
                 LogbookScreen(
-                    date = LocalDate.parse(backStackEntry.toRoute<Logbook>().date),
+                    date = selected,
                     contentPadding = PaddingValues(bottom = barHeight),
                 )
             }
@@ -55,12 +54,8 @@ fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
         if (entry?.destination.showsNavBar()) {
             NavBar(
                 days = navBar.days,
-                selected = selected?.let(LocalDate::parse) ?: navBar.today,
-                onSelect = {
-                    navController.navigate(Logbook(it.toString())) {
-                        popUpTo<Logbook> { inclusive = true }
-                    }
-                },
+                selected = selected,
+                onSelect = navBar::select,
                 onPlan = navBar::signOut,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)

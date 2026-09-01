@@ -8,6 +8,9 @@ import com.example.mealomat.data.repo.PrepBlockRepository
 import com.example.mealomat.domain.datesOf
 import com.example.mealomat.domain.weekStart
 import kotlin.time.Clock
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -29,6 +32,13 @@ class NavBarViewModel(
     val today: LocalDate = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     val days: List<DayNavState> = dayNavStates(today, prepBlocks.list())
+
+    private val _selected = MutableStateFlow(today)
+    val selected: StateFlow<LocalDate> = _selected.asStateFlow()
+
+    fun select(date: LocalDate) {
+        _selected.value = date
+    }
 
     // TODO: REMOVE just for testing
     fun signOut() {

@@ -5,7 +5,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Logbook(val date: String)
+data object Logbook
 
 // Whitelist, so a new route is without the nav bar until added here.
 fun NavDestination?.showsNavBar() = this?.hasRoute<Logbook>() == true
