@@ -13,7 +13,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-data class DayNav(
+data class DayNavState(
     val date: LocalDate,
     val isPast: Boolean,
     val shops: Boolean,
@@ -28,7 +28,7 @@ class NavBarViewModel(
 
     val today: LocalDate = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
-    val week: List<DayNav> = weekNav(today, prepBlocks.list())
+    val days: List<DayNavState> = dayNavStates(today, prepBlocks.list())
 
     // TODO: REMOVE just for testing
     fun signOut() {
@@ -36,10 +36,9 @@ class NavBarViewModel(
     }
 }
 
-// Builds the nav bar's week: this week's dates, each flagged with what happens on it.
-fun weekNav(today: LocalDate, blocks: List<Prep_block>): List<DayNav> =
+fun dayNavStates(today: LocalDate, blocks: List<Prep_block>): List<DayNavState> =
     datesOf(weekStart(today)).map { date ->
-        DayNav(
+        DayNavState(
             date = date,
             isPast = date < today,
             shops = blocks.any { it.shopping_weekday == date.dayOfWeek },

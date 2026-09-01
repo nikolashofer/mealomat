@@ -54,7 +54,7 @@ fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
 
         if (entry?.destination.showsNavBar()) {
             NavBar(
-                days = navBar.week,
+                days = navBar.days,
                 selected = selected?.let(LocalDate::parse) ?: navBar.today,
                 onSelect = {
                     navController.navigate(Logbook(it.toString())) {

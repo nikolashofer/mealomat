@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,7 +23,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.shadow.Shadow
 import com.example.mealomat.ui.components.Button
-import com.example.mealomat.ui.components.ButtonSize
+import com.example.mealomat.ui.components.ControlSize
 import com.example.mealomat.ui.components.edge
 import com.example.mealomat.ui.components.pressable
 import com.example.mealomat.ui.theme.MealomatTheme
@@ -32,7 +33,7 @@ import kotlinx.datetime.LocalDate
 
 @Composable
 fun NavBar(
-    days: List<DayNav>,
+    days: List<DayNavState>,
     selected: LocalDate,
     onSelect: (LocalDate) -> Unit,
     onPlan: () -> Unit,
@@ -41,16 +42,16 @@ fun NavBar(
     val colors = MealomatTheme.colors
     val shapes = MealomatTheme.shapes
     val soft = MealomatTheme.shadows.soft
-    val edge = MealomatTheme.shadows.edgeSm.offsetY
+    val edge = MealomatTheme.shadows.edge.sm
 
-    Box(modifier = modifier.padding(bottom = edge)) {
+    Box(modifier = modifier.padding(bottom = edge.offsetY)) {
         Row(
             modifier = Modifier
-                .edge(MealomatTheme.shadows.edgeSm.copy(color = colors.edge.subtle), shapes.nav)
-                .dropShadow(shapes.nav, Shadow(soft.blur, soft.color, offset = DpOffset(0.dp, soft.offsetY)))
-                .clip(shapes.nav)
+                .edge(edge.copy(color = colors.edge.subtle), shapes.surface.frame)
+                .dropShadow(shapes.surface.frame, Shadow(soft.blur, soft.color, offset = DpOffset(0.dp, soft.offsetY)))
+                .clip(shapes.surface.frame)
                 .background(colors.surface.raised)
-                .border(1.dp, colors.border.subtle, shapes.nav)
+                .border(1.dp, colors.border.subtle, shapes.surface.frame)
                 .padding(horizontal = Space.S10, vertical = Space.S8),
             horizontalArrangement = Arrangement.spacedBy(Space.S2),
             verticalAlignment = Alignment.CenterVertically,
@@ -67,19 +68,18 @@ fun NavBar(
                 modifier = Modifier
                     .padding(horizontal = Space.S10)
                     .width(1.dp)
-                    .height(MealomatTheme.sizes.nav.divider)
+                    .height(32.dp)
                     .background(colors.border.subtle),
             )
-            Button("Plan", onClick = onPlan, tone = colors.tone.neutral, size = ButtonSize.Md)
+            Button("Plan", onClick = onPlan, tone = colors.tone.neutral, size = ControlSize.Md)
         }
     }
 }
 
-// TODO: not exactly same height as md button -> fix
 // TODO: maybe render items always square with a hint that it can be scrolled, active one is always centered,
 //  and display week somehow if user moves of current week, so basically infinite scroll list with projected days
 @Composable
-private fun DayNavButton(day: DayNav, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DayNavButton(day: DayNavState, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = MealomatTheme.colors
     val tone = if (selected) colors.tone.brand else null
 
@@ -87,14 +87,14 @@ private fun DayNavButton(day: DayNav, selected: Boolean, onClick: () -> Unit, mo
         modifier = modifier
             .pressable(
                 onClick = onClick,
-                shape = MealomatTheme.shapes.button.md,
+                shape = MealomatTheme.shapes.control.md,
                 fill = tone?.fill ?: Color.Transparent,
                 edge = tone?.edge ?: Color.Transparent,
-                depth = MealomatTheme.shadows.edgeMd.offsetY,
+                depth = MealomatTheme.shadows.edge.md.offsetY,
             )
-            .padding(vertical = Space.S8),
+            .heightIn(min = MealomatTheme.sizes.control.md),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Space.S4),
+        verticalArrangement = Arrangement.spacedBy(Space.S4, Alignment.CenterVertically),
     ) {
         BasicText(
             text = day.date.dayOfWeek.short(),
@@ -121,10 +121,9 @@ private fun DayNavButton(day: DayNav, selected: Boolean, onClick: () -> Unit, mo
 
 @Composable
 private fun Dot(color: Color, wide: Boolean = false) {
-    val sizes = MealomatTheme.sizes.nav
     Box(
         modifier = Modifier
-            .size(if (wide) sizes.selectedDotWidth else sizes.dot, sizes.dot)
+            .size(if (wide) 16.dp else 6.dp, 6.dp)
             .clip(MealomatTheme.shapes.pill)
             .background(color),
     )

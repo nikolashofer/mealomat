@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Logbook(val date: String)
 
-// whitelist, so a new route is without the nav bar until added here.
+// Whitelist, so a new route is without the nav bar until added here.
 fun NavDestination?.showsNavBar() = this?.hasRoute<Logbook>() == true
