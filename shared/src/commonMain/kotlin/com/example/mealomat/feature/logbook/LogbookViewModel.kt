@@ -8,6 +8,11 @@ import com.example.mealomat.data.repo.PrepBlockRepository
 import com.example.mealomat.data.repo.PrepRepository
 import com.example.mealomat.data.repo.ShoppingRepository
 import com.example.mealomat.domain.Day
+import com.example.mealomat.feature.logbookold.MealRow
+import com.example.mealomat.feature.logbookold.Session
+import com.example.mealomat.feature.logbookold.logbookRows
+import com.example.mealomat.feature.logbookold.prepSession
+import com.example.mealomat.feature.logbookold.shoppingSession
 import com.example.mealomat.domain.DayTotals
 import com.example.mealomat.domain.ingredientUses
 import com.example.mealomat.domain.totalsOf
@@ -34,8 +39,8 @@ class LogbookViewModel(
     private val _meals = MutableStateFlow(emptyList<MealRow>())
     val meals: StateFlow<List<MealRow>> = _meals.asStateFlow()
 
-    private val _sessions = MutableStateFlow(emptyList<SessionTile>())
-    val sessions: StateFlow<List<SessionTile>> = _sessions.asStateFlow()
+    private val _sessions = MutableStateFlow(emptyList<Session>())
+    val sessions: StateFlow<List<Session>> = _sessions.asStateFlow()
 
     fun show(date: LocalDate) {
         val day = days.byDate(date)
@@ -53,7 +58,7 @@ class LogbookViewModel(
         }
     }
 
-    private fun sessionsOn(date: LocalDate): List<SessionTile> {
+    private fun sessionsOn(date: LocalDate): List<Session> {
         val blocks = prepBlocks.list()
         val shops = blocks.firstOrNull { it.shopping_weekday == date.dayOfWeek }
         val preps = blocks.firstOrNull { it.prep_weekday == date.dayOfWeek }
@@ -61,13 +66,13 @@ class LogbookViewModel(
         return listOfNotNull(
             shops?.let { block ->
                 val trip = shopping.open()?.takeIf { it.prep_block_id == block.id }
-                shoppingTile(
+                shoppingSession(
                     blockId = block.id,
                     needs = trip?.let { shopping.needsOf(it.id) } ?: shopping.needsFor(block.id, date),
                     steps = trip?.let { shopping.stepsOf(it.id) }.orEmpty(),
                 )
             },
-            preps?.let { prepTile(it.id, prep.stepsFor(it.id, date)) },
+            preps?.let { prepSession(it.id, prep.stepsFor(it.id, date)) },
         )
     }
 

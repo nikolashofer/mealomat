@@ -1,4 +1,4 @@
-package com.example.mealomat.feature.logbook
+package com.example.mealomat.feature.logbookold
 
 import com.example.mealomat.data.db.Ingredient
 import com.example.mealomat.domain.Day

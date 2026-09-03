@@ -1,4 +1,4 @@
-package com.example.mealomat.feature.logbook
+package com.example.mealomat.feature.logbookold
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,16 +29,16 @@ import com.example.mealomat.ui.theme.Space
 fun MealCard(meal: MealRow, onTick: (String) -> Unit, modifier: Modifier = Modifier) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
-    val shape = MealomatTheme.shapes.card
+    val shape = MealomatTheme.shapes.surface.card
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .edge(MealomatTheme.shadows.edgeSm.copy(color = colors.edge.subtle), shape)
+            .edge(MealomatTheme.shadows.edge.sm.copy(color = colors.edge.subtle), shape)
             .clip(shape)
             .background(colors.surface.raised)
             .border(1.dp, colors.border.subtle, shape)
-            .padding(Space.S16),
+            .padding(MealomatTheme.spacing.inset.card),
         verticalArrangement = Arrangement.spacedBy(Space.S12),
     ) {
         Row(
@@ -46,10 +46,10 @@ fun MealCard(meal: MealRow, onTick: (String) -> Unit, modifier: Modifier = Modif
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            BasicText(meal.name, style = typography.display.sm.copy(color = colors.text.primary))
+            BasicText(meal.name, style = typography.display.xs.copy(color = colors.text.primary))
             MeasureText(
                 label = kcalLabel(meal.kcal),
-                valueStyle = typography.number.unit.copy(color = colors.text.secondary),
+                valueStyle = typography.label.sm.copy(color = colors.text.secondary),
             )
         }
 
@@ -82,12 +82,12 @@ private fun ItemLine(item: ItemRow, onTick: (String) -> Unit) {
         BasicText(
             text = buildAnnotatedString {
                 append(item.name)
-                withStyle(typography.item.amount.toSpanStyle().copy(color = colors.text.secondary)) {
+                withStyle(typography.body.sm.toSpanStyle().copy(color = colors.text.secondary)) {
                     append(" · ${item.amount}")
                 }
             },
             modifier = Modifier.weight(1f),
-            style = typography.item.name.copy(
+            style = typography.strong.sm.copy(
                 color = if (struck) colors.text.tertiary else colors.text.primary,
                 textDecoration = if (struck) TextDecoration.LineThrough else null,
             ),
@@ -102,7 +102,7 @@ private fun ItemLine(item: ItemRow, onTick: (String) -> Unit) {
 @Composable
 private fun CheckBox(ticked: Boolean) {
     val colors = MealomatTheme.colors
-    val shape = MealomatTheme.shapes.chip
+    val shape = MealomatTheme.shapes.surface.badge
 
     Box(
         modifier = Modifier
@@ -128,13 +128,13 @@ private fun SourceBadge(prepped: Boolean) {
     Box(
         modifier = Modifier
             .size(MealomatTheme.sizes.badge)
-            .clip(MealomatTheme.shapes.chip)
+            .clip(MealomatTheme.shapes.surface.badge)
             .background(colors.tone.neutral.fill),
         contentAlignment = Alignment.Center,
     ) {
         BasicText(
             text = if (prepped) "P" else "F",
-            style = MealomatTheme.typography.field.label.copy(color = colors.tone.neutral.onFill),
+            style = MealomatTheme.typography.label.xxs.copy(color = colors.tone.neutral.onFill),
         )
     }
 }

@@ -1,219 +1,254 @@
 package com.example.mealomat.feature.logbook
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import com.example.mealomat.domain.DayTotals
-import com.example.mealomat.domain.grams
 import com.example.mealomat.domain.gramsValue
 import com.example.mealomat.domain.kcalLabel
-import com.example.mealomat.ui.components.Button
-import com.example.mealomat.ui.components.ButtonSize
-import com.example.mealomat.ui.components.Mascot
-import com.example.mealomat.ui.components.MascotImage
+import com.example.mealomat.feature.logbookold.MealRow
+import com.example.mealomat.feature.logbookold.SessionKind
+import com.example.mealomat.feature.logbookold.Session
+import com.example.mealomat.ui.components.Icon
+import com.example.mealomat.ui.components.IconImage
 import com.example.mealomat.ui.components.edge
+import com.example.mealomat.ui.components.pressable
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space
-import kotlinx.datetime.LocalDate
+import com.example.mealomat.ui.theme.semantic.ToneColors
+import com.example.mealomat.ui.theme.semantic.toDp
+import com.example.mealomat.ui.theme.semantic.bottomOnly
 
 @Composable
 fun LogbookHeader(
-    date: LocalDate,
     totals: DayTotals,
-    sessions: List<SessionTile>,
+    meals: List<MealRow>,
+    sessions: List<Session>,
     modifier: Modifier = Modifier,
 ) {
     val colors = MealomatTheme.colors
-    val typography = MealomatTheme.typography
-    val shape = MealomatTheme.shapes.header
+    val percent = eatenPercent(totals)
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .edge(MealomatTheme.shadows.edgeMd.copy(color = colors.edge.subtle), shape)
-            .clip(shape)
-            .background(colors.surface.raised)
-            .statusBarsPadding()
-            .padding(bottom = Space.S20)
-            // .padding(top = Space.S20, bottom = Space.S20)
-            .padding(horizontal = Space.S20),
-        verticalArrangement = Arrangement.spacedBy(Space.S12),
-    ) {
-        // TODO: pretty redundant
-        /*Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+    Column(modifier = modifier.fillMaxWidth().background(colors.surface.canvas)) {
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(MealomatTheme.spacing.inset.frame.bottomOnly()),
         ) {
-            BasicText(
-                text = dayLabel(date).uppercase(),
-                style = typography.label.caps.copy(color = colors.text.tertiary),
-            )
-            BasicText(
-                text = "W26 · DAY ${date.dayOfWeek.isoDayNumber}",
-                modifier = Modifier
-                    .clip(MealomatTheme.shapes.pill)
-                    .background(colors.tone.neutral.fill)
-                    .padding(horizontal = Space.S10, vertical = Space.S4),
-                style = typography.field.label.copy(color = colors.text.secondary),
-            )
-        }*/
-
-        // TODO: fix alignment of numbers with mascot
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Space.S10),
-            verticalAlignment = Alignment.Bottom,
-        ) {
-            BasicText(
-                text = kcalLabel(totals.eaten.kcal).value,
-                style = typography.number.lg.copy(color = colors.text.primary),
-            )
-            BasicText(
-                text = "/ ${kcalLabel(totals.planned.kcal).text}",
-                modifier = Modifier.padding(bottom = Space.S6).weight(1f),
-                style = typography.number.unit.copy(color = colors.text.tertiary),
-            )
-            // TODO: should react on actions -> make mascot feel alive
-            MascotImage(
-                mascot = Mascot.Happy,
-                contentDescription = null,
-                modifier = Modifier.size(MealomatTheme.sizes.mascot.header),
-            )
-        }
-
-        MacroBar(totals)
-        Legend(totals)
-
-        if (sessions.isNotEmpty()) {
-            Column(
-                modifier = Modifier.padding(top = Space.S4),
-                verticalArrangement = Arrangement.spacedBy(Space.S14),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Space.S16),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Spacer(Modifier.fillMaxWidth().height(1.dp).background(colors.border.subtle))
-                Row(horizontalArrangement = Arrangement.spacedBy(Space.S8)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    CalorieLine(totals)
+                    MacroRow(totals, Modifier.padding(bottom = Space.S16))
+                    Bubble(percent, meals)
+                }
+                RingWithBadge(percent)
+            }
+
+            if (sessions.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = Space.S20),
+                    horizontalArrangement = Arrangement.spacedBy(Space.S10),
+                ) {
                     sessions.forEach { SessionButton(it, Modifier.weight(1f)) }
                 }
             }
         }
+
+        Spacer(Modifier.fillMaxWidth().height(Space.S2).background(colors.border.subtle))
     }
 }
 
 @Composable
-private fun MacroBar(totals: DayTotals) {
+private fun CalorieLine(totals: DayTotals) {
     val colors = MealomatTheme.colors
-    val remaining = (totals.planned.grams - totals.eaten.grams).coerceAtLeast(0.0)
+    val typography = MealomatTheme.typography
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(Space.S8),
+    ) {
+        BasicText(
+            text = kcalLabel(totals.eaten.kcal).value,
+            modifier = Modifier.alignByBaseline(),
+            style = typography.display.lg.copy(color = colors.text.primary),
+        )
+        BasicText(
+            text = "/ ${kcalLabel(totals.planned.kcal).text}",
+            modifier = Modifier.alignByBaseline(),
+            style = typography.strong.sm.copy(color = colors.text.tertiary),
+        )
+    }
+}
+
+@Composable
+private fun MacroRow(totals: DayTotals, modifier: Modifier = Modifier) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(Space.S14)) {
+        MacroColumn("P", totals.eaten.proteinG, totals.planned.proteinG)
+        MacroColumn("C", totals.eaten.carbsG, totals.planned.carbsG)
+        MacroColumn("F", totals.eaten.fatG, totals.planned.fatG)
+    }
+}
+
+@Composable
+private fun RowScope.MacroColumn(label: String, eaten: Double, planned: Double) {
+    val colors = MealomatTheme.colors
+    val typography = MealomatTheme.typography
+    val fraction by animateFloatAsState(
+        targetValue = if (planned <= 0.0) 0f else (eaten / planned).toFloat().coerceIn(0f, 1f),
+        animationSpec = tween(ProgressMillis),
+    )
+
+    Column(
+        modifier = Modifier.weight(1f),
+        verticalArrangement = Arrangement.spacedBy(Space.S4),
+    ) {
+        BasicText(
+            modifier = Modifier,
+            text = buildAnnotatedString {
+                append("$label ${gramsValue(eaten)}")
+                withStyle(SpanStyle(color = colors.text.tertiary)) { append("/${gramsValue(planned)}") }
+            },
+            maxLines = 1,
+            style = typography.label.xs.copy(color = colors.text.primary),
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(Space.S6)
+                .clip(MealomatTheme.shapes.pill)
+                .background(colors.border.subtle),
+        ) {
+            Spacer(Modifier.fillMaxWidth(fraction).fillMaxHeight().background(colors.text.primary))
+        }
+    }
+}
+
+// TODO: make speech bubble
+@Composable
+private fun Bubble(percent: Int, meals: List<MealRow>) {
+    val colors = MealomatTheme.colors
+    val typography = MealomatTheme.typography
+    val next = nextMeal(meals)
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(Space.S12)
-            .clip(MealomatTheme.shapes.pill)
-            .background(colors.border.subtle),
-        horizontalArrangement = Arrangement.spacedBy(Space.S2),
-    ) {
-        Segment(totals.eaten.proteinG, colors.macro.protein)
-        Segment(totals.eaten.carbsG, colors.macro.carbs)
-        Segment(totals.eaten.fatG, colors.macro.fat)
-        Segment(remaining, colors.border.subtle)
-    }
-}
-
-// TODO: mybe min widht so 0 actually already shows stuff in the bar
-@Composable
-private fun RowScope.Segment(grams: Double, color: Color) {
-    if (grams <= 0.0) return
-    Spacer(modifier = Modifier.weight(grams.toFloat()).fillMaxHeight().background(color))
-}
-
-@Composable
-private fun Legend(totals: DayTotals) {
-    val colors = MealomatTheme.colors
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(Space.S14),
+            .background(colors.surface.subtle, MealomatTheme.shapes.control.sm)
+            .padding(horizontal = Space.S12, vertical = Space.S8),
+        horizontalArrangement = Arrangement.spacedBy(Space.S8),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        LegendEntry("P", colors.macro.protein, totals.eaten.proteinG, totals.planned.proteinG)
-        LegendEntry("C", colors.macro.carbs, totals.eaten.carbsG, totals.planned.carbsG)
-        LegendEntry("F", colors.macro.fat, totals.eaten.fatG, totals.planned.fatG)
-    }
-}
-
-@Composable
-private fun LegendEntry(label: String, color: Color, eaten: Double, planned: Double) {
-    val colors = MealomatTheme.colors
-    val typography = MealomatTheme.typography
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(Space.S6),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(
-            modifier = Modifier
-                .size(Space.S10)
-                .clip(MealomatTheme.shapes.pill)
-                .background(color),
-        )
         BasicText(
-            text = buildAnnotatedString {
-                append("$label ")
-                withStyle(SpanStyle(color = colors.text.primary, fontWeight = typography.label.xs.fontWeight)) {
-                    append(gramsValue(eaten))
-                }
-                append(" / ${gramsValue(planned)}")
-            },
-            style = typography.label.soft.copy(color = colors.text.secondary),
+            text = if (next == null) "All ticked!" else "${moodBlurb(percent)} · ${next.name}",
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = typography.label.xs.copy(color = colors.text.primary),
         )
     }
 }
 
 @Composable
-private fun SessionButton(session: SessionTile, modifier: Modifier = Modifier) {
+private fun RingWithBadge(percent: Int) {
+    val colors = MealomatTheme.colors
+    val success = colors.status.success
+    val shape = MealomatTheme.shapes.surface.badge
+
+    Box(modifier = Modifier.size(RingDiameter), contentAlignment = Alignment.BottomCenter) {
+        FuelRing(percent)
+        Row(
+            modifier = Modifier
+                .offset(y = Space.S6)
+                .height(MealomatTheme.sizes.check)
+                .edge(MealomatTheme.shadows.edge.sm.copy(color = success.edge), shape)
+                .clip(shape)
+                .background(success.fill)
+                .padding(horizontal = Space.S10),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            BasicText(
+                text = "$percent%",
+                style = MealomatTheme.typography.label.xs.copy(color = colors.text.strong),
+            )
+        }
+    }
+}
+
+@Composable
+private fun SessionButton(session: Session, modifier: Modifier = Modifier) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
-    val tone = when (session.kind) {
+    val tone: ToneColors = when (session.kind) {
         SessionKind.Shopping -> colors.tone.shopping
         SessionKind.Prep -> colors.tone.prep
     }
 
-    Button(onClick = {}, tone = tone, modifier = modifier, size = ButtonSize.Md) {
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Space.S2)) {
+    Row(
+        modifier = modifier
+            .pressable(
+                onClick = {},
+                shape = MealomatTheme.shapes.control.lg,
+                fill = tone.fill,
+                edge = tone.edge,
+                depth = MealomatTheme.shadows.edge.lg.offsetY,
+            )
+            .heightIn(min = MealomatTheme.sizes.control.lg)
+            .padding(horizontal = Space.S14),
+        horizontalArrangement = Arrangement.spacedBy(Space.S10),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
             BasicText(
                 text = when (session.kind) {
-                    SessionKind.Shopping -> "Shopping trip"
-                    SessionKind.Prep -> "Prep session"
+                    SessionKind.Shopping -> "Shop"
+                    SessionKind.Prep -> "Prep"
                 },
-                style = typography.label.lg.copy(color = tone.onFill),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = typography.label.md.copy(color = tone.onFill),
             )
             BasicText(
                 text = when (session.kind) {
-                    SessionKind.Shopping -> "${session.done} of ${session.total} items bought"
-                    SessionKind.Prep -> "${session.done} of ${session.total} steps done"
+                    SessionKind.Shopping -> "${session.done} of ${session.total} bought"
+                    SessionKind.Prep -> "${session.done} of ${session.total} steps"
                 },
-                style = typography.field.label.copy(color = tone.tint),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = typography.strong.xs.copy(color = tone.tint),
             )
         }
-        // TODO: make icon
-        BasicText("›", style = typography.display.sm.copy(color = tone.onFill))
+        IconImage(
+            icon = Icon.CaretRight,
+            tint = tone.onFill,
+            contentDescription = null,
+            modifier = Modifier.size(typography.label.md.fontSize.toDp()),
+        )
     }
 }
