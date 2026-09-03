@@ -144,7 +144,7 @@ class PrepRepositoryTest {
         prep.completeStep(session, "ingredient:rice")
         val line = days.byDate(friday)!!.meals.single().items.first { it.ingredientId == "rice" }
 
-        days.tickOff(friday, line.planItemId)
+        days.setTicked(friday, line.planItemId, ticked = true)
 
         assertEquals(-600.0, pantry.amountOf("rice"), "the tick adds nothing: it left at prep time")
     }

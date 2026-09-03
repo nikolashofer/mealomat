@@ -1,7 +1,6 @@
-package com.example.mealomat.feature.logbook
+package com.example.mealomat.feature.logbook.model
 
 import com.example.mealomat.domain.DayTotals
-import com.example.mealomat.feature.logbookold.MealRow
 import com.example.mealomat.ui.components.Mascot
 import kotlin.math.roundToInt
 
@@ -26,9 +25,6 @@ private val Blurbs = listOf(
 fun moodMascot(percent: Int): Mascot = pick(Mascots, percent)
 
 fun moodBlurb(percent: Int): String = pick(Blurbs, percent)
-
-fun nextMeal(meals: List<MealRow>): MealRow? =
-    meals.firstOrNull { meal -> meal.items.any { !it.ticked && !it.excluded } }
 
 fun eatenPercent(totals: DayTotals): Int {
     if (totals.planned.kcal <= 0.0) return 0

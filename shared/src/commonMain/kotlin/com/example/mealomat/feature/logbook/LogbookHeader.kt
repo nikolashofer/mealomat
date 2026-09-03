@@ -30,9 +30,12 @@ import androidx.compose.ui.text.withStyle
 import com.example.mealomat.domain.DayTotals
 import com.example.mealomat.domain.gramsValue
 import com.example.mealomat.domain.kcalLabel
-import com.example.mealomat.feature.logbookold.MealRow
-import com.example.mealomat.feature.logbookold.SessionKind
-import com.example.mealomat.feature.logbookold.Session
+import com.example.mealomat.feature.logbook.model.MealRow
+import com.example.mealomat.feature.logbook.model.SessionKind
+import com.example.mealomat.feature.logbook.model.Session
+import com.example.mealomat.feature.logbook.model.eatenPercent
+import com.example.mealomat.feature.logbook.model.moodBlurb
+import com.example.mealomat.feature.logbook.model.nextMeal
 import com.example.mealomat.ui.components.Icon
 import com.example.mealomat.ui.components.IconImage
 import com.example.mealomat.ui.components.edge

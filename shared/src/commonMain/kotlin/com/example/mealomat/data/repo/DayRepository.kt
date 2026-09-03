@@ -44,8 +44,8 @@ class DayRepository(
         )
     }
 
-    suspend fun tickOff(date: LocalDate, planItemId: String) =
-        writeItem(date, planItemId) { row, now -> row.copy(ticked_at = now) }
+    suspend fun setTicked(date: LocalDate, planItemId: String, ticked: Boolean) =
+        writeItem(date, planItemId) { row, now -> row.copy(ticked_at = if (ticked) now else null) }
 
     // TODO: maybe make atomic, so a step, prepping multiple items is written in same transaction with same timestamp
     suspend fun markPrepped(date: LocalDate, planItemId: String): String {

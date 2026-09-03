@@ -8,11 +8,12 @@ import com.example.mealomat.data.repo.PrepBlockRepository
 import com.example.mealomat.data.repo.PrepRepository
 import com.example.mealomat.data.repo.ShoppingRepository
 import com.example.mealomat.domain.Day
-import com.example.mealomat.feature.logbookold.MealRow
-import com.example.mealomat.feature.logbookold.Session
-import com.example.mealomat.feature.logbookold.logbookRows
-import com.example.mealomat.feature.logbookold.prepSession
-import com.example.mealomat.feature.logbookold.shoppingSession
+import com.example.mealomat.feature.logbook.model.nextMeal
+import com.example.mealomat.feature.logbook.model.MealRow
+import com.example.mealomat.feature.logbook.model.Session
+import com.example.mealomat.feature.logbook.model.logbookRows
+import com.example.mealomat.feature.logbook.model.prepSession
+import com.example.mealomat.feature.logbook.model.shoppingSession
 import com.example.mealomat.domain.DayTotals
 import com.example.mealomat.domain.ingredientUses
 import com.example.mealomat.domain.totalsOf
@@ -42,20 +43,42 @@ class LogbookViewModel(
     private val _sessions = MutableStateFlow(emptyList<Session>())
     val sessions: StateFlow<List<Session>> = _sessions.asStateFlow()
 
+    private val _openMeals = MutableStateFlow(emptySet<String>())
+    val openMeals: StateFlow<Set<String>> = _openMeals.asStateFlow()
+
+    private var openOverrides = emptyMap<String, Boolean>()
+    private var shown: LocalDate? = null
+
     fun show(date: LocalDate) {
         val day = days.byDate(date)
         val library = day?.ingredients().orEmpty()
+        if (date != shown) openOverrides = emptyMap()
+        shown = date
         _day.value = day
         _totals.value = day?.let { totalsOf(it, library) }
         _meals.value = day?.let { logbookRows(it, library) }.orEmpty()
         _sessions.value = sessionsOn(date)
+        refreshOpen()
     }
 
-    fun tick(date: LocalDate, planItemId: String) {
+    fun tick(date: LocalDate, planItemId: String, ticked: Boolean) {
         viewModelScope.launch {
-            days.tickOff(date, planItemId)
+            days.setTicked(date, planItemId, ticked)
             show(date)
         }
+    }
+
+    fun toggleMeal(id: String) {
+        openOverrides = openOverrides + (id to (id !in _openMeals.value))
+        refreshOpen()
+    }
+
+    private fun refreshOpen() {
+        val active = nextMeal(_meals.value)?.id
+        _openMeals.value = _meals.value
+            .filter { openOverrides[it.id] ?: (it.id == active) }
+            .map { it.id }
+            .toSet()
     }
 
     private fun sessionsOn(date: LocalDate): List<Session> {

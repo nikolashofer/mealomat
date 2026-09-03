@@ -1,4 +1,4 @@
-package com.example.mealomat.feature.logbookold
+package com.example.mealomat.feature.logbook.model
 
 import com.example.mealomat.data.db.Shopping_step
 import com.example.mealomat.domain.IngredientNeed

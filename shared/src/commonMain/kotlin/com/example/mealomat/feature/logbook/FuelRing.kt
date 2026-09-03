@@ -15,6 +15,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import com.example.mealomat.feature.logbook.model.moodMascot
 import com.example.mealomat.ui.components.MascotImage
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space

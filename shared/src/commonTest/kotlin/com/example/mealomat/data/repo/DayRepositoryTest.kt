@@ -80,7 +80,7 @@ class DayRepositoryTest {
     fun aPastDayKeepsTheAmountItWasEatenAt() = runTest {
         val v1 = plan.create(Slot(monday, 0))
         val item = mondayLunch(v1, amount = 180.0)
-        days.tickOff(monday, item)
+        days.setTicked(monday, item, ticked = true)
 
         // the plan changes from next Monday on
         val v2 = plan.forEditing(monday, Slot(nextMonday, 0))
@@ -95,7 +95,7 @@ class DayRepositoryTest {
     fun stateSurvivesALaterRevision() = runTest {
         val v1 = plan.create(Slot(monday, 0))
         val item = mondayLunch(v1)
-        days.tickOff(monday, item)
+        days.setTicked(monday, item, ticked = true)
 
         plan.forEditing(monday, Slot(nextMonday, 0))
 
@@ -119,7 +119,7 @@ class DayRepositoryTest {
 
         days.setExcluded(monday, item, excluded = true)
         days.markPrepped(monday, item)
-        days.tickOff(monday, item)
+        days.setTicked(monday, item, ticked = true)
 
         val rows = db.dayItemQueries.listForDate(monday.toString()).executeAsList()
         assertEquals(1, rows.size)
@@ -133,7 +133,7 @@ class DayRepositoryTest {
         val item = mondayLunch(v1)
         val before = db.syncOutboxQueries.count().executeAsOne()
 
-        days.tickOff(monday, item)
+        days.setTicked(monday, item, ticked = true)
 
         val tables = db.syncOutboxQueries.list().executeAsList().map { it.table_name }
         assertTrue(db.syncOutboxQueries.count().executeAsOne() > before)
@@ -161,7 +161,7 @@ class DayRepositoryTest {
         assertTrue(!days.byDate(monday)!!.meals.single().isDone)
         days.markPrepped(monday, rice)
         assertTrue(!days.byDate(monday)!!.meals.single().isDone, "one item still to do")
-        days.tickOff(monday, egg)
+        days.setTicked(monday, egg, ticked = true)
         assertTrue(days.byDate(monday)!!.meals.single().isDone)
     }
 
@@ -200,8 +200,8 @@ class DayRepositoryTest {
         val v1 = plan.create(Slot(monday, 0))
         val item = mondayLunch(v1, amount = 180.0)
 
-        days.tickOff(monday, item)
-        days.tickOff(monday, item)
+        days.setTicked(monday, item, ticked = true)
+        days.setTicked(monday, item, ticked = true)
 
         assertEquals(-180.0, pantry.amountOf("rice"), "the second tap moves nothing")
         val ledger = pantry.movementsOf("rice").single()
@@ -220,7 +220,7 @@ class DayRepositoryTest {
         val item = mondayLunch(v1, prepMode = PrepMode.PREP)
 
         days.markPrepped(monday, item)
-        days.tickOff(monday, item)
+        days.setTicked(monday, item, ticked = true)
 
         assertEquals(-180.0, pantry.amountOf("rice"), "deducted once, at prep time")
         assertEquals(LedgerReason.PREP, pantry.movementsOf("rice").single().reason)
@@ -241,7 +241,7 @@ class DayRepositoryTest {
         val item = mondayLunch(v1)
 
         days.setExcluded(monday, item, excluded = true)
-        days.tickOff(monday, item)
+        days.setTicked(monday, item, ticked = true)
 
         assertEquals(0.0, pantry.amountOf("rice"), "a planned eat-out was never bought")
     }
@@ -252,7 +252,7 @@ class DayRepositoryTest {
         val item = mondayLunch(v1)
         val signedOut = DayRepository(db, OutboxWriter(db, clock), FakeAuth(null), clock, plan, pantry)
 
-        assertFailsWith<IllegalArgumentException> { signedOut.tickOff(monday, item) }
+        assertFailsWith<IllegalArgumentException> { signedOut.setTicked(monday, item, ticked = true) }
         assertNull(itemOn(monday).tickedAt)
         assertTrue(pantry.movementsOf("rice").isEmpty())
     }
