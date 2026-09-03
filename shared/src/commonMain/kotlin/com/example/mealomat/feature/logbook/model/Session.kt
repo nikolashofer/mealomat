@@ -13,12 +13,15 @@ data class Session(
     val total: Int,
 )
 
-fun shoppingSession(blockId: String, needs: List<IngredientNeed>, steps: List<Shopping_step>) = Session(
-    kind = SessionKind.Shopping,
-    blockId = blockId,
-    done = steps.size,
-    total = steps.size + needs.count { it.buy > 0.0 },
-)
+fun shoppingSession(blockId: String, needs: List<IngredientNeed>, steps: List<Shopping_step>): Session {
+    val settled = steps.map { it.ingredient_id }.toSet()
+    return Session(
+        kind = SessionKind.Shopping,
+        blockId = blockId,
+        done = steps.size,
+        total = steps.size + needs.count { it.buy > 0.0 && it.ingredientId !in settled },
+    )
+}
 
 fun prepSession(blockId: String, steps: List<PrepStep>) = Session(
     kind = SessionKind.Prep,

@@ -51,6 +51,7 @@ fun LogbookHeader(
     totals: DayTotals,
     meals: List<MealRow>,
     sessions: List<Session>,
+    onSession: (Session) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = MealomatTheme.colors
@@ -80,7 +81,7 @@ fun LogbookHeader(
                     modifier = Modifier.fillMaxWidth().padding(top = Space.S20),
                     horizontalArrangement = Arrangement.spacedBy(Space.S10),
                 ) {
-                    sessions.forEach { SessionButton(it, Modifier.weight(1f)) }
+                    sessions.forEach { SessionButton(it, onSession, Modifier.weight(1f)) }
                 }
             }
         }
@@ -205,7 +206,11 @@ private fun RingWithBadge(percent: Int) {
 }
 
 @Composable
-private fun SessionButton(session: Session, modifier: Modifier = Modifier) {
+private fun SessionButton(
+    session: Session,
+    onSession: (Session) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
     val tone: ToneColors = when (session.kind) {
@@ -216,7 +221,7 @@ private fun SessionButton(session: Session, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .pressable(
-                onClick = {},
+                onClick = { onSession(session) },
                 shape = MealomatTheme.shapes.control.lg,
                 fill = tone.fill,
                 edge = tone.edge,

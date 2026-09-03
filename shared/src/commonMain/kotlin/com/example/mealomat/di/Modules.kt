@@ -17,6 +17,7 @@ import com.example.mealomat.data.repo.PrepRepository
 import com.example.mealomat.data.repo.ShoppingRepository
 import com.example.mealomat.feature.auth.SignInViewModel
 import com.example.mealomat.feature.logbook.LogbookViewModel
+import com.example.mealomat.feature.shopping.ShoppingViewModel
 import com.example.mealomat.navigation.NavBarViewModel
 import com.example.mealomat.data.sync.OutboxWriter
 import app.cash.sqldelight.db.SqlDriver
@@ -42,4 +43,5 @@ val appModule = module {
     viewModel { SignInViewModel(get()) }
     viewModel { LogbookViewModel(get(), get(), get(), get(), get()) }
     viewModel { NavBarViewModel(get(), get(), get()) }
+    viewModel { ShoppingViewModel(get(), get()) }
 }

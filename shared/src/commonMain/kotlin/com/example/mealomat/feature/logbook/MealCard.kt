@@ -46,10 +46,12 @@ fun MealCard(
     val colors = MealomatTheme.colors
     val shape = MealomatTheme.shapes.surface.card
     val edge = if (active) colors.tone.brand.fill else colors.edge.subtle
+    val depth = MealomatTheme.shadows.edge.sm.offsetY
 
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .padding(bottom = depth)
             .edge(MealomatTheme.shadows.edge.sm.copy(color = edge), shape)
             .clip(shape)
             .background(colors.surface.raised)

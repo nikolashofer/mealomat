@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.mealomat.feature.logbook.model.Session
 import com.example.mealomat.feature.logbook.model.nextMeal
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space
@@ -25,6 +26,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun LogbookScreen(
     date: LocalDate,
     contentPadding: PaddingValues,
+    onSession: (Session) -> Unit,
     viewModel: LogbookViewModel = koinViewModel(),
 ) {
     val totals by viewModel.totals.collectAsStateWithLifecycle()
@@ -35,7 +37,7 @@ fun LogbookScreen(
     LaunchedEffect(date) { viewModel.show(date) }
 
     Column(modifier = Modifier.background(MealomatTheme.colors.surface.canvas).fillMaxSize()) {
-        totals?.let { LogbookHeader(it, meals, sessions, modifier = Modifier.zIndex(1f)) }
+        totals?.let { LogbookHeader(it, meals, sessions, onSession, modifier = Modifier.zIndex(1f)) }
 
         Column(
             modifier = Modifier

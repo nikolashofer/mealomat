@@ -22,8 +22,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.mealomat.feature.logbook.LogbookScreen
+import com.example.mealomat.feature.logbook.model.SessionKind
+import com.example.mealomat.feature.shopping.ShoppingScreen
 import com.example.mealomat.ui.theme.Space
+import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -47,6 +51,19 @@ fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
                 LogbookScreen(
                     date = selected,
                     contentPadding = PaddingValues(bottom = barHeight),
+                    onSession = { session ->
+                        if (session.kind == SessionKind.Shopping) {
+                            navController.navigate(Shopping(session.blockId, selected.toString()))
+                        }
+                    },
+                )
+            }
+            composable<Shopping> { entry ->
+                val route = entry.toRoute<Shopping>()
+                ShoppingScreen(
+                    blockId = route.blockId,
+                    date = LocalDate.parse(route.date),
+                    onClose = { navController.popBackStack() },
                 )
             }
         }
