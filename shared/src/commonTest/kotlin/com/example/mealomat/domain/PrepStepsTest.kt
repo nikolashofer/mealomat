@@ -34,10 +34,13 @@ class PrepStepsTest {
         preppedAt = preppedAt,
     )
 
-    private fun component(lineage: String) = Plan_component(
-        id = "c-$lineage", user_id = "user-1", plan_id = "p", plan_meal_id = "m", lineage_id = lineage,
+    private fun component(lineage: String, id: String = "c-$lineage") = Plan_component(
+        id = id, user_id = "user-1", plan_id = "p", plan_meal_id = "m", lineage_id = lineage,
         updated_at = 0, deleted_at = null, name = "Peanut sauce", position = 0, prep_mode = PrepMode.PREP,
     )
+
+    private fun PrepStep.amountOf(ingredientId: String) =
+        totals.firstOrNull { it.ingredientId == ingredientId }?.amount
 
     private fun day(date: LocalDate, items: List<DayItemView>, components: List<Plan_component> = emptyList()) =
         Day(date, listOf(DayMealView("meal-$date", "Lunch", 0, components, items)))
@@ -56,7 +59,7 @@ class PrepStepsTest {
         )
 
         assertEquals(1, result.size)
-        assertEquals(900.0, result.single().amount, "combined across the meals it serves")
+        assertEquals(900.0, result.single().amountOf("rice"), "combined across the meals it serves")
         assertEquals(3, result.single().items.size)
     }
 
@@ -77,6 +80,36 @@ class PrepStepsTest {
     }
 
     @Test
+    fun oneLineageAcrossDaysIsOneStepTotalledPerIngredient() {
+        val result = steps(
+            listOf(
+                day(
+                    monday,
+                    listOf(
+                        item("quark", 250.0, componentId = "c-mon"),
+                        item("oats", 25.0, componentId = "c-mon"),
+                    ),
+                    listOf(component("breakfast-base", id = "c-mon")),
+                ),
+                day(
+                    tuesday,
+                    listOf(
+                        item("quark", 250.0, componentId = "c-tue"),
+                        item("oats", 25.0, componentId = "c-tue"),
+                    ),
+                    listOf(component("breakfast-base", id = "c-tue")),
+                ),
+            ),
+        )
+
+        assertEquals(1, result.size, "two days, two component rows, one step")
+        assertEquals("component:breakfast-base", result.single().key)
+        assertEquals(500.0, result.single().amountOf("quark"))
+        assertEquals(50.0, result.single().amountOf("oats"), "each ingredient totals on its own")
+        assertEquals(4, result.single().items.size)
+    }
+
+    @Test
     fun anExcludedLineDropsOutAndCanEmptyAStep() {
         val partly = steps(
             listOf(
@@ -84,7 +117,7 @@ class PrepStepsTest {
                 day(tuesday, listOf(item("rice", 300.0, excluded = true))),
             ),
         )
-        assertEquals(300.0, partly.single().amount, "the eat-out is not prepped")
+        assertEquals(300.0, partly.single().amountOf("rice"), "the eat-out is not prepped")
 
         val entirely = steps(listOf(day(monday, listOf(item("rice", 300.0, excluded = true)))))
         assertEquals(emptyList(), entirely)

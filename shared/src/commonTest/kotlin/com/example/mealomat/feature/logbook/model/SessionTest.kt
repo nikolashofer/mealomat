@@ -19,7 +19,7 @@ class SessionTest {
     )
 
     private fun prepStep(key: String, doneAt: Long?) =
-        PrepStep(key = key, label = key, amount = 300.0, items = emptyList(), doneAt = doneAt)
+        PrepStep(key = key, label = key, totals = emptyList(), items = emptyList(), doneAt = doneAt)
 
     @Test
     fun beforeATripNothingIsDoneAndOnlyMissingThingsCount() {

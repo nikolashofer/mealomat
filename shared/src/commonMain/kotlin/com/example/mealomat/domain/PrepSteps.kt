@@ -8,10 +8,12 @@ import kotlinx.datetime.LocalDate
 data class PrepStep(
     val key: String,
     val label: String,
-    val amount: Double,
+    val totals: List<PrepStepTotal>,
     val items: List<PrepStepItem>,
     val doneAt: Long?,
 )
+
+data class PrepStepTotal(val ingredientId: String, val amount: Double)
 
 data class PrepStepItem(
     val date: LocalDate,
@@ -38,7 +40,11 @@ fun prepStepsIn(
             PrepStep(
                 key = key,
                 label = labels(key),
-                amount = covered.sumOf { (_, _, item) -> item.amount },
+                totals = covered
+                    .groupBy { (_, _, item) -> item.ingredientId }
+                    .map { (ingredientId, lines) ->
+                        PrepStepTotal(ingredientId, lines.sumOf { (_, _, item) -> item.amount })
+                    },
                 items = covered.map { (date, _, item) ->
                     PrepStepItem(date, item.planItemId, item.ingredientId, item.amount, item.preppedAt)
                 },

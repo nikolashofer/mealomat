@@ -10,5 +10,8 @@ data object Logbook
 @Serializable
 data class Shopping(val blockId: String, val date: String)
 
+@Serializable
+data class Prep(val blockId: String, val date: String)
+
 // Whitelist, so a new route is without the nav bar until added here.
 fun NavDestination?.showsNavBar() = this?.hasRoute<Logbook>() == true

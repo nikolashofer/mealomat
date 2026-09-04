@@ -104,7 +104,7 @@ class PrepRepositoryTest {
 
         assertEquals(1, steps.size, "the fresh salad is not a step")
         assertEquals("Rice", steps.single().label)
-        assertEquals(600.0, steps.single().amount)
+        assertEquals(600.0, steps.single().totals.single().amount)
     }
 
     @Test

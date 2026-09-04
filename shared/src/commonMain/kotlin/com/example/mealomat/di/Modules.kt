@@ -17,6 +17,7 @@ import com.example.mealomat.data.repo.PrepRepository
 import com.example.mealomat.data.repo.ShoppingRepository
 import com.example.mealomat.feature.auth.SignInViewModel
 import com.example.mealomat.feature.logbook.LogbookViewModel
+import com.example.mealomat.feature.prep.PrepViewModel
 import com.example.mealomat.feature.shopping.ShoppingViewModel
 import com.example.mealomat.navigation.NavBarViewModel
 import com.example.mealomat.data.sync.OutboxWriter
@@ -44,4 +45,5 @@ val appModule = module {
     viewModel { LogbookViewModel(get(), get(), get(), get(), get()) }
     viewModel { NavBarViewModel(get(), get(), get()) }
     viewModel { ShoppingViewModel(get(), get()) }
+    viewModel { PrepViewModel(get(), get()) }
 }

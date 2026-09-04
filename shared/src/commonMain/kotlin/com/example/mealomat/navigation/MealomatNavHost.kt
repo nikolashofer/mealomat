@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mealomat.feature.logbook.LogbookScreen
 import com.example.mealomat.feature.logbook.model.SessionKind
+import com.example.mealomat.feature.prep.PrepScreen
 import com.example.mealomat.feature.shopping.ShoppingScreen
 import com.example.mealomat.ui.theme.Space
 import kotlinx.datetime.LocalDate
@@ -52,10 +53,22 @@ fun MealomatNavHost(navBar: NavBarViewModel = koinViewModel()) {
                     date = selected,
                     contentPadding = PaddingValues(bottom = barHeight),
                     onSession = { session ->
-                        if (session.kind == SessionKind.Shopping) {
-                            navController.navigate(Shopping(session.blockId, selected.toString()))
-                        }
+                        val date = selected.toString()
+                        navController.navigate(
+                            when (session.kind) {
+                                SessionKind.Shopping -> Shopping(session.blockId, date)
+                                SessionKind.Prep -> Prep(session.blockId, date)
+                            },
+                        )
                     },
+                )
+            }
+            composable<Prep> { entry ->
+                val route = entry.toRoute<Prep>()
+                PrepScreen(
+                    blockId = route.blockId,
+                    date = LocalDate.parse(route.date),
+                    onClose = { navController.popBackStack() },
                 )
             }
             composable<Shopping> { entry ->

@@ -1,4 +1,4 @@
-package com.example.mealomat.feature.shopping
+package com.example.mealomat.feature.prep
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -6,15 +6,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,29 +28,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.mealomat.feature.shopping.model.LineState
-import com.example.mealomat.feature.shopping.model.ShoppingLine
+import com.example.mealomat.feature.prep.model.PrepLine
+import com.example.mealomat.feature.prep.model.PrepLineState
 import com.example.mealomat.ui.components.Button
 import com.example.mealomat.ui.components.ControlSize
 import com.example.mealomat.ui.components.Icon
+import com.example.mealomat.ui.components.IconImage
 import com.example.mealomat.ui.components.Mascot
 import com.example.mealomat.ui.components.MascotImage
 import com.example.mealomat.ui.components.edge
-import com.example.mealomat.ui.components.IconImage
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space
 import com.example.mealomat.ui.theme.semantic.bottomOnly
-import com.example.mealomat.ui.theme.semantic.caps
 import com.example.mealomat.ui.theme.semantic.toDp
 import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ShoppingScreen(
+fun PrepScreen(
     blockId: String,
     date: LocalDate,
     onClose: () -> Unit,
-    viewModel: ShoppingViewModel = koinViewModel(),
+    viewModel: PrepViewModel = koinViewModel(),
 ) {
     val lines by viewModel.lines.collectAsStateWithLifecycle()
     val ready by viewModel.ready.collectAsStateWithLifecycle()
@@ -75,9 +73,9 @@ fun ShoppingScreen(
 
         val listState = rememberLazyListState()
 
-        LaunchedEffect(active?.ingredientId, lines.size) {
-            val index = lines.indexOfFirst { it.ingredientId == active?.ingredientId }
-            if (index >= 0) listState.animateScrollToItem(index)
+        LaunchedEffect(active?.key, lines.size) {
+            val index = lines.indexOfFirst { it.key == active?.key }
+            if (index >= 0) listState.scrollToItem(index)
         }
 
         LazyColumn(
@@ -86,23 +84,13 @@ fun ShoppingScreen(
             contentPadding = PaddingValues(horizontal = Space.S20, vertical = Space.S2),
             verticalArrangement = Arrangement.spacedBy(Space.S10),
         ) {
-            if (finished) {
-                val (bought, skipped) = lines.partition { it.state == LineState.Bought }
-
-                if (skipped.isNotEmpty()) {
-                    item(key = "skipped") { SectionLabel("SKIPPED") }
-                    items(skipped, key = { it.ingredientId }) { SettledRow(it, true) {} }
-                }
-                if (bought.isNotEmpty()) {
-                    item(key = "bought") { SectionLabel("BOUGHT") }
-                    items(bought, key = { it.ingredientId }) { SettledRow(it, true) {} }
-                }
-            } else {
-                items(lines, key = { it.ingredientId }) { line ->
+            // The summary's body is not designed yet, so a finished session shows the card alone.
+            if (!finished) {
+                items(lines, key = { it.key }) { line ->
                     when {
-                        line.ingredientId == active?.ingredientId -> ShoppingCard(line)
-                        line.state == LineState.Pending -> PendingRow(line) { viewModel.focus(line) }
-                        else -> SettledRow(line, finished) { viewModel.focus(line) }
+                        line.key == active?.key -> PrepCard(line)
+                        line.state == PrepLineState.Pending -> PendingRow(line) { viewModel.focus(line) }
+                        else -> DoneRow(line)
                     }
                 }
             }
@@ -116,21 +104,13 @@ fun ShoppingScreen(
 }
 
 @Composable
-private fun SectionLabel(text: String) {
-    BasicText(
-        text = text,
-        modifier = Modifier.padding(start = Space.S4, end = Space.S4, top = Space.S6),
-        style = MealomatTheme.typography.label.xxs.caps().copy(color = MealomatTheme.colors.text.tertiary),
-    )
-}
-
-@Composable
-private fun SummaryCard(lines: List<ShoppingLine>) {
+private fun SummaryCard(lines: List<PrepLine>) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
-    val tone = colors.tone.shopping
+    val tone = colors.tone.prep
     val shape = MealomatTheme.shapes.surface.card
     val depth = MealomatTheme.shadows.edge.lg.offsetY
+    val steps = if (lines.size == 1) "step" else "steps"
 
     Row(
         modifier = Modifier
@@ -150,12 +130,9 @@ private fun SummaryCard(lines: List<ShoppingLine>) {
             modifier = Modifier.size(MealomatTheme.sizes.mascot.header),
         )
         Column {
+            BasicText(text = "Prep done", style = typography.display.sm.copy(color = tone.onFill))
             BasicText(
-                text = "Trip done",
-                style = typography.display.sm.copy(color = tone.onFill),
-            )
-            BasicText(
-                text = summaryLine(lines),
+                text = "${lines.size} $steps",
                 style = typography.body.sm.copy(color = tone.tint),
             )
         }
@@ -163,10 +140,10 @@ private fun SummaryCard(lines: List<ShoppingLine>) {
 }
 
 @Composable
-private fun Header(lines: List<ShoppingLine>, active: ShoppingLine?, onClose: () -> Unit) {
+private fun Header(lines: List<PrepLine>, active: PrepLine?, onClose: () -> Unit) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
-    val done = lines.count { it.state == LineState.Bought }
+    val done = lines.count { it.state == PrepLineState.Done }
 
     Column(
         modifier = Modifier
@@ -179,15 +156,13 @@ private fun Header(lines: List<ShoppingLine>, active: ShoppingLine?, onClose: ()
             horizontalArrangement = Arrangement.spacedBy(Space.S12),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(
-                modifier = Modifier.weight(1f),
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 BasicText(
-                    text = "Shopping trip",
+                    text = "Prep session",
                     style = typography.label.lg.copy(color = colors.text.primary),
                 )
                 BasicText(
-                    text = "$done of ${lines.size} bought",
+                    text = "$done of ${lines.size} done",
                     style = typography.body.xs.copy(color = colors.text.secondary),
                 )
             }
@@ -203,7 +178,7 @@ private fun Header(lines: List<ShoppingLine>, active: ShoppingLine?, onClose: ()
 }
 
 @Composable
-private fun ProgressBar(lines: List<ShoppingLine>, active: ShoppingLine?) {
+private fun ProgressBar(lines: List<PrepLine>, active: PrepLine?) {
     val colors = MealomatTheme.colors
 
     Row(
@@ -212,9 +187,8 @@ private fun ProgressBar(lines: List<ShoppingLine>, active: ShoppingLine?) {
     ) {
         lines.forEach { line ->
             val fill = when {
-                line.ingredientId == active?.ingredientId -> colors.tone.shopping.border
-                line.state == LineState.Bought -> colors.tone.shopping.fill
-                line.state == LineState.Skipped -> colors.tone.neutral.edge
+                line.key == active?.key -> colors.tone.prep.border
+                line.state == PrepLineState.Done -> colors.tone.prep.fill
                 else -> colors.border.subtle
             }
             Box(
@@ -229,12 +203,10 @@ private fun ProgressBar(lines: List<ShoppingLine>, active: ShoppingLine?) {
 }
 
 @Composable
-private fun SettledRow(line: ShoppingLine, finished: Boolean, onClick: () -> Unit) {
+private fun DoneRow(line: PrepLine) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
-    val bought = line.state == LineState.Bought
     val shape = MealomatTheme.shapes.surface.card
-    val edge = if (bought) colors.edge.subtle else colors.tone.neutral.edge
     val depth = MealomatTheme.shadows.edge.sm.offsetY
 
     Row(
@@ -242,16 +214,10 @@ private fun SettledRow(line: ShoppingLine, finished: Boolean, onClick: () -> Uni
             .fillMaxWidth()
             .alpha(MealomatTheme.opacity.muted)
             .padding(bottom = depth)
-            .edge(MealomatTheme.shadows.edge.sm.copy(color = edge), shape)
+            .edge(MealomatTheme.shadows.edge.sm.copy(color = colors.edge.subtle), shape)
             .clip(shape)
-            .then(
-                when {
-                    bought -> Modifier
-                    else -> Modifier.clickable(interactionSource = null, indication = null, onClick = onClick)
-                },
-            )
-            .background(if (bought) colors.surface.raised else colors.surface.subtle)
-            .border(1.dp, if (bought) colors.border.subtle else colors.tone.neutral.border, shape)
+            .background(colors.surface.raised)
+            .border(1.dp, colors.border.subtle, shape)
             .padding(horizontal = Space.S14, vertical = Space.S12),
         horizontalArrangement = Arrangement.spacedBy(Space.S12),
         verticalAlignment = Alignment.CenterVertically,
@@ -260,12 +226,12 @@ private fun SettledRow(line: ShoppingLine, finished: Boolean, onClick: () -> Uni
             modifier = Modifier
                 .size(MealomatTheme.sizes.check)
                 .clip(MealomatTheme.shapes.surface.badge)
-                .background(if (bought) colors.tone.shopping.fill else colors.tone.neutral.border),
+                .background(colors.tone.prep.fill),
             contentAlignment = Alignment.Center,
         ) {
             IconImage(
-                icon = if (bought) Icon.Check else Icon.Minus,
-                tint = if (bought) colors.tone.shopping.onFill else colors.text.secondary,
+                icon = Icon.Check,
+                tint = colors.tone.prep.onFill,
                 contentDescription = null,
                 modifier = Modifier.size(typography.label.sm.fontSize.toDp()),
             )
@@ -275,25 +241,17 @@ private fun SettledRow(line: ShoppingLine, finished: Boolean, onClick: () -> Uni
             modifier = Modifier.weight(1f),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = typography.strong.md.copy(
-                color = if (bought) colors.text.primary else colors.text.secondary,
-            ),
+            style = typography.strong.md.copy(color = colors.text.primary),
         )
-        when (val amount = line.bought) {
-            null -> BasicText(
-                text = if (finished) "needs ${line.short.text}" else "skipped",
-                style = typography.strong.sm.copy(color = colors.text.tertiary),
-            )
-            else -> BasicText(
-                text = "+${amount.text}",
-                style = typography.label.sm.copy(color = colors.tone.shopping.edge),
-            )
-        }
+        BasicText(
+            text = line.make.text,
+            style = typography.label.sm.copy(color = colors.tone.prep.edge),
+        )
     }
 }
 
 @Composable
-private fun PendingRow(line: ShoppingLine, onClick: () -> Unit) {
+private fun PendingRow(line: PrepLine, onClick: () -> Unit) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
     val shape = MealomatTheme.shapes.surface.card
@@ -320,32 +278,24 @@ private fun PendingRow(line: ShoppingLine, onClick: () -> Unit) {
             style = typography.body.md.copy(color = colors.text.primary),
         )
         BasicText(
-            text = line.buy.text,
+            text = line.make.text,
             style = typography.strong.sm.copy(color = colors.text.secondary),
         )
     }
 }
 
 @Composable
-private fun Footer(active: ShoppingLine, viewModel: ShoppingViewModel) {
+private fun Footer(active: PrepLine, viewModel: PrepViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = Space.S20)
             .padding(top = Space.S12, bottom = Space.S24),
-        horizontalArrangement = Arrangement.spacedBy(Space.S10),
     ) {
         Button(
-            text = "Skip",
-            onClick = { viewModel.skip(active) },
-            tone = MealomatTheme.colors.tone.neutral,
-            modifier = Modifier.width(Space.S112),
-            size = ControlSize.Lg,
-        )
-        Button(
-            text = "Bought ${active.buy.text}",
-            onClick = { viewModel.buy(active) },
-            tone = MealomatTheme.colors.tone.shopping,
+            text = "Made ${active.make.text}",
+            onClick = { viewModel.make(active) },
+            tone = MealomatTheme.colors.tone.prep,
             modifier = Modifier.weight(1f),
             size = ControlSize.Lg,
         )
@@ -363,18 +313,9 @@ private fun Finished(onClose: () -> Unit) {
         Button(
             text = "Back to today",
             onClick = onClose,
-            tone = MealomatTheme.colors.tone.shopping,
+            tone = MealomatTheme.colors.tone.prep,
             modifier = Modifier.weight(1f),
             size = ControlSize.Lg,
         )
-    }
-}
-
-private fun summaryLine(lines: List<ShoppingLine>): String {
-    val bought = lines.count { it.state == LineState.Bought }
-    val skipped = lines.count { it.state == LineState.Skipped }
-    return when {
-        skipped > 0 -> "$bought bought · $skipped skipped"
-        else -> "$bought bought"
     }
 }
