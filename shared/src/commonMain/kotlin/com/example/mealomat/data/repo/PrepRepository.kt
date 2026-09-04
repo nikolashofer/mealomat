@@ -32,6 +32,9 @@ class PrepRepository(
 
     fun open(): Prep_session? = sessionQueries.findOpen().executeAsOneOrNull()
 
+    fun sessionOn(prepBlockId: String, on: LocalDate): Prep_session? =
+        sessionQueries.findForBlock(prepBlockId, on.toString()).executeAsOneOrNull()
+
     fun stepsOf(sessionId: String): List<PrepStep> {
         val session = sessionQueries.findById(sessionId).executeAsOneOrNull() ?: return emptyList()
         return stepsIn(session.window(), session.prep_block_id)

@@ -138,5 +138,6 @@ class ShoppingLinesTest {
 
         assertEquals("1 000 g", lines.single().buy.text)
         assertEquals("700 g", lines.single().need.text, "the need itself is not rounded")
+        assertEquals("700 g", lines.single().short.text, "what is missing is what is missing")
     }
 }

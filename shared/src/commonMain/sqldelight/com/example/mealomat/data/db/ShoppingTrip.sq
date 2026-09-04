@@ -34,5 +34,10 @@ WHERE deleted_at IS NULL AND status IN ('IN_PROGRESS', 'DONE') AND covers_to_dat
 findById:
 SELECT * FROM shopping_trip WHERE id = ?;
 
+findForBlock:
+SELECT * FROM shopping_trip
+WHERE deleted_at IS NULL AND prep_block_id = ? AND planned_date = ?
+ORDER BY updated_at DESC LIMIT 1;
+
 findOpen:
 SELECT * FROM shopping_trip WHERE deleted_at IS NULL AND status = 'IN_PROGRESS';

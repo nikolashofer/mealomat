@@ -22,11 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import com.example.mealomat.data.db.SessionStatus
 import com.example.mealomat.domain.DayTotals
 import com.example.mealomat.domain.gramsValue
 import com.example.mealomat.domain.kcalLabel
@@ -218,45 +220,84 @@ private fun SessionButton(
         SessionKind.Prep -> colors.tone.prep
     }
 
+    val abandoned = session.status == SessionStatus.ABANDONED
+    val fill = if (abandoned) colors.tone.neutral.fill else tone.fill
+    val edge = if (abandoned) colors.tone.neutral.edge else tone.edge
+    val label = if (abandoned) colors.text.secondary else tone.onFill
+    val sub = if (abandoned) colors.text.secondary else tone.tint
+
+    val row = Modifier
+        .heightIn(min = MealomatTheme.sizes.control.lg)
+        .padding(horizontal = Space.S14)
+
     Row(
         modifier = modifier
-            .pressable(
-                onClick = { onSession(session) },
-                shape = MealomatTheme.shapes.control.lg,
-                fill = tone.fill,
-                edge = tone.edge,
-                depth = MealomatTheme.shadows.edge.lg.offsetY,
+            .then(
+                when (session.status) {
+                    SessionStatus.IN_PROGRESS -> Modifier.pressable(
+                        onClick = { onSession(session) },
+                        shape = MealomatTheme.shapes.control.lg,
+                        fill = fill,
+                        edge = edge,
+                        depth = MealomatTheme.shadows.edge.lg.offsetY,
+                    )
+                    else -> Modifier
+                        .padding(bottom = MealomatTheme.shadows.edge.lg.offsetY)
+                        .edge(MealomatTheme.shadows.edge.lg.copy(color = edge), MealomatTheme.shapes.control.lg)
+                        .clip(MealomatTheme.shapes.control.lg)
+                        .background(fill)
+                },
             )
-            .heightIn(min = MealomatTheme.sizes.control.lg)
-            .padding(horizontal = Space.S14),
+            .then(row),
         horizontalArrangement = Arrangement.spacedBy(Space.S10),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             BasicText(
-                text = when (session.kind) {
-                    SessionKind.Shopping -> "Shop"
-                    SessionKind.Prep -> "Prep"
-                },
+                text = session.title(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = typography.label.md.copy(color = tone.onFill),
+                style = typography.label.md.copy(color = label),
             )
             BasicText(
-                text = when (session.kind) {
-                    SessionKind.Shopping -> "${session.done} of ${session.total} bought"
-                    SessionKind.Prep -> "${session.done} of ${session.total} steps"
-                },
+                text = session.subtitle(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = typography.strong.xs.copy(color = tone.tint),
+                style = typography.strong.xs.copy(color = sub),
             )
         }
-        IconImage(
-            icon = Icon.CaretRight,
-            tint = tone.onFill,
-            contentDescription = null,
-            modifier = Modifier.size(typography.label.md.fontSize.toDp()),
-        )
+        if (session.status == SessionStatus.IN_PROGRESS) {
+            IconImage(
+                icon = Icon.CaretRight,
+                tint = label,
+                contentDescription = null,
+                modifier = Modifier.size(typography.label.md.fontSize.toDp()),
+            )
+        }
     }
 }
+
+private fun Session.title(): String = when (status) {
+    SessionStatus.DONE -> when (kind) {
+        SessionKind.Shopping -> "Shopped"
+        SessionKind.Prep -> "Prepped"
+    }
+    else -> when (kind) {
+        SessionKind.Shopping -> "Shop"
+        SessionKind.Prep -> "Prep"
+    }
+}
+
+private fun Session.subtitle(): String = when (status) {
+    SessionStatus.IN_PROGRESS -> when (kind) {
+        SessionKind.Shopping -> "$done of $total bought"
+        SessionKind.Prep -> "$done of $total steps"
+    }
+    SessionStatus.DONE -> when {
+        kind == SessionKind.Prep -> "All $total steps"
+        skipped > 0 -> "$got got · $skipped skipped"
+        else -> "All $total bought"
+    }
+    SessionStatus.ABANDONED -> "Left at $done of $total"
+}
+

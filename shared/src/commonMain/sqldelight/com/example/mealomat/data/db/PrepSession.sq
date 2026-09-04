@@ -33,5 +33,10 @@ WHERE deleted_at IS NULL AND status IN ('IN_PROGRESS', 'DONE') AND covers_to_dat
 findById:
 SELECT * FROM prep_session WHERE id = ?;
 
+findForBlock:
+SELECT * FROM prep_session
+WHERE deleted_at IS NULL AND prep_block_id = ? AND planned_date = ?
+ORDER BY updated_at DESC LIMIT 1;
+
 findOpen:
 SELECT * FROM prep_session WHERE deleted_at IS NULL AND status = 'IN_PROGRESS';

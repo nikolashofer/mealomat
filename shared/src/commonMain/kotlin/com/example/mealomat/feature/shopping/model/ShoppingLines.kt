@@ -17,6 +17,7 @@ data class ShoppingLine(
     val have: MeasureLabel,
     val buy: MeasureLabel,
     val buyAmount: Double,
+    val short: MeasureLabel,
     val bought: MeasureLabel?,
 )
 
@@ -74,6 +75,7 @@ private fun IngredientNeed.toLine(
         have = amountLabel(have, ingredient.basis),
         buy = amountLabel(amount, ingredient.basis),
         buyAmount = amount,
+        short = amountLabel(buy, ingredient.basis),
         bought = bought,
     )
 }

@@ -38,6 +38,9 @@ class ShoppingRepository(
 
     fun open(): Shopping_trip? = tripQueries.findOpen().executeAsOneOrNull()
 
+    fun tripOn(prepBlockId: String, on: LocalDate): Shopping_trip? =
+        tripQueries.findForBlock(prepBlockId, on.toString()).executeAsOneOrNull()
+
     fun stepsOf(tripId: String): List<Shopping_step> =
         stepQueries.listForTrip(tripId).executeAsList()
 

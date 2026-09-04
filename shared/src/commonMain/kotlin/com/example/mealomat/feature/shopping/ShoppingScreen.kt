@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,11 +34,14 @@ import com.example.mealomat.feature.shopping.model.ShoppingLine
 import com.example.mealomat.ui.components.Button
 import com.example.mealomat.ui.components.ControlSize
 import com.example.mealomat.ui.components.Icon
+import com.example.mealomat.ui.components.Mascot
+import com.example.mealomat.ui.components.MascotImage
 import com.example.mealomat.ui.components.edge
 import com.example.mealomat.ui.components.IconImage
 import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.Space
 import com.example.mealomat.ui.theme.semantic.bottomOnly
+import com.example.mealomat.ui.theme.semantic.caps
 import com.example.mealomat.ui.theme.semantic.toDp
 import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
@@ -58,13 +60,18 @@ fun ShoppingScreen(
 
     LaunchedEffect(blockId, date) { viewModel.start(blockId, date) }
 
+    val finished = ready && active == null
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colors.surface.canvas)
             .statusBarsPadding(),
     ) {
-        Header(lines, active, onClose)
+        when {
+            finished -> SummaryCard(lines)
+            else -> Header(lines, active, onClose)
+        }
 
         val listState = rememberLazyListState()
 
@@ -79,11 +86,24 @@ fun ShoppingScreen(
             contentPadding = PaddingValues(horizontal = Space.S20, vertical = Space.S2),
             verticalArrangement = Arrangement.spacedBy(Space.S10),
         ) {
-            items(lines, key = { it.ingredientId }) { line ->
-                when {
-                    line.ingredientId == active?.ingredientId -> ShoppingCard(line)
-                    line.state == LineState.Pending -> PendingRow(line) { viewModel.focus(line) }
-                    else -> SettledRow(line) { viewModel.focus(line) }
+            if (finished) {
+                val (bought, skipped) = lines.partition { it.state == LineState.Bought }
+
+                if (skipped.isNotEmpty()) {
+                    item(key = "skipped") { SectionLabel("SKIPPED") }
+                    items(skipped, key = { it.ingredientId }) { SettledRow(it, true) {} }
+                }
+                if (bought.isNotEmpty()) {
+                    item(key = "bought") { SectionLabel("BOUGHT") }
+                    items(bought, key = { it.ingredientId }) { SettledRow(it, true) {} }
+                }
+            } else {
+                items(lines, key = { it.ingredientId }) { line ->
+                    when {
+                        line.ingredientId == active?.ingredientId -> ShoppingCard(line)
+                        line.state == LineState.Pending -> PendingRow(line) { viewModel.focus(line) }
+                        else -> SettledRow(line, finished) { viewModel.focus(line) }
+                    }
                 }
             }
         }
@@ -91,6 +111,53 @@ fun ShoppingScreen(
         when (val line = active) {
             null -> if (ready) Finished(onClose)
             else -> Footer(line, viewModel)
+        }
+    }
+}
+
+@Composable
+private fun SectionLabel(text: String) {
+    BasicText(
+        text = text,
+        modifier = Modifier.padding(start = Space.S4, end = Space.S4, top = Space.S6),
+        style = MealomatTheme.typography.label.xxs.caps().copy(color = MealomatTheme.colors.text.tertiary),
+    )
+}
+
+@Composable
+private fun SummaryCard(lines: List<ShoppingLine>) {
+    val colors = MealomatTheme.colors
+    val typography = MealomatTheme.typography
+    val tone = colors.tone.shopping
+    val shape = MealomatTheme.shapes.surface.card
+    val depth = MealomatTheme.shadows.edge.lg.offsetY
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(MealomatTheme.spacing.inset.frame.bottomOnly())
+            .padding(bottom = depth)
+            .edge(MealomatTheme.shadows.edge.lg.copy(color = tone.edge), shape)
+            .clip(shape)
+            .background(tone.fill)
+            .padding(Space.S16),
+        horizontalArrangement = Arrangement.spacedBy(Space.S14),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        MascotImage(
+            mascot = Mascot.Excited,
+            contentDescription = null,
+            modifier = Modifier.size(MealomatTheme.sizes.mascot.header),
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(Space.S4)) {
+            BasicText(
+                text = "Trip done",
+                style = typography.display.sm.copy(color = tone.onFill),
+            )
+            BasicText(
+                text = summaryLine(lines),
+                style = typography.body.sm.copy(color = tone.tint),
+            )
         }
     }
 }
@@ -162,7 +229,7 @@ private fun ProgressBar(lines: List<ShoppingLine>, active: ShoppingLine?) {
 }
 
 @Composable
-private fun SettledRow(line: ShoppingLine, onClick: () -> Unit) {
+private fun SettledRow(line: ShoppingLine, finished: Boolean, onClick: () -> Unit) {
     val colors = MealomatTheme.colors
     val typography = MealomatTheme.typography
     val bought = line.state == LineState.Bought
@@ -214,7 +281,7 @@ private fun SettledRow(line: ShoppingLine, onClick: () -> Unit) {
         )
         when (val amount = line.bought) {
             null -> BasicText(
-                text = "skipped",
+                text = if (finished) "needs ${line.short.text}" else "skipped",
                 style = typography.strong.sm.copy(color = colors.text.tertiary),
             )
             else -> BasicText(
@@ -296,9 +363,18 @@ private fun Finished(onClose: () -> Unit) {
         Button(
             text = "Back to today",
             onClick = onClose,
-            tone = MealomatTheme.colors.tone.brand,
+            tone = MealomatTheme.colors.tone.shopping,
             modifier = Modifier.weight(1f),
             size = ControlSize.Lg,
         )
+    }
+}
+
+private fun summaryLine(lines: List<ShoppingLine>): String {
+    val bought = lines.count { it.state == LineState.Bought }
+    val skipped = lines.count { it.state == LineState.Skipped }
+    return when {
+        skipped > 0 -> "$bought bought · $skipped skipped"
+        else -> "$bought bought"
     }
 }

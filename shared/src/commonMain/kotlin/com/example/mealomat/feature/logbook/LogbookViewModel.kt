@@ -2,6 +2,7 @@ package com.example.mealomat.feature.logbook
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mealomat.data.db.SessionStatus
 import com.example.mealomat.data.repo.DayRepository
 import com.example.mealomat.data.repo.IngredientRepository
 import com.example.mealomat.data.repo.PrepBlockRepository
@@ -88,14 +89,21 @@ class LogbookViewModel(
 
         return listOfNotNull(
             shops?.let { block ->
-                val trip = shopping.open()?.takeIf { it.prep_block_id == block.id }
+                val trip = shopping.tripOn(block.id, date)
                 shoppingSession(
                     blockId = block.id,
+                    status = trip?.status ?: SessionStatus.IN_PROGRESS,
                     needs = trip?.let { shopping.needsOf(it.id) } ?: shopping.needsFor(block.id, date),
                     steps = trip?.let { shopping.stepsOf(it.id) }.orEmpty(),
                 )
             },
-            preps?.let { prepSession(it.id, prep.stepsFor(it.id, date)) },
+            preps?.let { block ->
+                prepSession(
+                    blockId = block.id,
+                    status = prep.sessionOn(block.id, date)?.status ?: SessionStatus.IN_PROGRESS,
+                    steps = prep.stepsFor(block.id, date),
+                )
+            },
         )
     }
 
