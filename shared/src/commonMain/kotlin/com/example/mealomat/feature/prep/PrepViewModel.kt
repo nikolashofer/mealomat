@@ -46,6 +46,12 @@ class PrepViewModel(
         refreshActive()
     }
 
+    // Moves on without recording anything; the step stays waiting for later in the session.
+    fun later(line: PrepLine) {
+        focused = nextAfter(line.key)
+        refreshActive()
+    }
+
     fun make(line: PrepLine) {
         val id = sessionId ?: return
         viewModelScope.launch {

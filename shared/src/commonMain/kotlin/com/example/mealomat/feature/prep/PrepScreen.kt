@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -84,8 +85,9 @@ fun PrepScreen(
             contentPadding = PaddingValues(horizontal = Space.S20, vertical = Space.S2),
             verticalArrangement = Arrangement.spacedBy(Space.S10),
         ) {
-            // The summary's body is not designed yet, so a finished session shows the card alone.
-            if (!finished) {
+            if (finished) {
+                items(lines, key = { it.key }) { DoneRow(it) }
+            } else {
                 items(lines, key = { it.key }) { line ->
                     when {
                         line.key == active?.key -> PrepCard(line)
@@ -110,7 +112,6 @@ private fun SummaryCard(lines: List<PrepLine>) {
     val tone = colors.tone.prep
     val shape = MealomatTheme.shapes.surface.card
     val depth = MealomatTheme.shadows.edge.lg.offsetY
-    val steps = if (lines.size == 1) "step" else "steps"
 
     Row(
         modifier = Modifier
@@ -132,7 +133,7 @@ private fun SummaryCard(lines: List<PrepLine>) {
         Column {
             BasicText(text = "Prep done", style = typography.display.sm.copy(color = tone.onFill))
             BasicText(
-                text = "${lines.size} $steps",
+                text = summaryLine(lines),
                 style = typography.body.sm.copy(color = tone.tint),
             )
         }
@@ -291,7 +292,15 @@ private fun Footer(active: PrepLine, viewModel: PrepViewModel) {
             .fillMaxWidth()
             .padding(horizontal = Space.S20)
             .padding(top = Space.S12, bottom = Space.S24),
+        horizontalArrangement = Arrangement.spacedBy(Space.S10),
     ) {
+        Button(
+            text = "Later",
+            onClick = { viewModel.later(active) },
+            tone = MealomatTheme.colors.tone.neutral,
+            modifier = Modifier.width(Space.S112),
+            size = ControlSize.Lg,
+        )
         Button(
             text = "Made ${active.make.text}",
             onClick = { viewModel.make(active) },
@@ -318,4 +327,9 @@ private fun Finished(onClose: () -> Unit) {
             size = ControlSize.Lg,
         )
     }
+}
+
+private fun summaryLine(lines: List<PrepLine>): String {
+    val made = lines.count { it.state == PrepLineState.Done }
+    return "$made made"
 }
