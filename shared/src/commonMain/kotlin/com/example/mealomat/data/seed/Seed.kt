@@ -1,6 +1,7 @@
 package com.example.mealomat.data.seed
 
 import com.example.mealomat.data.db.Basis
+import com.example.mealomat.data.db.PrepMode
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -8,6 +9,8 @@ data class Seed(
     val version: Int,
     val ingredients: List<SeedIngredient> = emptyList(),
     val prepBlocks: List<SeedPrepBlock> = emptyList(),
+    val components: List<SeedComponent> = emptyList(),
+    val pantry: List<SeedStock> = emptyList(),
     val planMeals: List<SeedMeal> = emptyList(),
 )
 
@@ -27,6 +30,16 @@ data class SeedIngredient(
     val packSize: Double? = null,
     val note: String? = null,
 )
+
+@Serializable
+data class SeedComponent(
+    val key: String,
+    val name: String,
+    val prepMode: PrepMode = PrepMode.PREP,
+)
+
+@Serializable
+data class SeedStock(val ingredient: String, val amount: Double)
 
 @Serializable
 data class SeedPrepBlock(
@@ -50,4 +63,6 @@ data class SeedMeal(
 data class SeedItem(
     val ingredient: String,
     val amount: Double,
+    val prepMode: PrepMode? = null,
+    val component: String? = null,
 )

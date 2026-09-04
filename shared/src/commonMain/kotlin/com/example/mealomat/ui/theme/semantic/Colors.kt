@@ -84,7 +84,7 @@ data class StatusScheme(
     val danger: StatusColors,
 )
 
-// TODO: have completely separate colors for macros, isntead of using area ones
+// TODO: remove
 @Immutable
 data class MacroColors(
     val protein: Color,

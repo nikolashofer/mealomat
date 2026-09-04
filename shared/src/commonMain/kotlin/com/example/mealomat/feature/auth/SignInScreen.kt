@@ -3,6 +3,7 @@ package com.example.mealomat.feature.auth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,11 +23,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mealomat.ui.components.Button
-import com.example.mealomat.ui.components.ButtonSize
+import com.example.mealomat.ui.components.ControlSize
 import com.example.mealomat.ui.components.Mascot
 import com.example.mealomat.ui.components.MascotImage
 import com.example.mealomat.ui.components.TextField
 import com.example.mealomat.ui.theme.MealomatTheme
+import com.example.mealomat.ui.theme.semantic.topOnly
 import org.koin.compose.viewmodel.koinViewModel
 import com.example.mealomat.ui.theme.Space
 
@@ -64,10 +66,10 @@ fun SignInScreen(viewModel: SignInViewModel = koinViewModel()) {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .clip(MealomatTheme.shapes.sheet)
+                .clip(MealomatTheme.shapes.surface.sheet.topOnly())
                 .background(colors.surface.canvas)
-                .padding(start = Space.S24, end = Space.S24, top = Space.S28, bottom = Space.S32),
-            verticalArrangement = Arrangement.spacedBy(MealomatTheme.spacing.formGap),
+                .padding(MealomatTheme.spacing.inset.sheet),
+            verticalArrangement = Arrangement.spacedBy(MealomatTheme.spacing.gap.form),
         ) {
             TextField(
                 value = state.email,
@@ -95,14 +97,14 @@ fun SignInScreen(viewModel: SignInViewModel = koinViewModel()) {
                 onClick = viewModel::submit,
                 tone = colors.tone.brand,
                 modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Lg,
+                size = ControlSize.Lg,
                 enabled = state.canSubmit,
             )
             Spacer(Modifier.weight(1f))
             BasicText(
                 text = FOOTNOTE,
                 modifier = Modifier.fillMaxWidth(),
-                style = typography.label.xs.copy(
+                style = typography.body.sm.copy(
                     color = colors.text.tertiary,
                     textAlign = TextAlign.Center,
                 ),
@@ -119,9 +121,9 @@ private fun ErrorBanner(message: String) {
         text = message,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(MealomatTheme.shapes.field)
+            .clip(MealomatTheme.shapes.control.lg)
             .background(colors.status.danger.tint)
             .padding(horizontal = Space.S16, vertical = Space.S12),
-        style = MealomatTheme.typography.field.value.copy(color = colors.status.danger.text),
+        style = MealomatTheme.typography.strong.md.copy(color = colors.status.danger.text),
     )
 }

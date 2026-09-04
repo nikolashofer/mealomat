@@ -6,17 +6,18 @@ import androidx.compose.ui.unit.dp
 
 @Immutable
 data class MealomatSizes(
+    val control: ControlSizes = ControlSizes(),
     val mascot: MascotSizes = MascotSizes(),
-    val nav: NavSizes = NavSizes(),
+    // TODO: remove, i.e. check should be control.xs
     val check: Dp = 26.dp,
     val badge: Dp = 20.dp,
 )
 
 @Immutable
-data class NavSizes(
-    val dot: Dp = 6.dp,
-    val selectedDotWidth: Dp = 16.dp,
-    val divider: Dp = 32.dp,
+data class ControlSizes(
+    val sm: Dp = 38.dp,
+    val md: Dp = 46.dp,
+    val lg: Dp = 55.dp,
 )
 
 @Immutable

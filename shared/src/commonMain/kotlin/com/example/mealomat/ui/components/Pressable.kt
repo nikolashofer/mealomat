@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -28,6 +29,24 @@ import androidx.compose.ui.unit.IntOffset
 import com.example.mealomat.ui.theme.MealomatTheme
 
 @Composable
+fun Modifier.pressGesture(enabled: Boolean = true, onPressed: (Boolean) -> Unit): Modifier {
+    val haptics = LocalHapticFeedback.current
+    val report by rememberUpdatedState(onPressed)
+
+    return pointerInput(enabled) {
+        if (!enabled) return@pointerInput
+        awaitEachGesture {
+            awaitFirstDown(requireUnconsumed = false)
+            report(true)
+            haptics.performHapticFeedback(HapticFeedbackType.VirtualKey)
+            waitForUpOrCancellation()
+            report(false)
+        }
+    }
+}
+
+// controls own presses
+@Composable
 fun Modifier.pressable(
     onClick: () -> Unit,
     shape: CornerBasedShape,
@@ -36,10 +55,32 @@ fun Modifier.pressable(
     depth: Dp,
     enabled: Boolean = true,
 ): Modifier {
+    var pressed by remember { mutableStateOf(false) }
+
+    return this
+        .pressable(pressed, shape, fill, edge, depth, enabled)
+        .pressGesture(enabled) { pressed = it }
+        .clickable(
+            interactionSource = null,
+            indication = null,
+            enabled = enabled,
+            role = Role.Button,
+            onClick = onClick,
+        )
+}
+
+// cotrolled presses from outside
+@Composable
+fun Modifier.pressable(
+    pressed: Boolean,
+    shape: CornerBasedShape,
+    fill: Color,
+    edge: Color,
+    depth: Dp,
+    enabled: Boolean = true,
+): Modifier {
     val motion = MealomatTheme.motion
     val opacity = MealomatTheme.opacity
-    val haptics = LocalHapticFeedback.current
-    var pressed by remember { mutableStateOf(false) }
 
     val edgeDepth by animateDpAsState(
         targetValue = if (pressed) motion.pressedEdge else depth,
@@ -53,21 +94,4 @@ fun Modifier.pressable(
         .edge(edgeDepth, shape, edge)
         .clip(shape)
         .background(fill)
-        .pointerInput(enabled) {
-            if (!enabled) return@pointerInput
-            awaitEachGesture {
-                awaitFirstDown(requireUnconsumed = false)
-                pressed = true
-                haptics.performHapticFeedback(HapticFeedbackType.VirtualKey)
-                waitForUpOrCancellation()
-                pressed = false
-            }
-        }
-        .clickable(
-            interactionSource = null,
-            indication = null,
-            enabled = enabled,
-            role = Role.Button,
-            onClick = onClick,
-        )
 }

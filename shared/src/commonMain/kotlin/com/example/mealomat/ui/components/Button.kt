@@ -3,6 +3,7 @@ package com.example.mealomat.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerBasedShape
@@ -16,11 +17,10 @@ import com.example.mealomat.ui.theme.MealomatTheme
 import com.example.mealomat.ui.theme.semantic.ToneColors
 import com.example.mealomat.ui.theme.Space
 
-enum class ButtonSize { Sm, Md, Lg }
-
 private class ButtonSpec(
     val shape: CornerBasedShape,
     val edge: Dp,
+    val height: Dp,
     val padding: PaddingValues,
     val textStyle: TextStyle,
 )
@@ -31,10 +31,13 @@ fun Button(
     onClick: () -> Unit,
     tone: ToneColors,
     modifier: Modifier = Modifier,
-    size: ButtonSize = ButtonSize.Md,
+    size: ControlSize = ControlSize.Md,
     enabled: Boolean = true,
-) = Button(onClick, tone, modifier, size, enabled) {
-    BasicText(text = text, style = size.spec().textStyle.copy(color = tone.onFill))
+) {
+    val style = size.spec().textStyle.copy(color = tone.onFill)
+    Button(onClick, tone, modifier, size, enabled) {
+        BasicText(text = text, style = style)
+    }
 }
 
 @Composable
@@ -42,7 +45,7 @@ fun Button(
     onClick: () -> Unit,
     tone: ToneColors,
     modifier: Modifier = Modifier,
-    size: ButtonSize = ButtonSize.Md,
+    size: ControlSize = ControlSize.Md,
     enabled: Boolean = true,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -51,6 +54,7 @@ fun Button(
     Row(
         modifier = modifier
             .pressable(onClick, spec.shape, tone.fill, tone.edge, spec.edge, enabled)
+            .heightIn(min = spec.height)
             .padding(spec.padding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Space.S8, Alignment.CenterHorizontally),
@@ -59,13 +63,14 @@ fun Button(
 }
 
 @Composable
-private fun ButtonSize.spec(): ButtonSpec {
-    val t = MealomatTheme.shapes.button
-    val s = MealomatTheme.shadows
-    val label = MealomatTheme.typography.label
+private fun ControlSize.spec(): ButtonSpec {
+    val s = MealomatTheme.shapes.control
+    val e = MealomatTheme.shadows.edge
+    val h = MealomatTheme.sizes.control
+    val t = MealomatTheme.typography.label
     return when (this) {
-        ButtonSize.Sm -> ButtonSpec(t.sm, s.edgeSm.offsetY, PaddingValues(Space.S14, Space.S10), label.sm)
-        ButtonSize.Md -> ButtonSpec(t.md, s.edgeMd.offsetY, PaddingValues(Space.S16, Space.S12), label.md)
-        ButtonSize.Lg -> ButtonSpec(t.lg, s.edgeLg.offsetY, PaddingValues(Space.S24, Space.S16), label.lg)
+        ControlSize.Sm -> ButtonSpec(s.sm, e.sm.offsetY, h.sm, PaddingValues(horizontal = Space.S14), t.sm)
+        ControlSize.Md -> ButtonSpec(s.md, e.md.offsetY, h.md, PaddingValues(horizontal = Space.S16), t.md)
+        ControlSize.Lg -> ButtonSpec(s.lg, e.lg.offsetY, h.lg, PaddingValues(horizontal = Space.S24), t.lg)
     }
 }

@@ -45,6 +45,7 @@ import com.example.mealomat.ui.theme.semantic.toDp
 import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
+// TODO: generalize with shopping screen
 @Composable
 fun PrepScreen(
     blockId: String,

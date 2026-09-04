@@ -27,4 +27,6 @@ object Space {
     val S96: Dp = 96.dp
     val S112: Dp = 112.dp
     val S128: Dp = 128.dp
+    val S144: Dp = 144.dp
+    val S160: Dp = 160.dp
 }

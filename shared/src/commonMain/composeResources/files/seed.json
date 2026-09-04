@@ -139,7 +139,8 @@
       "proteinG": 1,
       "carbsG": 7,
       "fatG": 0.6,
-      "fiberG": 5
+      "fiberG": 5,
+      "packSize": 800.0
     },
     {
       "key": "bohnen-gruen",
@@ -209,7 +210,8 @@
       "proteinG": 9,
       "carbsG": 69,
       "fatG": 1.5,
-      "fiberG": 4
+      "fiberG": 4,
+      "packSize": 500.0
     },
     {
       "key": "champignons",
@@ -229,7 +231,8 @@
       "proteinG": 1,
       "carbsG": 3,
       "fatG": 0.3,
-      "fiberG": 1
+      "fiberG": 1,
+      "packSize": 400.0
     },
     {
       "key": "chiasamen",
@@ -239,7 +242,8 @@
       "proteinG": 21,
       "carbsG": 4.5,
       "fatG": 31,
-      "fiberG": 31
+      "fiberG": 31,
+      "packSize": 100.0
     },
     {
       "key": "cocobohnen",
@@ -289,7 +293,8 @@
       "proteinG": 10,
       "carbsG": 1,
       "fatG": 0,
-      "fiberG": 0
+      "fiberG": 0,
+      "packSize": 300.0
     },
     {
       "key": "erbsen",
@@ -314,12 +319,13 @@
     {
       "key": "essig-balsamico-weiss",
       "name": "Essig balsamico weiss",
-      "basis": "G100",
+      "basis": "ML100",
       "kcal": 145,
       "proteinG": 0,
       "carbsG": 32,
       "fatG": 0,
-      "fiberG": 0
+      "fiberG": 0,
+      "packSize": 1000.0
     },
     {
       "key": "feta",
@@ -389,7 +395,8 @@
       "proteinG": 15,
       "carbsG": 60,
       "fatG": 6.7,
-      "fiberG": 9.7
+      "fiberG": 9.7,
+      "packSize": 500.0
     },
     {
       "key": "heidelbeeren",
@@ -624,12 +631,13 @@
     {
       "key": "olivenoel",
       "name": "Olivenöl",
-      "basis": "G100",
+      "basis": "ML100",
       "kcal": 828,
       "proteinG": 0,
       "carbsG": 0,
       "fatG": 92,
-      "fiberG": 0
+      "fiberG": 0,
+      "packSize": 1000.0
     },
     {
       "key": "orange",
@@ -709,7 +717,8 @@
       "proteinG": 8,
       "carbsG": 79,
       "fatG": 0.5,
-      "fiberG": 0.4
+      "fiberG": 0.4,
+      "packSize": 1000.0
     },
     {
       "key": "rhabarber",
@@ -930,6 +939,82 @@
       "coversFromPosition": 1
     }
   ],
+  "components": [
+    {
+      "key": "breakfast-base",
+      "name": "Breakfast base"
+    },
+    {
+      "key": "lunch-base",
+      "name": "Potatoes & egg"
+    },
+    {
+      "key": "lentils",
+      "name": "Lentils & spinach"
+    },
+    {
+      "key": "dressing",
+      "name": "Onion, oil & vinegar"
+    },
+    {
+      "key": "poultry",
+      "name": "Chicken breast"
+    }
+  ],
+  "pantry": [
+    {
+      "ingredient": "apfel-stueck-mittel-180g",
+      "amount": 8.0
+    },
+    {
+      "ingredient": "aubergine-stueck-350g",
+      "amount": 4.0
+    },
+    {
+      "ingredient": "banane-stueck-mittel-140g",
+      "amount": 8.0
+    },
+    {
+      "ingredient": "beerenmischung",
+      "amount": 300.0
+    },
+    {
+      "ingredient": "buchweizenflocken",
+      "amount": 1000.0
+    },
+    {
+      "ingredient": "chiasamen",
+      "amount": 200.0
+    },
+    {
+      "ingredient": "haferflocken",
+      "amount": 500.0
+    },
+    {
+      "ingredient": "kaex-beutel-28-1g",
+      "amount": 16.0
+    },
+    {
+      "ingredient": "whey-isoclear",
+      "amount": 1000.0
+    },
+    {
+      "ingredient": "zwiebeln-rot-stueck-150g",
+      "amount": 8.0
+    },
+    {
+      "ingredient": "reis",
+      "amount": 300.0
+    },
+    {
+      "ingredient": "kicherbsen-dose-klein-120g",
+      "amount": 4.0
+    },
+    {
+      "ingredient": "knoblauch-stueck-6g",
+      "amount": 32.0
+    }
+  ],
   "planMeals": [
     {
       "weekday": 1,
@@ -938,23 +1023,33 @@
       "items": [
         {
           "ingredient": "magerquark",
-          "amount": 250
+          "amount": 250,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "haferflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "buchweizenflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "chiasamen",
-          "amount": 15
+          "amount": 15,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "beerenmischung",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "zwetschgen",
@@ -973,19 +1068,26 @@
       "items": [
         {
           "ingredient": "ei",
-          "amount": 2
+          "amount": 2,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "kartoffeln",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "suesskartoffeln",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "rosenkohl",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP"
         }
       ]
     },
@@ -1046,23 +1148,33 @@
       "items": [
         {
           "ingredient": "magerquark",
-          "amount": 250
+          "amount": 250,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "haferflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "buchweizenflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "chiasamen",
-          "amount": 15
+          "amount": 15,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "beerenmischung",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "ananas-dose-140g",
@@ -1081,19 +1193,27 @@
       "items": [
         {
           "ingredient": "ei",
-          "amount": 2
+          "amount": 2,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "linsen-rot",
-          "amount": 50
+          "amount": 50,
+          "prepMode": "PREP",
+          "component": "lentils"
         },
         {
           "ingredient": "linsen-beluga",
-          "amount": 50
+          "amount": 50,
+          "prepMode": "PREP",
+          "component": "lentils"
         },
         {
           "ingredient": "spinat",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lentils"
         }
       ]
     },
@@ -1104,7 +1224,8 @@
       "items": [
         {
           "ingredient": "reis",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP"
         },
         {
           "ingredient": "rindsgeschnetzeltes",
@@ -1139,23 +1260,33 @@
       "items": [
         {
           "ingredient": "magerquark",
-          "amount": 250
+          "amount": 250,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "haferflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "buchweizenflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "chiasamen",
-          "amount": 15
+          "amount": 15,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "beerenmischung",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "kiwi-stueck-90g",
@@ -1178,11 +1309,15 @@
         },
         {
           "ingredient": "kartoffeln",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "suesskartoffeln",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "cherrytomaten",
@@ -1212,7 +1347,8 @@
       "items": [
         {
           "ingredient": "reis",
-          "amount": 150
+          "amount": 150,
+          "prepMode": "PREP"
         },
         {
           "ingredient": "pouletbrust",
@@ -1243,23 +1379,33 @@
       "items": [
         {
           "ingredient": "magerquark",
-          "amount": 250
+          "amount": 250,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "haferflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "buchweizenflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "chiasamen",
-          "amount": 15
+          "amount": 15,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "beerenmischung",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "apfel-stueck-mittel-180g",
@@ -1278,7 +1424,9 @@
       "items": [
         {
           "ingredient": "pouletbrust",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "poultry"
         },
         {
           "ingredient": "kicherbsen-dose-klein-120g",
@@ -1286,7 +1434,9 @@
         },
         {
           "ingredient": "zwiebeln-rot-stueck-150g",
-          "amount": 1
+          "amount": 1,
+          "prepMode": "PREP",
+          "component": "dressing"
         },
         {
           "ingredient": "cherrytomaten",
@@ -1294,11 +1444,15 @@
         },
         {
           "ingredient": "olivenoel",
-          "amount": 15
+          "amount": 15,
+          "prepMode": "PREP",
+          "component": "dressing"
         },
         {
           "ingredient": "essig-balsamico-weiss",
-          "amount": 30
+          "amount": 30,
+          "prepMode": "PREP",
+          "component": "dressing"
         }
       ]
     },
@@ -1324,7 +1478,8 @@
       "items": [
         {
           "ingredient": "reis",
-          "amount": 150
+          "amount": 150,
+          "prepMode": "PREP"
         },
         {
           "ingredient": "rindsgeschnetzeltes",
@@ -1359,23 +1514,33 @@
       "items": [
         {
           "ingredient": "magerquark",
-          "amount": 250
+          "amount": 250,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "haferflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "buchweizenflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "chiasamen",
-          "amount": 15
+          "amount": 15,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "beerenmischung",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "rhabarber",
@@ -1394,15 +1559,21 @@
       "items": [
         {
           "ingredient": "pouletbrust",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "poultry"
         },
         {
           "ingredient": "kartoffeln",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "suesskartoffeln",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "gurke-stueck-400g",
@@ -1410,7 +1581,8 @@
         },
         {
           "ingredient": "olivenoel",
-          "amount": 10
+          "amount": 10,
+          "prepMode": "PREP"
         }
       ]
     },
@@ -1436,7 +1608,8 @@
       "items": [
         {
           "ingredient": "reis",
-          "amount": 150
+          "amount": 150,
+          "prepMode": "PREP"
         },
         {
           "ingredient": "rindsgeschnetzeltes",
@@ -1471,23 +1644,33 @@
       "items": [
         {
           "ingredient": "magerquark",
-          "amount": 250
+          "amount": 250,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "haferflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "buchweizenflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "chiasamen",
-          "amount": 15
+          "amount": 15,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "beerenmischung",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "kokosnusswasser",
@@ -1552,7 +1735,8 @@
       "items": [
         {
           "ingredient": "reis",
-          "amount": 125
+          "amount": 125,
+          "prepMode": "PREP"
         },
         {
           "ingredient": "pouletbrust",
@@ -1587,23 +1771,33 @@
       "items": [
         {
           "ingredient": "magerquark",
-          "amount": 250
+          "amount": 250,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "haferflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "buchweizenflocken",
-          "amount": 25
+          "amount": 25,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "chiasamen",
-          "amount": 15
+          "amount": 15,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "beerenmischung",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP",
+          "component": "breakfast-base"
         },
         {
           "ingredient": "orange-stueck-mittel-200g",
@@ -1645,15 +1839,21 @@
       "items": [
         {
           "ingredient": "ei",
-          "amount": 2
+          "amount": 2,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "kartoffeln",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "suesskartoffeln",
-          "amount": 200
+          "amount": 200,
+          "prepMode": "PREP",
+          "component": "lunch-base"
         },
         {
           "ingredient": "sauerkraut-roh",
@@ -1672,7 +1872,8 @@
       "items": [
         {
           "ingredient": "reis",
-          "amount": 100
+          "amount": 100,
+          "prepMode": "PREP"
         },
         {
           "ingredient": "pouletbrust",

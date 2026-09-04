@@ -5,6 +5,7 @@ import com.example.mealomat.data.db.Basis
 import com.example.mealomat.data.db.MealomatDatabase
 import com.example.mealomat.data.db.mealomatDatabase
 import com.example.mealomat.data.repo.IngredientRepository
+import com.example.mealomat.data.repo.PantryRepository
 import com.example.mealomat.data.repo.PlanRepository
 import com.example.mealomat.data.repo.PrepBlockRepository
 import com.example.mealomat.data.sync.OutboxWriter
@@ -27,6 +28,7 @@ class SeedImporterTest {
     private lateinit var db: MealomatDatabase
     private lateinit var plan: PlanRepository
     private lateinit var prepBlocks: PrepBlockRepository
+    private lateinit var pantry: PantryRepository
     private lateinit var importer: SeedImporter
     private val clock = FixedClock()
     private val activeFrom = Slot(LocalDate(2026, 6, 22), 0)
@@ -40,7 +42,8 @@ class SeedImporterTest {
         val ingredients = IngredientRepository(db, outbox, auth, clock)
         plan = PlanRepository(db, outbox, auth, clock)
         prepBlocks = PrepBlockRepository(db, outbox, auth, clock)
-        importer = SeedImporter(ingredients, plan, prepBlocks)
+        pantry = PantryRepository(db, outbox, auth, clock)
+        importer = SeedImporter(ingredients, plan, prepBlocks, pantry)
     }
 
     private fun planId() = plan.list().single().id
@@ -53,8 +56,10 @@ class SeedImporterTest {
     private fun seed(
         ingredients: List<SeedIngredient> = listOf(oats()),
         prepBlocks: List<SeedPrepBlock> = emptyList(),
+        components: List<SeedComponent> = emptyList(),
+        pantry: List<SeedStock> = emptyList(),
         planMeals: List<SeedMeal> = emptyList(),
-    ) = Seed(1, ingredients, prepBlocks, planMeals)
+    ) = Seed(1, ingredients, prepBlocks, components, pantry, planMeals)
 
     private fun breakfast(vararg items: SeedItem) =
         listOf(SeedMeal(1, "Breakfast", 0, items.toList()))
@@ -141,5 +146,13 @@ class SeedImporterTest {
 
         assertTrue(failure is IllegalArgumentException, "got $failure")
         assertTrue(failure.message!!.contains("nope"))
+    }
+
+    @Test
+    fun stocksThePantryFromTheSeed() = runTest {
+        importer.import(seed(pantry = listOf(SeedStock("oats", 500.0))), activeFrom)
+
+        val oats = db.ingredientQueries.listWithArchived().executeAsList().single()
+        assertEquals(500.0, pantry.amountOf(oats.id), "the shelf starts where the seed says")
     }
 }
